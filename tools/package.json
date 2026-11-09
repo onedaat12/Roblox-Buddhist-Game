@@ -1,0 +1,14 @@
+{
+  "name": "bodhi-path-tools",
+  "private": true,
+  "description": "Build and check tools for The Bodhi Path (not part of the game itself)",
+  "scripts": {
+    "build": "node build.js",
+    "check": "node check.js",
+    "sim": "node sim.js"
+  },
+  "devDependencies": {
+    "fengari": "^0.1.4",
+    "luaparse": "^0.3.1"
+  }
+}

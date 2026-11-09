@@ -1,0 +1,28 @@
+<!doctype html><html><head><meta charset="utf-8"><title>World preview</title>
+<style>html,body{margin:0;height:100%;overflow:hidden;background:#cfe3f0}#i{position:fixed;left:8px;top:8px;font:12px sans-serif;background:#fff8;padding:4px}</style></head><body><div id="i">loading</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const q=new URLSearchParams(location.search);const g=(k,d)=>parseFloat(q.get(k)??d);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0xcfe3f0);scene.fog=new THREE.Fog(0xcfe3f0,300,g('fog',1400));
+const cam=new THREE.PerspectiveCamera(g('fov',60),innerWidth/innerHeight,1,6000);
+cam.position.set(g('x',60),g('y',60),g('z',120));cam.lookAt(g('tx',0),g('ty',10),g('tz',0));
+const r=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});r.setSize(innerWidth,innerHeight);document.body.appendChild(r.domElement);
+scene.add(new THREE.HemisphereLight(0xffffff,0x887766,0.75));const sun=new THREE.DirectionalLight(0xfff0d8,0.9);sun.position.set(0.5,1,0.3);scene.add(sun);
+const MAT={Grass:0x6f9a4a,LeafyGrass:0x55803c,Ground:0x9a7a55,Basalt:0x3a343c,Sand:0xd9c48f,Sandstone:0xc9a878,Rock:0x7d7a76,Limestone:0xd8cfb8,Cobblestone:0x8f8c86,Pavement:0x9a9a98,Mud:0x6b5238,Slate:0x54525a,CrackedLava:0xff5a20,Water:0x3a8c96};
+fetch('world.json').then(x=>x.json()).then(w=>{
+ const geos={b:new THREE.BoxGeometry(1,1,1),c:new THREE.CylinderGeometry(.5,.5,1,14).rotateZ(Math.PI/2),s:new THREE.SphereGeometry(.5,12,8)};
+ const groups={b:[],c:[],s:[]};for(const p of w.parts){if(p[19]>0.5)continue;groups[p[0]].push(p)}
+ const m4=new THREE.Matrix4(),col=new THREE.Color();
+ for(const k in groups){const list=groups[k];const im=new THREE.InstancedMesh(geos[k],new THREE.MeshLambertMaterial(),list.length);
+  list.forEach((p,i)=>{const [_,px,py,pz,a,b,c,d,e,f,gg,h,ii,sx,sy,sz,R,G,B]=p;
+   m4.set(a*sx,b*sy,c*sz,px, d*sx,e*sy,f*sz,py, gg*sx,h*sy,ii*sz,pz, 0,0,0,1);im.setMatrixAt(i,m4);im.setColorAt(i,col.setRGB(R/255,G/255,B/255));});
+  scene.add(im)}
+ for(const t of w.terrain){const mat=t[1];if(mat==='Air')continue;const c=MAT[mat]??0xff00ff;const water=mat==='Water';
+  const m=new THREE.MeshLambertMaterial({color:c,transparent:water,opacity:water?0.8:1});let mesh;
+  if(t[0]==='block'){let h=t[6],y=t[3];if(water){y=-0.9;h=0.3}mesh=new THREE.Mesh(new THREE.BoxGeometry(t[5]+(h<=4&&!water?0:0),h,t[7]),m);mesh.position.set(t[2],y+(h<=4&&!water?0.06:0),t[4])}
+  else if(t[0]==='ball'){mesh=new THREE.Mesh(new THREE.SphereGeometry(t[5],20,14),m);mesh.position.set(t[2],t[3],t[4])}
+  else{let y=t[3],h=t[5];if(water){y=-0.9;h=0.4}mesh=new THREE.Mesh(new THREE.CylinderGeometry(t[6],t[6],h,32),m);mesh.position.set(t[2],y+0.07,t[4])}
+  scene.add(mesh)}
+ r.render(scene,cam);document.getElementById('i').textContent=w.parts.length+' parts';document.title='ready';
+});
+</script></body></html>
