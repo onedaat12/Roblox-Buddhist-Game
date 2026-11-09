@@ -104,6 +104,7 @@ local function setupWheels(objects)
 					spinning = false
 				end)
 			end
+			Remotes.fx("wheel", { pos = core.Position })
 			local now = os.clock()
 			if now >= (session.wheels[index] or 0) then
 				session.wheels[index] = now + 45
@@ -208,6 +209,7 @@ local function setupCollectibles(objects)
 			if not profile or not session then
 				return
 			end
+			Remotes.fxTo(player, "pickup", {})
 			if item.kind == "leaf" then
 				local index = tonumber(string.sub(item.id, 6)) or 1
 				local teaching = Story.Teachings[index] or Story.Teachings[1]
@@ -332,6 +334,7 @@ function Actions.Buy(player, shopId, itemId)
 				profile.bought[itemId] = true
 			end
 			PlayerData.give(player, itemId, 1)
+			Remotes.fxTo(player, "buy", {})
 			Remotes.notify(player, "Received: " .. def.name, "good")
 			if itemId == "prayer_flags" then
 				task.spawn(Robes.apply, player)
@@ -358,6 +361,7 @@ function Actions.BuyRobe(player, robeId)
 	end
 	profile.robes[robeId] = true
 	profile.robe = robeId
+	Remotes.fxTo(player, "buy", {})
 	Remotes.notify(player, "You now wear the " .. def.name .. ".", "good")
 	PlayerData.push(player)
 	Robes.apply(player)

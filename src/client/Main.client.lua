@@ -15,6 +15,7 @@ local Remotes = ReplicatedStorage:WaitForChild("Remotes")
 local BossState = ReplicatedStorage:WaitForChild("BossState")
 local UI = require(script.Parent:WaitForChild("UI"))
 local Fx = require(script.Parent:WaitForChild("Fx"))
+local Audio = require(script.Parent:WaitForChild("Audio"))
 
 local T = UI.Theme
 local Action = Remotes:WaitForChild("Action")
@@ -104,6 +105,9 @@ end
 local TOAST_COLOR = { info = T.cream, good = T.green, warn = T.saffron, quest = T.goldBright, merit = T.goldBright }
 
 local function toast(text, kind)
+	if kind == "merit" or kind == "quest" then
+		Audio.play(kind)
+	end
 	local count = 0
 	for _, child in ipairs(toasts:GetChildren()) do
 		if child:IsA("GuiObject") then
@@ -164,6 +168,7 @@ local function queueDialog(lines)
 		table.insert(dialogQueue, line)
 	end
 	if not dialogOpen then
+		Audio.play("talk")
 		showNextLine()
 	end
 end
@@ -437,6 +442,9 @@ local function setMeditating(on)
 		return
 	end
 	meditating = on
+	if on then
+		Audio.play("meditate")
+	end
 	local hum = humanoid()
 	if hum then
 		hum.Sit = on
@@ -472,6 +480,7 @@ local function useAbility(name)
 	if name == "strike" then
 		playSlash()
 	end
+	Audio.play(name)
 	Action:FireServer(name)
 end
 
@@ -632,12 +641,16 @@ Remotes:WaitForChild("State").OnClientEvent:Connect(function(new)
 	refreshMerit()
 	refreshWindow()
 	Fx.refreshWorld(state)
+	Audio.setStage(state.stage)
 end)
 
 Remotes:WaitForChild("Notify").OnClientEvent:Connect(toast)
 Remotes:WaitForChild("Dialog").OnClientEvent:Connect(queueDialog)
 Remotes:WaitForChild("UI").OnClientEvent:Connect(function(kind, arg)
 	if Windows[kind] then
+		if kind == "shrine" then
+			Audio.play("pray")
+		end
 		openWindow = nil
 		showWindow(kind, arg)
 	end
@@ -708,6 +721,7 @@ function Effects.awaken()
 end
 
 Remotes:WaitForChild("Fx").OnClientEvent:Connect(function(name, data)
+	Audio.play(name, type(data) == "table" and data.pos or nil)
 	local fn = Effects[name]
 	if fn then
 		local ok, err = pcall(fn, data or {})

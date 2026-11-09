@@ -1,4 +1,4 @@
-<roblox version="4"><Item class="ReplicatedStorage" referent="RBX4"><Properties><string name="Name">ReplicatedStorage</string></Properties><Item class="Folder" referent="RBX3"><Properties><string name="Name">Shared</string></Properties><Item class="ModuleScript" referent="RBX1"><Properties><string name="Name">Config</string><ProtectedString name="Source"><![CDATA[-- The Bodhi Path: shared settings and world data.
+<roblox version="4"><Item class="ReplicatedStorage" referent="RBX5"><Properties><string name="Name">ReplicatedStorage</string></Properties><Item class="Folder" referent="RBX4"><Properties><string name="Name">Shared</string></Properties><Item class="ModuleScript" referent="RBX1"><Properties><string name="Name">Config</string><ProtectedString name="Source"><![CDATA[-- The Bodhi Path: shared settings and world data.
 -- Everything here is plain data so that the server and the client agree on it.
 -- Positions are written as {x = ..., z = ...}; the ground is at height 0 and the
 -- journey runs along the X axis, from the home temple (x = 0) to the Bodhi tree.
@@ -297,7 +297,81 @@ Config.Lotus = {
 }
 
 return Config
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX2"><Properties><string name="Name">Story</string><ProtectedString name="Source"><![CDATA[-- The Bodhi Path: the story.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX2"><Properties><string name="Name">Sounds</string><ProtectedString name="Source"><![CDATA[-- The Bodhi Path: music and sound effects.
+--
+-- HOW TO ADD A SOUND
+--   1. In Roblox Studio open the Toolbox, choose the Audio tab, and find a sound you like.
+--   2. Right-click it and choose "Copy Asset ID".
+--   3. Replace the 0 on the matching line below with that number.
+-- A line left at 0 is simply silent (music keeps playing the previous step's track).
+
+local Sounds = {}
+
+Sounds.MusicVolume = 0.4
+Sounds.EffectVolume = 0.7
+
+----------------------------------------------------------------------
+-- MUSIC: one looping track for each of the 28 steps of the journey.
+----------------------------------------------------------------------
+Sounds.Music = {
+	{ step = "arrive", id = 88321898452519 }, --  1  Arrival: calm, welcoming, morning
+	{ step = "bell", id = 0 }, --  2  The Temple Bell: very quiet, so the bell stands out
+	{ step = "breath", id = 0 }, --  3  The First Breath: still, slow meditation
+	{ step = "alms", id = 0 }, --  4  The Alms Round: light, warm village life
+	{ step = "store", id = 0 }, --  5  The Merit Store: friendly bazaar
+	{ step = "sights", id = 0 }, --  6  The Four Sights: thoughtful, bittersweet
+	{ step = "cross", id = 0 }, --  7  The Great Departure: night journey, resolve
+	{ step = "channa", id = 0 }, --  8  Channa's Farewell: tender parting
+	{ step = "hair", id = 0 }, --  9  The Wanderer's Robe: solemn turning point
+	{ step = "scouts", id = 0 }, -- 10  Shadows on the Road: uneasy, light tension
+	{ step = "alara", id = 0 }, -- 11  The First Teacher: deep forest calm
+	{ step = "uddaka", id = 0 }, -- 12  The Second Teacher: deeper, more spacious
+	{ step = "doubt", id = 0 }, -- 13  The Seventh Army: unsettled, shifting
+	{ step = "ascetics", id = 0 }, -- 14  The Five Companions: dry, sparse, austere
+	{ step = "austerity", id = 0 }, -- 15  Six Years of Austerity: harsh, weary
+	{ step = "sujata", id = 0 }, -- 16  Sujata's Offering: gentle relief, kindness
+	{ step = "eat", id = 0 }, -- 17  The Middle Way: uplifting, balanced
+	{ step = "bowl", id = 0 }, -- 18  The Golden Bowl: wonder, flowing water
+	{ step = "sotthiya", id = 0 }, -- 19  The Grass-Cutter: simple, earthy
+	{ step = "kusa", id = 0 }, -- 20  Eight Handfuls of Grass: quiet anticipation
+	{ step = "daughters", id = 0 }, -- 21  The Daughters of Mara: hypnotic, then dangerous
+	{ step = "armies", id = 0 }, -- 22  The Ten Armies: battle drums
+	{ step = "mara", id = 0 }, -- 23  Mara: the biggest, darkest track
+	{ step = "seat", id = 0 }, -- 24  The Seat of Awakening: hushed, sacred
+	{ step = "watch1", id = 0 }, -- 25  The First Watch: night, vast, slow
+	{ step = "watch2", id = 0 }, -- 26  The Second Watch: wider, deeper
+	{ step = "watch3", id = 0 }, -- 27  The Third Watch: rising, luminous
+	{ step = "awake", id = 0 }, -- 28  Awakened: joyful peace
+}
+
+----------------------------------------------------------------------
+-- SOUND EFFECTS: short sounds that play once when something happens.
+----------------------------------------------------------------------
+Sounds.Effects = {
+	bell = 0, -- the great temple bell is rung (deep bell or gong)
+	wheel = 0, -- a prayer wheel is spun (soft whirr or small chime)
+	strike = 0, -- your palm or staff swings (whoosh)
+	hit = 0, -- a strike lands on a shadow (soft thud)
+	beads = 0, -- a mala bead of light is sent (light shimmer or ping)
+	metta = 0, -- loving-kindness radiates (warm swell or chord)
+	bowl = 0, -- the singing bowl (a long singing-bowl tone)
+	meditate = 0, -- you sit down to meditate (a single soft chime)
+	petals = 0, -- a shadow is dispelled into petals (gentle sparkle)
+	hurt = 0, -- your Calm is struck (dull low hit)
+	overwhelm = 0, -- your Calm runs out (low fading tone)
+	merit = 0, -- you earn merit (small bright chime)
+	quest = 0, -- a new step of the journey begins (short gong or fanfare)
+	pickup = 0, -- you pick something up: leaf, lotus, kusa (soft pluck)
+	talk = 0, -- someone begins to speak (soft page-turn or blip)
+	buy = 0, -- you buy something or put on a robe (cloth or coin sound)
+	pray = 0, -- you pray at a shrine (small bell)
+	storm = 0, -- Mara sends a storm (thunder crack)
+	quake = 0, -- the earth answers as your witness (deep rumble)
+	awaken = 0, -- the moment of awakening (long shimmering rise)
+}
+
+return Sounds
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX3"><Properties><string name="Name">Story</string><ProtectedString name="Source"><![CDATA[-- The Bodhi Path: the story.
 -- People to meet, the steps of the journey, and the teachings written on the Bodhi leaves.
 --
 -- The journey follows the traditional account of how Siddhartha Gautama became the Buddha
@@ -796,7 +870,7 @@ Story.OverwhelmLines = {
 }
 
 return Story
-]]></ProtectedString></Properties></Item></Item></Item><Item class="ServerScriptService" referent="RBX23"><Properties><string name="Name">ServerScriptService</string></Properties><Item class="Folder" referent="RBX22"><Properties><string name="Name">Server</string></Properties><Item class="ModuleScript" referent="RBX5"><Properties><string name="Name">Boss</string><ProtectedString name="Source"><![CDATA[-- Boss: the meeting with Mara, told in the order the old stories tell it.
+]]></ProtectedString></Properties></Item></Item></Item><Item class="ServerScriptService" referent="RBX24"><Properties><string name="Name">ServerScriptService</string></Properties><Item class="Folder" referent="RBX23"><Properties><string name="Name">Server</string></Properties><Item class="ModuleScript" referent="RBX6"><Properties><string name="Name">Boss</string><ProtectedString name="Source"><![CDATA[-- Boss: the meeting with Mara, told in the order the old stories tell it.
 --   1. Mara's host attacks.
 --   2. Mara sends nine storms. To one who sits unmoved, they fall as flowers.
 --   3. Mara himself attacks from the back of the elephant Girimekhala, hurling his discus.
@@ -1264,7 +1338,7 @@ function Boss.start(objects)
 end
 
 return Boss
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX6"><Properties><string name="Name">Buildings</string><ProtectedString name="Source"><![CDATA[-- Buildings: temples, stupas, gateways, houses and the other architecture of the journey.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX7"><Properties><string name="Name">Buildings</string><ProtectedString name="Source"><![CDATA[-- Buildings: temples, stupas, gateways, houses and the other architecture of the journey.
 -- Styles are drawn from Buddhist India and the wider Buddhist world: the stone spire of the
 -- Mahabodhi temple, the domed stupas and carved gateways (toranas) of Sanchi, mud-walled
 -- village houses, tiered East Asian roofs, Tibetan prayer wheels and prayer flags.
@@ -1992,7 +2066,7 @@ function B.bodhiTree(parent, o)
 end
 
 return B
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX7"><Properties><string name="Name">Combat</string><ProtectedString name="Source"><![CDATA[-- Combat: Calm (the player's "health"), the monk's abilities, and meditation.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX8"><Properties><string name="Name">Combat</string><ProtectedString name="Source"><![CDATA[-- Combat: Calm (the player's "health"), the monk's abilities, and meditation.
 --
 -- Nothing is killed in this game. Mara's soldiers are troubles of the mind; when they are
 -- met steadily they are "dispelled" and fall apart into petals, as Mara's weapons turned
@@ -2549,7 +2623,7 @@ function Combat.start()
 end
 
 return Combat
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX8"><Properties><string name="Name">Enemies</string><ProtectedString name="Source"><![CDATA[-- Enemies: Mara's ten armies and his three daughters.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX9"><Properties><string name="Name">Enemies</string><ProtectedString name="Source"><![CDATA[-- Enemies: Mara's ten armies and his three daughters.
 -- Soldiers appear only where players are nearby, chase them, and wear down their Calm.
 -- Each army has its own character: Hunger drains you from a distance, Sloth slows you,
 -- Doubt never stays where you look for it, and so on (see Config.Enemies).
@@ -2826,7 +2900,7 @@ function Enemies.start()
 end
 
 return Enemies
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX9"><Properties><string name="Name">Interact</string><ProtectedString name="Source"><![CDATA[-- Interact: everything a player can use in the world or choose in a window.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX10"><Properties><string name="Name">Interact</string><ProtectedString name="Source"><![CDATA[-- Interact: everything a player can use in the world or choose in a window.
 -- The temple bell, prayer wheels, shrines, things to pick up, the shops, robes,
 -- the Eightfold Path, and using items from the Bag.
 
@@ -2932,6 +3006,7 @@ local function setupWheels(objects)
 					spinning = false
 				end)
 			end
+			Remotes.fx("wheel", { pos = core.Position })
 			local now = os.clock()
 			if now >= (session.wheels[index] or 0) then
 				session.wheels[index] = now + 45
@@ -3036,6 +3111,7 @@ local function setupCollectibles(objects)
 			if not profile or not session then
 				return
 			end
+			Remotes.fxTo(player, "pickup", {})
 			if item.kind == "leaf" then
 				local index = tonumber(string.sub(item.id, 6)) or 1
 				local teaching = Story.Teachings[index] or Story.Teachings[1]
@@ -3160,6 +3236,7 @@ function Actions.Buy(player, shopId, itemId)
 				profile.bought[itemId] = true
 			end
 			PlayerData.give(player, itemId, 1)
+			Remotes.fxTo(player, "buy", {})
 			Remotes.notify(player, "Received: " .. def.name, "good")
 			if itemId == "prayer_flags" then
 				task.spawn(Robes.apply, player)
@@ -3186,6 +3263,7 @@ function Actions.BuyRobe(player, robeId)
 	end
 	profile.robes[robeId] = true
 	profile.robe = robeId
+	Remotes.fxTo(player, "buy", {})
 	Remotes.notify(player, "You now wear the " .. def.name .. ".", "good")
 	PlayerData.push(player)
 	Robes.apply(player)
@@ -3307,7 +3385,7 @@ function Interact.start(objects)
 end
 
 return Interact
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX10"><Properties><string name="Name">Kit</string><ProtectedString name="Source"><![CDATA[-- Kit: small helpers for building the world out of simple parts.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX11"><Properties><string name="Name">Kit</string><ProtectedString name="Source"><![CDATA[-- Kit: small helpers for building the world out of simple parts.
 -- Every structure in the game is assembled from these (blocks, cylinders, balls),
 -- so nothing has to be made by hand in Roblox Studio.
 
@@ -3576,7 +3654,7 @@ function Kit.weld(part, to)
 end
 
 return Kit
-]]></ProtectedString></Properties></Item><Item class="Script" referent="RBX11"><Properties><string name="Name">Main</string><ProtectedString name="Source"><![CDATA[-- The Bodhi Path: server start-up.
+]]></ProtectedString></Properties></Item><Item class="Script" referent="RBX12"><Properties><string name="Name">Main</string><ProtectedString name="Source"><![CDATA[-- The Bodhi Path: server start-up.
 -- Builds the world, then looks after each player who arrives.
 
 local Players = game:GetService("Players")
@@ -3754,7 +3832,7 @@ for _, player in ipairs(Players:GetPlayers()) do
 end
 
 print("[Bodhi Path] Ready.")
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX12"><Properties><string name="Name">NPCs</string><ProtectedString name="Source"><![CDATA[-- NPCs: the people of the story. They stand (or sit) where the story needs them,
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX13"><Properties><string name="Name">NPCs</string><ProtectedString name="Source"><![CDATA[-- NPCs: the people of the story. They stand (or sit) where the story needs them,
 -- speak when spoken to, give alms, and keep the shops. A few simply wander so the
 -- villages feel alive.
 
@@ -3925,7 +4003,7 @@ function NPCs.start()
 end
 
 return NPCs
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX13"><Properties><string name="Name">PlayerData</string><ProtectedString name="Source"><![CDATA[-- PlayerData: each player's saved progress (merit, bag, robes, how far they have walked)
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX14"><Properties><string name="Name">PlayerData</string><ProtectedString name="Source"><![CDATA[-- PlayerData: each player's saved progress (merit, bag, robes, how far they have walked)
 -- plus short-lived things that last only for one visit (cooldowns, blessings).
 
 local Players = game:GetService("Players")
@@ -4262,7 +4340,7 @@ game:BindToClose(function()
 end)
 
 return PlayerData
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX14"><Properties><string name="Name">Props</string><ProtectedString name="Source"><![CDATA[-- Props: trees, rocks, animals and small objects.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX15"><Properties><string name="Name">Props</string><ProtectedString name="Source"><![CDATA[-- Props: trees, rocks, animals and small objects.
 -- Every function takes the place to put the thing ("o", a ground-level frame) and
 -- builds it from simple parts. Structures treat -Z as "front".
 
@@ -4673,7 +4751,7 @@ function Props.elephant(parent, o, s, color, opts)
 end
 
 return Props
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX15"><Properties><string name="Name">Quests</string><ProtectedString name="Source"><![CDATA[-- Quests: moves each player through the steps of the journey (see Story.Quests).
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX16"><Properties><string name="Name">Quests</string><ProtectedString name="Source"><![CDATA[-- Quests: moves each player through the steps of the journey (see Story.Quests).
 -- Other modules report what happened ("talked to the abbot", "dispelled a shadow")
 -- and this module works out whether the current step is now complete.
 
@@ -4847,7 +4925,7 @@ function Quests.progress(player, kind, target, amount)
 end
 
 return Quests
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX16"><Properties><string name="Name">Remotes</string><ProtectedString name="Source"><![CDATA[-- Remotes: the messages that travel between the server and each player's screen.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX17"><Properties><string name="Name">Remotes</string><ProtectedString name="Source"><![CDATA[-- Remotes: the messages that travel between the server and each player's screen.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -4905,7 +4983,7 @@ function Remotes.fxTo(player, name, data)
 end
 
 return Remotes
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX17"><Properties><string name="Name">Rig</string><ProtectedString name="Source"><![CDATA[-- Rig: makes people (and Mara's soldiers) out of the standard Roblox character body.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX18"><Properties><string name="Name">Rig</string><ProtectedString name="Source"><![CDATA[-- Rig: makes people (and Mara's soldiers) out of the standard Roblox character body.
 -- One blank body is created when the server starts; every villager, monk and shadow is a
 -- copy of it, recoloured and dressed with simple welded pieces (robes, wraps, turbans).
 
@@ -5461,7 +5539,7 @@ function Rig.animate(model, fast)
 end
 
 return Rig
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX18"><Properties><string name="Name">Robes</string><ProtectedString name="Source"><![CDATA[-- Robes: dresses a player's avatar as a monastic.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX19"><Properties><string name="Name">Robes</string><ProtectedString name="Source"><![CDATA[-- Robes: dresses a player's avatar as a monastic.
 -- The avatar keeps its own face, hair and body; shirt and trousers are replaced by a robe
 -- in the chosen colours, with a wrap and a sash. "My Own Clothes" restores the avatar.
 
@@ -5618,7 +5696,7 @@ function Robes.apply(player)
 end
 
 return Robes
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX19"><Properties><string name="Name">World</string><ProtectedString name="Source"><![CDATA[-- World: builds the whole landscape when the server starts.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX20"><Properties><string name="Name">World</string><ProtectedString name="Source"><![CDATA[-- World: builds the whole landscape when the server starts.
 -- Terrain (ground, hills, rivers), lighting, the gates between zones, the things to
 -- collect, and then each zone's own scenery (see ZonesWest and ZonesEast).
 
@@ -6007,7 +6085,7 @@ end
 World.ctx = ctx
 
 return World
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX20"><Properties><string name="Name">ZonesEast</string><ProtectedString name="Source"><![CDATA[-- ZonesEast: the second half of the journey.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX21"><Properties><string name="Name">ZonesEast</string><ProtectedString name="Source"><![CDATA[-- ZonesEast: the second half of the journey.
 -- Uruvela (the grove of austerities), Senani village and the Neranjara river,
 -- Mara's Field, and Bodh Gaya with the Bodhi tree.
 
@@ -6372,7 +6450,7 @@ function Zones.build(ctx)
 end
 
 return Zones
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX21"><Properties><string name="Name">ZonesWest</string><ProtectedString name="Source"><![CDATA[-- ZonesWest: the first half of the journey.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX22"><Properties><string name="Name">ZonesWest</string><ProtectedString name="Source"><![CDATA[-- ZonesWest: the first half of the journey.
 -- Kapilavastu (home temple and village), the Road of the Four Sights,
 -- the River Anoma, and the Forest of the Teachers.
 
@@ -6769,7 +6847,120 @@ function Zones.build(ctx)
 end
 
 return Zones
-]]></ProtectedString></Properties></Item></Item></Item><Item class="StarterPlayer" referent="RBX29"><Properties><string name="Name">StarterPlayer</string></Properties><Item class="StarterPlayerScripts" referent="RBX28"><Properties><string name="Name">StarterPlayerScripts</string></Properties><Item class="Folder" referent="RBX27"><Properties><string name="Name">Client</string></Properties><Item class="ModuleScript" referent="RBX24"><Properties><string name="Name">Fx</string><ProtectedString name="Source"><![CDATA[-- Fx: what the world looks like for this player.
+]]></ProtectedString></Properties></Item></Item></Item><Item class="StarterPlayer" referent="RBX31"><Properties><string name="Name">StarterPlayer</string></Properties><Item class="StarterPlayerScripts" referent="RBX30"><Properties><string name="Name">StarterPlayerScripts</string></Properties><Item class="Folder" referent="RBX29"><Properties><string name="Name">Client</string></Properties><Item class="ModuleScript" referent="RBX25"><Properties><string name="Name">Audio</string><ProtectedString name="Source"><![CDATA[-- Audio: plays the music for the current step of the journey and the sound effects.
+-- The sound IDs themselves live in ReplicatedStorage.Shared.Sounds.
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local SoundService = game:GetService("SoundService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Sounds = require(Shared:WaitForChild("Sounds"))
+local Story = require(Shared:WaitForChild("Story"))
+
+local Audio = {}
+
+local player = Players.LocalPlayer
+local folder = Instance.new("Folder")
+folder.Name = "BodhiPathAudio"
+folder.Parent = SoundService
+
+local function asset(id)
+	return "rbxassetid://" .. tostring(id)
+end
+
+----------------------------------------------------------------------
+-- Music
+----------------------------------------------------------------------
+local current = nil
+local currentId = 0
+
+-- The track for a step; if that step has none, the nearest earlier step that has one.
+local function musicFor(stage)
+	local quest = Story.Quests[stage]
+	if not quest then
+		return 0
+	end
+	local index = 0
+	for i, entry in ipairs(Sounds.Music) do
+		if entry.step == quest.id then
+			index = i
+		end
+	end
+	for i = index, 1, -1 do
+		local id = Sounds.Music[i].id
+		if type(id) == "number" and id > 0 then
+			return id
+		end
+	end
+	return 0
+end
+
+function Audio.setStage(stage)
+	local id = musicFor(stage)
+	if id == currentId then
+		return
+	end
+	currentId = id
+	local old = current
+	current = nil
+	if old then
+		local t = TweenService:Create(old, TweenInfo.new(2), { Volume = 0 })
+		t:Play()
+		task.delay(2.2, function()
+			old:Destroy()
+		end)
+	end
+	if id > 0 then
+		local s = Instance.new("Sound")
+		s.Name = "Music"
+		s.SoundId = asset(id)
+		s.Looped = true
+		s.Volume = 0
+		s.Parent = folder
+		s:Play()
+		TweenService:Create(s, TweenInfo.new(2.5), { Volume = Sounds.MusicVolume }):Play()
+		current = s
+	end
+end
+
+----------------------------------------------------------------------
+-- Sound effects
+----------------------------------------------------------------------
+local lastPlayed = {}
+
+-- Play an effect by name. If "pos" is given, it is only heard when you are near it.
+function Audio.play(name, pos, volume)
+	local id = Sounds.Effects[name]
+	if type(id) ~= "number" or id <= 0 then
+		return
+	end
+	local now = os.clock()
+	if now - (lastPlayed[name] or -10) < 0.08 then
+		return
+	end
+	if pos then
+		local character = player.Character
+		local root = character and character:FindFirstChild("HumanoidRootPart")
+		if not root or (root.Position - pos).Magnitude > 160 then
+			return
+		end
+	end
+	lastPlayed[name] = now
+	local s = Instance.new("Sound")
+	s.Name = name
+	s.SoundId = asset(id)
+	s.Volume = (volume or 1) * Sounds.EffectVolume
+	s.Parent = folder
+	s:Play()
+	task.delay(12, function()
+		s:Destroy()
+	end)
+end
+
+return Audio
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX26"><Properties><string name="Name">Fx</string><ProtectedString name="Source"><![CDATA[-- Fx: what the world looks like for this player.
 -- Visual effects, the changing light of each zone, which gates are open, and which
 -- things have already been collected.
 
@@ -6990,7 +7181,7 @@ CollectionService:GetInstanceAddedSignal("GateVeil"):Connect(applyGate)
 CollectionService:GetInstanceAddedSignal("Collectible"):Connect(applyCollectible)
 
 return Fx
-]]></ProtectedString></Properties></Item><Item class="LocalScript" referent="RBX25"><Properties><string name="Name">Main</string><ProtectedString name="Source"><![CDATA[-- The Bodhi Path: everything the player sees on screen and every button they press.
+]]></ProtectedString></Properties></Item><Item class="LocalScript" referent="RBX27"><Properties><string name="Name">Main</string><ProtectedString name="Source"><![CDATA[-- The Bodhi Path: everything the player sees on screen and every button they press.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -7007,6 +7198,7 @@ local Remotes = ReplicatedStorage:WaitForChild("Remotes")
 local BossState = ReplicatedStorage:WaitForChild("BossState")
 local UI = require(script.Parent:WaitForChild("UI"))
 local Fx = require(script.Parent:WaitForChild("Fx"))
+local Audio = require(script.Parent:WaitForChild("Audio"))
 
 local T = UI.Theme
 local Action = Remotes:WaitForChild("Action")
@@ -7096,6 +7288,9 @@ end
 local TOAST_COLOR = { info = T.cream, good = T.green, warn = T.saffron, quest = T.goldBright, merit = T.goldBright }
 
 local function toast(text, kind)
+	if kind == "merit" or kind == "quest" then
+		Audio.play(kind)
+	end
 	local count = 0
 	for _, child in ipairs(toasts:GetChildren()) do
 		if child:IsA("GuiObject") then
@@ -7156,6 +7351,7 @@ local function queueDialog(lines)
 		table.insert(dialogQueue, line)
 	end
 	if not dialogOpen then
+		Audio.play("talk")
 		showNextLine()
 	end
 end
@@ -7429,6 +7625,9 @@ local function setMeditating(on)
 		return
 	end
 	meditating = on
+	if on then
+		Audio.play("meditate")
+	end
 	local hum = humanoid()
 	if hum then
 		hum.Sit = on
@@ -7464,6 +7663,7 @@ local function useAbility(name)
 	if name == "strike" then
 		playSlash()
 	end
+	Audio.play(name)
 	Action:FireServer(name)
 end
 
@@ -7624,12 +7824,16 @@ Remotes:WaitForChild("State").OnClientEvent:Connect(function(new)
 	refreshMerit()
 	refreshWindow()
 	Fx.refreshWorld(state)
+	Audio.setStage(state.stage)
 end)
 
 Remotes:WaitForChild("Notify").OnClientEvent:Connect(toast)
 Remotes:WaitForChild("Dialog").OnClientEvent:Connect(queueDialog)
 Remotes:WaitForChild("UI").OnClientEvent:Connect(function(kind, arg)
 	if Windows[kind] then
+		if kind == "shrine" then
+			Audio.play("pray")
+		end
 		openWindow = nil
 		showWindow(kind, arg)
 	end
@@ -7700,6 +7904,7 @@ function Effects.awaken()
 end
 
 Remotes:WaitForChild("Fx").OnClientEvent:Connect(function(name, data)
+	Audio.play(name, type(data) == "table" and data.pos or nil)
 	local fn = Effects[name]
 	if fn then
 		local ok, err = pcall(fn, data or {})
@@ -7865,7 +8070,7 @@ refreshMerit()
 refreshTracker()
 refreshAbilities()
 Action:FireServer("Ready")
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX26"><Properties><string name="Name">UI</string><ProtectedString name="Source"><![CDATA[-- UI: small helpers and the shared look of every panel on screen.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX28"><Properties><string name="Name">UI</string><ProtectedString name="Source"><![CDATA[-- UI: small helpers and the shared look of every panel on screen.
 
 local UI = {}
 
