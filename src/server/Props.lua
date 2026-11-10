@@ -305,7 +305,7 @@ end
 function Props.signpost(parent, o, text)
 	Kit.cyl(parent, o * CFrame.new(0, 3, 0), 0.5, 6, C.woodDark, M.Wood)
 	local board = Kit.block(parent, o * CFrame.new(0, 5.4, 0), V(6, 1.8, 0.3), C.wood, M.WoodPlanks, NOCOL)
-	Kit.sign(board, text, C.ivory, 0, 90, UDim2.new(0, 200, 0, 40))
+	Kit.plaque(board, text, C.ivory, { Enum.NormalId.Front, Enum.NormalId.Back })
 	return board
 end
 
@@ -364,8 +364,8 @@ function Props.horse(parent, o)
 	return m
 end
 
-function Props.deer(parent, o)
-	local c = Color3.fromRGB(176, 124, 76)
+function Props.deer(parent, o, color)
+	local c = color or Color3.fromRGB(176, 124, 76)
 	Kit.block(parent, o * CFrame.new(0, 2.6, 0), V(1.3, 1.5, 3.4), c, M.SmoothPlastic, NOCOL)
 	Kit.block(parent, o * CFrame.new(0, 3.9, -1.7) * CFrame.Angles(rad(-25), 0, 0), V(0.8, 2, 0.8), c, M.SmoothPlastic, SOFT)
 	Kit.block(parent, o * CFrame.new(0, 4.9, -2.4), V(0.8, 0.8, 1.4), c, M.SmoothPlastic, SOFT)
@@ -406,6 +406,118 @@ function Props.elephant(parent, o, s, color, opts)
 		Kit.blob(m, o * CFrame.new(0, 12.4 * s, -7.4 * s), V(4 * s, 1.4 * s, 4 * s), opts.cloth, M.Fabric, SOFT)
 	end
 	return m
+end
+
+----------------------------------------------------------------------
+-- Animals of the Jataka tales (small still figures)
+----------------------------------------------------------------------
+
+function Props.hare(parent, o)
+	local c = Color3.fromRGB(206, 186, 154)
+	Kit.blob(parent, o * CFrame.new(0, 0.75, 0), V(1.2, 1.1, 1.8), c, M.SmoothPlastic, NOCOL)
+	Kit.ball(parent, o * CFrame.new(0, 1.4, -0.9), 0.9, c, M.SmoothPlastic, SOFT)
+	for _, sx in ipairs({ -1, 1 }) do
+		Kit.block(parent, o * CFrame.new(sx * 0.22, 2.2, -0.8) * CFrame.Angles(rad(-10), 0, rad(sx * -8)), V(0.2, 1, 0.3), c, M.SmoothPlastic, SOFT)
+		Kit.ball(parent, o * CFrame.new(sx * 0.3, 1.5, -1.25), 0.14, C.black, M.SmoothPlastic, SOFT)
+	end
+	Kit.ball(parent, o * CFrame.new(0, 0.9, 0.95), 0.45, C.white, M.SmoothPlastic, SOFT)
+end
+
+function Props.monkey(parent, o)
+	local c = Color3.fromRGB(140, 100, 70)
+	local face = Color3.fromRGB(222, 190, 160)
+	Kit.blob(parent, o * CFrame.new(0, 1.2, 0), V(1.4, 1.9, 1.3), c, M.SmoothPlastic, NOCOL)
+	Kit.ball(parent, o * CFrame.new(0, 2.6, -0.2), 1.1, c, M.SmoothPlastic, SOFT)
+	Kit.blob(parent, o * CFrame.new(0, 2.5, -0.65), V(0.75, 0.65, 0.45), face, M.SmoothPlastic, SOFT)
+	for _, sx in ipairs({ -1, 1 }) do
+		Kit.block(parent, o * CFrame.new(sx * 0.85, 1.4, -0.2) * CFrame.Angles(rad(-15), 0, rad(sx * 8)), V(0.35, 1.5, 0.35), c, M.SmoothPlastic, SOFT)
+		Kit.block(parent, o * CFrame.new(sx * 0.5, 0.25, -0.7), V(0.4, 0.4, 1.1), c, M.SmoothPlastic, SOFT)
+		Kit.ball(parent, o * CFrame.new(sx * 0.6, 2.7, -0.2), 0.4, face, M.SmoothPlastic, SOFT)
+		Kit.ball(parent, o * CFrame.new(sx * 0.2, 2.65, -0.85), 0.12, C.black, M.SmoothPlastic, SOFT)
+	end
+	Kit.block(parent, o * CFrame.new(0, 0.9, 1.3) * CFrame.Angles(rad(40), 0, 0), V(0.2, 0.2, 2.2), c, M.SmoothPlastic, SOFT)
+end
+
+function Props.goose(parent, o)
+	local c = C.goldBright
+	local beak = Color3.fromRGB(226, 120, 40)
+	Kit.blob(parent, o * CFrame.new(0, 1.3, 0), V(1.4, 1.3, 2.4), c, M.Metal, NOCOL)
+	Kit.block(parent, o * CFrame.new(0, 2.4, -1) * CFrame.Angles(rad(-15), 0, 0), V(0.4, 1.7, 0.4), c, M.Metal, SOFT)
+	Kit.ball(parent, o * CFrame.new(0, 3.3, -1.25), 0.7, c, M.Metal, SOFT)
+	Kit.block(parent, o * CFrame.new(0, 3.25, -1.75), V(0.25, 0.2, 0.6), beak, M.SmoothPlastic, SOFT)
+	Kit.block(parent, o * CFrame.new(0, 1.7, 1.3) * CFrame.Angles(rad(25), 0, 0), V(0.9, 0.2, 0.9), c, M.Metal, SOFT)
+	for _, sx in ipairs({ -1, 1 }) do
+		Kit.block(parent, o * CFrame.new(sx * 0.3, 0.35, 0), V(0.15, 0.7, 0.15), beak, M.SmoothPlastic, SOFT)
+		Kit.blob(parent, o * CFrame.new(sx * 0.7, 1.45, 0.15), V(0.3, 0.9, 1.8), c, M.Metal, SOFT)
+		Kit.ball(parent, o * CFrame.new(sx * 0.3, 3.4, -1.45), 0.12, C.black, M.SmoothPlastic, SOFT)
+	end
+end
+
+function Props.quail(parent, o)
+	local c = Color3.fromRGB(150, 120, 90)
+	Kit.blob(parent, o * CFrame.new(0, 0.6, 0), V(1, 0.9, 1.3), c, M.SmoothPlastic, NOCOL)
+	Kit.ball(parent, o * CFrame.new(0, 1.1, -0.5), 0.55, c, M.SmoothPlastic, SOFT)
+	Kit.block(parent, o * CFrame.new(0, 1.05, -0.85), V(0.14, 0.12, 0.25), Color3.fromRGB(60, 50, 40), M.SmoothPlastic, SOFT)
+	Kit.block(parent, o * CFrame.new(0, 1.55, -0.5) * CFrame.Angles(rad(-20), 0, 0), V(0.08, 0.45, 0.08), C.black, M.SmoothPlastic, SOFT)
+	Kit.blob(parent, o * CFrame.new(0, 0.55, 0.1), V(1.05, 0.5, 0.9), Color3.fromRGB(196, 170, 130), M.SmoothPlastic, SOFT)
+	for _, sx in ipairs({ -1, 1 }) do
+		Kit.ball(parent, o * CFrame.new(sx * 0.22, 1.18, -0.7), 0.09, C.black, M.SmoothPlastic, SOFT)
+	end
+end
+
+----------------------------------------------------------------------
+-- The Eight Auspicious Symbols (floating golden figures). "o" is the centre.
+----------------------------------------------------------------------
+local FIND = { collide = false, shadow = false }
+
+function Props.symbol(parent, o, id)
+	local gold = C.goldBright
+	local red = Color3.fromRGB(190, 40, 44)
+	if id == "vase" then
+		Kit.blob(parent, o, V(1.9, 1.9, 1.9), gold, M.Metal, FIND)
+		Kit.cyl(parent, o * CFrame.new(0, -1, 0), 1.1, 0.3, gold, M.Metal, FIND)
+		Kit.cyl(parent, o * CFrame.new(0, 1.1, 0), 0.9, 0.7, gold, M.Metal, FIND)
+		Kit.cyl(parent, o * CFrame.new(0, 1.5, 0), 1.4, 0.2, gold, M.Metal, FIND)
+		Kit.ball(parent, o * CFrame.new(0, 1.95, 0), 0.6, red, M.Neon, FIND)
+	elseif id == "parasol" then
+		Kit.cyl(parent, o, 0.2, 3.2, gold, M.Metal, FIND)
+		Kit.blob(parent, o * CFrame.new(0, 1.7, 0), V(3, 1.3, 3), gold, M.Metal, FIND)
+		Kit.cyl(parent, o * CFrame.new(0, 1.3, 0), 3, 0.3, red, M.Fabric, FIND)
+		Kit.ball(parent, o * CFrame.new(0, 2.45, 0), 0.45, gold, M.Neon, FIND)
+	elseif id == "fishes" then
+		for _, sx in ipairs({ -1, 1 }) do
+			local f = o * CFrame.new(sx * 0.6, 0, 0) * CFrame.Angles(rad(sx * 90 - 90), rad(sx * 12), 0)
+			Kit.blob(parent, f, V(0.7, 1, 2.3), gold, M.Metal, FIND)
+			Kit.block(parent, f * CFrame.new(0, 0, 1.35), V(0.1, 0.9, 0.6), gold, M.Metal, FIND)
+			Kit.ball(parent, f * CFrame.new(0.3, 0.15, -0.75), 0.16, C.black, M.SmoothPlastic, FIND)
+		end
+	elseif id == "knot" then
+		local k = o * CFrame.Angles(0, 0, rad(45))
+		for _, d in ipairs({ -0.75, 0, 0.75 }) do
+			Kit.block(parent, k * CFrame.new(d, 0, 0), V(0.3, 2.6, 0.3), gold, M.Metal, FIND)
+			Kit.block(parent, k * CFrame.new(0, d, 0), V(2.6, 0.3, 0.34), gold, M.Metal, FIND)
+		end
+	elseif id == "conch" then
+		Kit.blob(parent, o, V(1.5, 1.5, 2.4), C.white, M.SmoothPlastic, FIND)
+		Kit.blob(parent, o * CFrame.new(0, 0, -1.2), V(1, 1, 1.5), C.white, M.SmoothPlastic, FIND)
+		Kit.ball(parent, o * CFrame.new(0, 0, 1.3), 0.6, gold, M.Metal, FIND)
+		Kit.ball(parent, o * CFrame.new(0, 0, -2), 0.4, gold, M.Metal, FIND)
+	elseif id == "lotus" then
+		Props.lotus(parent, o * CFrame.new(0, -0.6, 0), gold, true)
+	elseif id == "banner" then
+		Kit.cyl(parent, o, 0.2, 3.8, gold, M.Metal, FIND)
+		Kit.cyl(parent, o * CFrame.new(0, 0.6, 0), 1.3, 1.6, red, M.Fabric, FIND)
+		Kit.cyl(parent, o * CFrame.new(0, -0.3, 0), 1.5, 0.2, gold, M.Metal, FIND)
+		Kit.cyl(parent, o * CFrame.new(0, 1.5, 0), 1.7, 0.25, gold, M.Metal, FIND)
+		Kit.ball(parent, o * CFrame.new(0, 2.1, 0), 0.5, gold, M.Neon, FIND)
+	else -- the wheel
+		local face = o * CFrame.Angles(rad(90), 0, 0)
+		Kit.cyl(parent, face, 2.8, 0.25, gold, M.Metal, FIND)
+		Kit.cyl(parent, face, 0.8, 0.5, red, M.Metal, FIND)
+		for i = 0, 3 do
+			Kit.block(parent, o * CFrame.Angles(0, 0, rad(i * 45)), V(0.18, 3.3, 0.3), gold, M.Metal, FIND)
+		end
+	end
 end
 
 return Props

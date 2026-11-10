@@ -47,6 +47,9 @@ local function defaults()
 		dispelled = 0,
 		bought = {},
 		bossWins = 0,
+		weapon = "auto",
+		symbols = {},
+		friends = {},
 	}
 end
 
@@ -70,6 +73,9 @@ local function sanitize(data)
 	data.abilities.meditate = true
 	data.robes.own = true
 	data.robes.novice = true
+	if data.abilities.staff then
+		data.inv.staff = 1
+	end
 	return data
 end
 
@@ -119,6 +125,8 @@ function PlayerData.load(player)
 		shieldUntil = 0,
 		slowUntil = 0,
 		graceUntil = 0,
+		talkUntil = 0,
+		fed = {},
 		meditating = false,
 		lotus = {},
 		wheels = {},
@@ -290,6 +298,17 @@ function PlayerData.push(player)
 	if not profile then
 		return
 	end
+	-- which villagers have already filled the bowl this morning
+	local almsGiven = {}
+	local given = sessions[player] and sessions[player].alms
+	if given then
+		local now = os.clock()
+		for id, untilTime in pairs(given) do
+			if now < untilTime then
+				almsGiven[id] = true
+			end
+		end
+	end
 	player:SetAttribute("Stage", profile.stage)
 	local stats = player:FindFirstChild("leaderstats")
 	if stats and stats:FindFirstChild("Journey") then
@@ -310,6 +329,10 @@ function PlayerData.push(player)
 		checkpoint = profile.checkpoint,
 		awakened = profile.awakened,
 		bought = profile.bought,
+		weapon = profile.weapon,
+		symbols = profile.symbols,
+		friends = profile.friends,
+		almsGiven = almsGiven,
 		lotus = sessions[player] and sessions[player].lotus or {},
 	})
 end

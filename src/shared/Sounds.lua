@@ -10,31 +10,32 @@ local Sounds = {}
 
 Sounds.MusicVolume = 0.4
 Sounds.EffectVolume = 0.7
+Sounds.WaterVolume = 0.6
 
 ----------------------------------------------------------------------
 -- MUSIC: one looping track for each of the 28 steps of the journey.
 ----------------------------------------------------------------------
 Sounds.Music = {
-	{ step = "arrive", id = 88321898452519 }, --  1  Arrival: calm, welcoming, morning
-	{ step = "bell", id = 0 }, --  2  The Temple Bell: very quiet, so the bell stands out
-	{ step = "breath", id = 0 }, --  3  The First Breath: still, slow meditation
-	{ step = "alms", id = 0 }, --  4  The Alms Round: light, warm village life
-	{ step = "store", id = 0 }, --  5  The Merit Store: friendly bazaar
-	{ step = "sights", id = 0 }, --  6  The Four Sights: thoughtful, bittersweet
-	{ step = "cross", id = 0 }, --  7  The Great Departure: night journey, resolve
-	{ step = "channa", id = 0 }, --  8  Channa's Farewell: tender parting
-	{ step = "hair", id = 0 }, --  9  The Wanderer's Robe: solemn turning point
-	{ step = "scouts", id = 0 }, -- 10  Shadows on the Road: uneasy, light tension
-	{ step = "alara", id = 0 }, -- 11  The First Teacher: deep forest calm
-	{ step = "uddaka", id = 0 }, -- 12  The Second Teacher: deeper, more spacious
-	{ step = "doubt", id = 0 }, -- 13  The Seventh Army: unsettled, shifting
-	{ step = "ascetics", id = 0 }, -- 14  The Five Companions: dry, sparse, austere
-	{ step = "austerity", id = 0 }, -- 15  Six Years of Austerity: harsh, weary
-	{ step = "sujata", id = 0 }, -- 16  Sujata's Offering: gentle relief, kindness
-	{ step = "eat", id = 0 }, -- 17  The Middle Way: uplifting, balanced
-	{ step = "bowl", id = 0 }, -- 18  The Golden Bowl: wonder, flowing water
-	{ step = "sotthiya", id = 0 }, -- 19  The Grass-Cutter: simple, earthy
-	{ step = "kusa", id = 0 }, -- 20  Eight Handfuls of Grass: quiet anticipation
+	{ step = "arrive", id = 100971756298760 }, --  1  Arrival: calm, welcoming, morning
+	{ step = "bell", id = 93946537663928 }, --  2  The Temple Bell: very quiet, so the bell stands out
+	{ step = "breath", id = 116130915379705 }, --  3  The First Breath: still, slow meditation
+	{ step = "alms", id = 1839894836 }, --  4  The Alms Round: light, warm village life
+	{ step = "store", id = 1840124474 }, --  5  The Merit Store: friendly bazaar
+	{ step = "sights", id = 104515600700947 }, --  6  The Four Sights: thoughtful, bittersweet
+	{ step = "cross", id = 1836376521 }, --  7  The Great Departure: night journey, resolve
+	{ step = "channa", id = 1845724239 }, --  8  Channa's Farewell: tender parting
+	{ step = "hair", id = 1842483589 }, --  9  The Wanderer's Robe: solemn turning point
+	{ step = "scouts", id = 77103661048765 }, -- 10  Shadows on the Road: uneasy, light tension
+	{ step = "alara", id = 135919250581860 }, -- 11  The First Teacher: deep forest calm
+	{ step = "uddaka", id = 84936650613249 }, -- 12  The Second Teacher: deeper, more spacious
+	{ step = "doubt", id = 1840843924 }, -- 13  The Seventh Army: unsettled, shifting
+	{ step = "ascetics", id = 83850416265658 }, -- 14  The Five Companions: dry, sparse, austere
+	{ step = "austerity", id = 76534453813986 }, -- 15  Six Years of Austerity: harsh, weary
+	{ step = "sujata", id = 73080860156849 }, -- 16  Sujata's Offering: gentle relief, kindness
+	{ step = "eat", id = 9046656223 }, -- 17  The Middle Way: uplifting, balanced
+	{ step = "bowl", id = 140422396863468 }, -- 18  The Golden Bowl: wonder, flowing water
+	{ step = "sotthiya", id = 111399415119885 }, -- 19  The Grass-Cutter: simple, earthy
+	{ step = "kusa", id = 92428953268139 }, -- 20  Eight Handfuls of Grass: quiet anticipation
 	{ step = "daughters", id = 0 }, -- 21  The Daughters of Mara: hypnotic, then dangerous
 	{ step = "armies", id = 0 }, -- 22  The Ten Armies: battle drums
 	{ step = "mara", id = 0 }, -- 23  Mara: the biggest, darkest track
@@ -49,12 +50,12 @@ Sounds.Music = {
 -- SOUND EFFECTS: short sounds that play once when something happens.
 ----------------------------------------------------------------------
 Sounds.Effects = {
-	bell = 0, -- the great temple bell is rung (deep bell or gong)
-	wheel = 0, -- a prayer wheel is spun (soft whirr or small chime)
-	strike = 0, -- your palm or staff swings (whoosh)
-	hit = 0, -- a strike lands on a shadow (soft thud)
-	beads = 0, -- a mala bead of light is sent (light shimmer or ping)
-	metta = 0, -- loving-kindness radiates (warm swell or chord)
+	bell = 106399723585350, -- the great temple bell is rung (deep bell or gong)
+	wheel = 9120658280, -- a prayer wheel is spun (soft whirr or small chime)
+	strike = 123890977510299, -- your palm or staff swings (whoosh)
+	hit = 9113818671, -- a strike lands on a shadow (soft thud)
+	beads = 6691605753, -- a mala bead of light is sent (light shimmer or ping)
+	metta = 99384056183835, -- loving-kindness radiates (warm swell or chord)
 	bowl = 0, -- the singing bowl (a long singing-bowl tone)
 	meditate = 0, -- you sit down to meditate (a single soft chime)
 	petals = 0, -- a shadow is dispelled into petals (gentle sparkle)
@@ -69,6 +70,16 @@ Sounds.Effects = {
 	storm = 0, -- Mara sends a storm (thunder crack)
 	quake = 0, -- the earth answers as your witness (deep rumble)
 	awaken = 0, -- the moment of awakening (long shimmering rise)
+	splash = 142431247, -- you drop into deep water (a splash)
+}
+
+----------------------------------------------------------------------
+-- SURROUNDINGS: looping sounds that grow louder as you come near something.
+----------------------------------------------------------------------
+Sounds.Ambient = {
+	stream = 110597779584354, -- running water, heard near every stream and river and on the bridges
+	wade = 78165223586115, -- walking through shallow water (sloshing footsteps)
+	swim = 9125777696, -- swimming (strokes and splashes)
 }
 
 return Sounds

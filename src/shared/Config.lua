@@ -38,6 +38,15 @@ Config.Gates = {
 ----------------------------------------------------------------------
 -- Important places
 ----------------------------------------------------------------------
+-- Running water: every stream and river crosses the road from north to south at "x".
+Config.Rivers = {
+	{ x = 122, width = 12, depth = 6 },
+	{ x = 456, width = 12, depth = 6 },
+	{ x = 725, width = 48, depth = 10 }, -- the Anoma
+	{ x = 1040, width = 12, depth = 6 },
+	{ x = 1880, width = 72, depth = 10 }, -- the Neranjara
+}
+
 Config.Places = {
 	spawn = { x = 0, z = 0 },
 	temple = { x = -80, z = 0 },
@@ -114,8 +123,24 @@ Config.Abilities = {
 	bowl = { name = "Bowl", key = "G", cooldown = 18, range = 28, stun = 4, order = 4, hint = "The singing bowl stills every shadow that hears it." },
 	meditate = { name = "Meditate", key = "M", cooldown = 0.5, order = 5, hint = "Sit and return to the breath. Calm returns quickly." },
 }
-Config.StaffDamage = 22
-Config.StaffRange = 11
+
+-- What the Strike ability is done with. "palm" needs nothing; the others are items
+-- held in the hand (chosen in the Bag). "hits" is how many shadows one swing can touch,
+-- "all" reaches behind you as well, "swing" is how far the weapon sweeps (degrees).
+-- "stun" holds a struck shadow still (seconds), "push" throws it back (studs),
+-- "thrown" flies out and returns, "field" leaves a circle of light (seconds).
+Config.Weapons = {
+	palm = { name = "Open Palm", damage = 10, range = 8, cooldown = 0.45, hits = 3 },
+	staff = { name = "Walking Staff", damage = 22, range = 11, cooldown = 0.45, hits = 3, swing = 115 },
+	whisk = { name = "Fly Whisk", damage = 13, range = 10, cooldown = 0.28, hits = 5, all = true, swing = 140 },
+	spade = { name = "Monk's Spade", damage = 44, range = 14, cooldown = 0.85, hits = 4, swing = 125 },
+	wisdom_sword = { name = "Sword of Wisdom", damage = 36, range = 12, cooldown = 0.45, hits = 4, swing = 130 },
+	conch = { name = "Conch Horn", damage = 16, range = 18, cooldown = 1, hits = 8, all = true, push = 12, stun = 0.5, ring = true },
+	bell = { name = "Hand Bell", damage = 18, range = 12, cooldown = 0.7, hits = 3, all = true, swing = 80, stun = 0.5, ring = true },
+	phurba = { name = "Phurba", damage = 30, range = 9, cooldown = 0.5, hits = 1, swing = 150, stun = 3 },
+	chakra = { name = "Wheel of Light", damage = 24, range = 44, cooldown = 1.1, hits = 0, swing = 120, thrown = true },
+	lantern = { name = "Paper Lantern", damage = 6, range = 14, cooldown = 6, hits = 0, field = 5 },
+}
 
 ----------------------------------------------------------------------
 -- The Noble Eightfold Path: upgrades bought in order with merit at any shrine.
@@ -150,6 +175,15 @@ Config.Items = {
 	wheel_charm = { name = "Dharma Wheel", desc = "Eight spokes for the Eightfold Path. Earn 10% more merit.", keep = true, order = 12 },
 	long_mala = { name = "Mala of 108 Beads", desc = "A full mala. The Mala ability recovers twice as fast.", keep = true, order = 13 },
 	prayer_flags = { name = "Prayer Flags", desc = "Blue, white, red, green and yellow. Colourful flags trail behind you.", keep = true, order = 14 },
+	staff = { name = "Walking Staff", desc = "A ringed staff; the rings warn small creatures off the path. Reaches further and strikes harder than an open palm.", keep = true, use = "equip", order = 15 },
+	whisk = { name = "Fly Whisk", desc = "A whisk for brushing insects away without harming them: a sign of sweeping troubles from the mind. Very quick, and reaches every shadow around you.", keep = true, use = "equip", order = 16 },
+	spade = { name = "Monk's Spade", desc = "The crescent-bladed spade of the wandering monks of China, carried to clear the road and to bury the dead they found. Slow, heavy, and long.", keep = true, use = "equip", order = 17 },
+	wisdom_sword = { name = "Sword of Wisdom", desc = "The flaming sword of Manjushri. It cuts through ignorance and harms no living thing. Earned by finding the Eight Auspicious Symbols.", keep = true, use = "equip", order = 18 },
+	conch = { name = "Conch Horn", desc = "The white conch, whose deep note carries in every direction as the teaching does. One blast pushes back every shadow around you.", keep = true, use = "equip", order = 19 },
+	bell = { name = "Hand Bell", desc = "The ritual bell, held with the vajra. Its clear sound stands for wisdom. Shadows that hear it stop for a moment.", keep = true, use = "equip", order = 20 },
+	phurba = { name = "Phurba", desc = "The three-sided ritual peg of Tibet. It wounds nothing: it pins one obstacle in place so that it can be faced.", keep = true, use = "equip", order = 21 },
+	chakra = { name = "Wheel of Light", desc = "A wheel of eight spokes. In the Deer Park the Buddha set the wheel of the Dharma turning. Thrown, it flies out and comes back. A gift of the animals of the old stories.", keep = true, use = "equip", order = 22 },
+	lantern = { name = "Paper Lantern", desc = "A lantern for the dark road. Set down its light and shadows inside the circle grow slow and weak.", keep = true, use = "equip", order = 23 },
 }
 
 Config.Shops = {
@@ -162,6 +196,9 @@ Config.Shops = {
 			{ item = "incense", price = 15 },
 			{ item = "lamp", price = 20 },
 			{ item = "singing_bowl", price = 120, once = true },
+			{ item = "whisk", price = 140, once = true },
+			{ item = "conch", price = 180, once = true },
+			{ item = "lantern", price = 200, once = true },
 			{ item = "prayer_flags", price = 150, once = true },
 			{ item = "wheel_charm", price = 200, once = true },
 		},
@@ -177,6 +214,9 @@ Config.Shops = {
 			{ item = "singing_bowl", price = 120, once = true },
 			{ item = "long_mala", price = 250, once = true },
 			{ item = "vajra", price = 300, once = true },
+			{ item = "bell", price = 220, once = true },
+			{ item = "phurba", price = 260, once = true },
+			{ item = "spade", price = 320, once = true },
 		},
 	},
 }
@@ -294,6 +334,30 @@ Config.Lotus = {
 	{ x = 46, z = -98 }, { x = 60, z = -86 }, { x = 54, z = -104 },
 	{ x = 1994, z = -102 }, { x = 2006, z = -90 }, { x = 2008, z = -104 },
 	{ x = 2656, z = 72 }, { x = 2666, z = 64 }, { x = 2658, z = -70 }, { x = 2668, z = -78 },
+}
+
+-- The Eight Auspicious Symbols (Ashtamangala), one hidden in each land.
+-- Finding all eight earns the Sword of Wisdom.
+Config.Symbols = {
+	{ id = "vase", name = "The Treasure Vase", x = -170, z = -60, text = "The treasure vase is never emptied, however much is taken from it. It stands for the teaching, which is not used up by being shared." },
+	{ id = "parasol", name = "The Parasol", x = 330, z = 120, text = "The parasol gives shade from the burning sun. It stands for shelter from suffering, offered to every being." },
+	{ id = "fishes", name = "The Golden Fishes", x = 756, z = -112, text = "Two golden fishes swim wherever they wish and do not fear the water. They stand for moving freely and without fear through the ocean of this world." },
+	{ id = "knot", name = "The Endless Knot", x = 1000, z = 120, text = "The endless knot has no beginning and no end. It stands for the way all things depend on one another, and for wisdom and compassion woven together." },
+	{ id = "conch", name = "The White Conch", x = 1370, z = -122, text = "The white conch is blown like a horn and heard far away. It stands for the sound of the teaching, which wakes those who hear it." },
+	{ id = "lotus", name = "The Lotus", x = 1780, z = -118, text = "The lotus roots in mud and opens clean above the water. It stands for a mind that grows pure in the middle of a troubled world." },
+	{ id = "banner", name = "The Victory Banner", x = 2300, z = -120, text = "The victory banner is raised when a battle is won. It stands for victory over Mara: over craving, fear, pride and death." },
+	{ id = "wheel", name = "The Dharma Wheel", x = 2790, z = 70, text = "The wheel has eight spokes for the Noble Eightfold Path. When the Buddha first taught, it is said he set the wheel turning." },
+}
+
+-- Animals of the Jataka tales, the stories of the Buddha's earlier lives.
+-- Share a little alms rice with each one to hear its story.
+Config.Animals = {
+	{ id = "hare", kind = "hare", name = "The Hare", x = 410, z = 62, yaw = 40, source = "Sasa Jataka, no. 316", text = "Long ago the Buddha-to-be was born as a hare. A hungry traveller came by, and the hare had no food to give, so he offered himself and leapt into the traveller's fire. The fire did not burn him. The traveller was the god Sakka, who drew the hare's shape on the moon so that his gift would be remembered." },
+	{ id = "deer", kind = "deer", name = "The Banyan Deer", x = 520, z = -90, yaw = 200, source = "Nigrodhamiga Jataka, no. 12", text = "Long ago the Buddha-to-be was born as a golden deer, king of his herd. When a mother deer was to be sent to the king's kitchen, he lay down on the block in her place. The king was so moved that he spared the deer, and then every creature in his land." },
+	{ id = "monkey", kind = "monkey", name = "The Monkey King", x = 770, z = 100, yaw = 250, source = "Mahakapi Jataka, no. 407", text = "Long ago the Buddha-to-be was born as a king of monkeys. When archers surrounded his troop, he stretched his own body across the river as a bridge, and every monkey crossed to safety over his back. The human king who saw it learned what a ruler is for." },
+	{ id = "quail", kind = "quail", name = "The Young Quail", x = 1280, z = -100, yaw = 120, source = "Vattaka Jataka, no. 35", text = "Long ago the Buddha-to-be was born as a baby quail, too young to fly. A forest fire came and his parents fled. He had nothing left but the truth, so he spoke it: 'I have wings that cannot fly and feet that cannot walk.' At his true words the fire turned back." },
+	{ id = "elephant", kind = "elephant", name = "The Six-Tusked Elephant", x = 1806, z = 112, yaw = 160, source = "Chaddanta Jataka, no. 514", text = "Long ago the Buddha-to-be was born as Chaddanta, a great white elephant king. A hunter wounded him for his tusks. Chaddanta felt no anger. He forgave the hunter and gave the tusks himself." },
+	{ id = "goose", kind = "goose", name = "The Golden Goose", x = 1830, z = -80, yaw = 300, source = "Suvannahamsa Jataka, no. 136", text = "Long ago the Buddha-to-be was born as a goose with feathers of gold. He gave his poor family one feather at a time, and they lived well. Then greed made them pluck him bare, and every stolen feather turned plain and white." },
 }
 
 return Config

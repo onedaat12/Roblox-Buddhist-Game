@@ -167,7 +167,7 @@ Story.Quests = {
 	},
 	{
 		id = "alms", title = "The Alms Round",
-		intro = "A monk does not buy food or grow it. Each morning the village shares what it has. Cross the stream to the village and walk the alms round.",
+		intro = "A monk does not buy food or grow it. Each morning the village shares what it has. Cross the stream to the village. Four villagers wait by their doors beside the road: follow the golden marker to each one, walk up close, and choose \"Hold out your bowl\" (press E, or tap the button that appears). They will put food in it.",
 		objectives = {
 			{ kind = "alms", target = "alms", count = 4, text = "Receive alms from four villagers" },
 		},

@@ -6,6 +6,7 @@
 -- shrine they prayed at.
 
 local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -161,7 +162,7 @@ function Combat.hurt(player, amount)
 		return false
 	end
 	local now = os.clock()
-	if now < session.graceUntil then
+	if now < session.graceUntil or now < session.talkUntil then
 		return false
 	end
 	if session.meditating then
@@ -191,10 +192,28 @@ end
 
 function Combat.canBeTargeted(player)
 	local session = PlayerData.session(player)
-	if not session or os.clock() < session.graceUntil then
+	if not session or os.clock() < session.graceUntil or os.clock() < session.talkUntil then
 		return false
 	end
 	return Combat.root(player) ~= nil
+end
+
+-- While someone is speaking to you (or the story is being told), Mara's shadows wait.
+-- The player's screen reports when the last line has been read.
+function Combat.beginTalk(player, lines)
+	local session = PlayerData.session(player)
+	if session then
+		local count = type(lines) == "table" and #lines or 1
+		local seconds = math.min(240, 20 * count + 5)
+		session.talkUntil = math.max(session.talkUntil, os.clock() + seconds)
+	end
+end
+
+function Combat.endTalk(player)
+	local session = PlayerData.session(player)
+	if session and os.clock() < session.talkUntil then
+		session.talkUntil = os.clock() + 3
+	end
 end
 
 ----------------------------------------------------------------------
@@ -253,9 +272,23 @@ local function ready(session, name, cooldown)
 	return true
 end
 
+-- Which weapon a player is holding: returns its id and its entry in Config.Weapons.
+function Combat.weapon(player)
+	local profile = PlayerData.get(player)
+	local id = profile and profile.weapon or "palm"
+	if id == "auto" then
+		id = profile.abilities.staff and "staff" or "palm"
+	end
+	if id ~= "palm" and (not Config.Weapons[id] or (profile.inv[id] or 0) < 1) then
+		id = "palm"
+	end
+	return id, Config.Weapons[id]
+end
+
 local function strikePower(player)
 	local profile = PlayerData.get(player)
-	local dmg = profile.abilities.staff and Config.StaffDamage or Config.Abilities.strike.damage
+	local _, weapon = Combat.weapon(player)
+	local dmg = weapon.damage
 	if PlayerData.hasPath(player, "action") then
 		dmg = dmg * 1.3
 	end
@@ -265,25 +298,164 @@ local function strikePower(player)
 	return dmg
 end
 
+-- The Wheel of Light: flies out, turns, and comes back to the hand.
+local wheels = {}
+
+local function throwWheel(player, root, weapon, dmg)
+	local disc = Instance.new("Part")
+	disc.Name = "ThrownWheel"
+	disc.Size = Vector3.new(3.2, 0.3, 3.2)
+	disc.Material = Enum.Material.Neon
+	disc.Color = Color3.fromRGB(255, 214, 110)
+	disc.Anchored = true
+	disc.CanCollide = false
+	disc.CanTouch = false
+	disc.CanQuery = false
+	disc.CastShadow = false
+	local look = root.CFrame.LookVector
+	local dir = Vector3.new(look.X, 0, look.Z)
+	if dir.Magnitude < 0.1 then
+		dir = Vector3.new(0, 0, -1)
+	end
+	dir = dir.Unit
+	disc.CFrame = CFrame.new(root.Position + Vector3.new(0, 1.5, 0) + dir * 2)
+	local light = Instance.new("PointLight")
+	light.Color = disc.Color
+	light.Range = 14
+	light.Parent = disc
+	disc.Parent = workspace
+	local speed = 90
+	table.insert(wheels, {
+		part = disc, dir = dir, speed = speed, out = weapon.range / speed, age = 0,
+		player = player, damage = dmg, struck = {},
+	})
+end
+
+local function moveWheels(dt)
+	for i = #wheels, 1, -1 do
+		local w = wheels[i]
+		w.age = w.age + dt
+		local pos = w.part.Position
+		local done = false
+		if w.age < w.out then
+			pos = pos + w.dir * w.speed * dt
+		else
+			local home = Combat.root(w.player)
+			if not home or w.age > 4 then
+				done = true
+			else
+				if not w.returning then
+					w.returning = true
+					w.struck = {} -- it may touch each shadow again on the way back
+				end
+				local to = (home.Position + Vector3.new(0, 1.5, 0)) - pos
+				local step = w.speed * dt
+				if to.Magnitude <= step + 2 then
+					done = true
+				else
+					pos = pos + to.Unit * step
+				end
+			end
+		end
+		w.part.CFrame = CFrame.new(pos) * CFrame.Angles(0, w.age * 18, 0)
+		for _, t in ipairs(Combat.targets) do
+			if t.alive and t.root and t.root.Parent and not w.struck[t] then
+				if (t.root.Position - pos).Magnitude <= 4.5 + (t.hitRadius or 0) then
+					w.struck[t] = true
+					Combat.damage(t, w.player, w.damage)
+				end
+			end
+		end
+		if done then
+			w.part:Destroy()
+			table.remove(wheels, i)
+		end
+	end
+end
+
+-- The Paper Lantern: a circle of light stays where you stood. Shadows inside it are
+-- slowed and worn away a little at a time.
+local function lightLantern(player, root, weapon, dmg)
+	local pos = root.Position
+	local glow = Instance.new("Part")
+	glow.Name = "LanternLight"
+	glow.Shape = Enum.PartType.Cylinder
+	glow.Size = Vector3.new(0.3, weapon.range * 2, weapon.range * 2)
+	glow.Material = Enum.Material.Neon
+	glow.Color = Color3.fromRGB(255, 206, 130)
+	glow.Transparency = 0.8
+	glow.Anchored = true
+	glow.CanCollide = false
+	glow.CanTouch = false
+	glow.CanQuery = false
+	glow.CastShadow = false
+	glow.CFrame = CFrame.new(pos - Vector3.new(0, 2.7, 0)) * CFrame.Angles(0, 0, math.rad(90))
+	local light = Instance.new("PointLight")
+	light.Color = glow.Color
+	light.Range = 30
+	light.Brightness = 1.6
+	light.Shadows = false
+	light.Parent = glow
+	glow.Parent = workspace
+	Remotes.fx("ring", { pos = pos, radius = weapon.range, color = glow.Color, time = 0.8 })
+	task.spawn(function()
+		for _ = 1, weapon.field * 2 do
+			task.wait(0.5)
+			local now = os.clock()
+			for _, entry in ipairs(targetsNear(pos, weapon.range)) do
+				local t = entry.target
+				t.slowUntil = now + 0.8
+				Combat.damage(t, player, dmg)
+			end
+		end
+		glow:Destroy()
+	end)
+end
+
 local Abilities = {}
 
 function Abilities.strike(player, session, profile, root)
-	if not ready(session, "strike", Config.Abilities.strike.cooldown - 0.08) then
+	local _, weapon = Combat.weapon(player)
+	if not ready(session, "strike", weapon.cooldown - 0.08) then
 		return
 	end
 	Combat.setMeditating(player, false)
-	local range = profile.abilities.staff and Config.StaffRange or Config.Abilities.strike.range
+	Combat.swing(player)
+	local range = weapon.range
 	local look = root.CFrame.LookVector
 	local dmg = strikePower(player)
+	if weapon.thrown then
+		throwWheel(player, root, weapon, dmg)
+		return
+	end
+	if weapon.field then
+		lightLantern(player, root, weapon, dmg)
+		return
+	end
+	if weapon.ring then
+		Remotes.fx("ring", { pos = root.Position, radius = range, color = Color3.fromRGB(255, 244, 214), time = 0.5 })
+	end
+	local now = os.clock()
 	local hits = 0
 	for _, entry in ipairs(targetsNear(root.Position, range)) do
 		local t = entry.target
 		local to = t.root.Position - root.Position
 		local flat = Vector3.new(to.X, 0, to.Z)
-		if flat.Magnitude < 3 + (t.hitRadius or 0) or flat.Unit:Dot(look) > 0.1 then
+		if weapon.all or flat.Magnitude < 3 + (t.hitRadius or 0) or flat.Unit:Dot(look) > 0.1 then
 			Combat.damage(t, player, dmg)
+			if t.alive and not t.static then
+				if weapon.stun then
+					local seconds = t.big and weapon.stun * 0.25 or weapon.stun
+					t.stunUntil = math.max(t.stunUntil or 0, now + seconds)
+				end
+				if weapon.push and not t.big and t.model and flat.Magnitude > 0.1 then
+					local at = t.root.Position
+					local dest = at + flat.Unit * weapon.push
+					t.model:PivotTo(CFrame.new(dest.X, at.Y + 0.5, dest.Z))
+				end
+			end
 			hits = hits + 1
-			if hits >= 3 then
+			if hits >= weapon.hits then
 				break
 			end
 		end
@@ -404,58 +576,290 @@ function Combat.use(player, name, arg)
 	if not session or not profile or not root or not fn then
 		return
 	end
+	session.talkUntil = 0 -- acting ends the pause that a conversation gives
 	fn(player, session, profile, root, arg)
 end
 
 ----------------------------------------------------------------------
--- The walking staff
+-- The weapon in the player's hand
 ----------------------------------------------------------------------
-function Combat.equipStaff(player)
+local GRIP = CFrame.new(0, 1.1, -0.55)
+local WOOD = Color3.fromRGB(110, 78, 50)
+local BRASS = Color3.fromRGB(226, 178, 54)
+local STEEL = Color3.fromRGB(196, 200, 208)
+
+-- One piece of a weapon, fixed to its handle.
+local function piece(handle, size, offset, color, material, shape)
+	local p = Instance.new("Part")
+	p.Name = "Piece"
+	if shape then
+		p.Shape = shape
+	end
+	p.Size = size
+	p.Material = material or Enum.Material.Wood
+	p.Color = color
+	p.CanCollide = false
+	p.CanTouch = false
+	p.CanQuery = false
+	p.Massless = true
+	p.CastShadow = false
+	p.CFrame = handle.CFrame * offset
+	local w = Instance.new("WeldConstraint")
+	w.Part0 = handle
+	w.Part1 = p
+	w.Parent = p
+	p.Parent = handle
+	return p
+end
+
+-- Each builder shapes the handle, adds the pieces, and returns the height of the
+-- weapon's tip above the middle of the handle.
+local Builders = {}
+
+function Builders.staff(handle)
+	handle.Size = Vector3.new(0.3, 6.2, 0.3)
+	for i = 0, 2 do
+		local d = 0.55 - i * 0.08
+		piece(handle, Vector3.new(d, d, d), CFrame.new(0, 2.5 + i * 0.36, 0), BRASS, Enum.Material.Metal, Enum.PartType.Ball)
+	end
+	return 3.1
+end
+
+function Builders.whisk(handle)
+	handle.Size = Vector3.new(0.26, 2.2, 0.26)
+	handle.Color = Color3.fromRGB(120, 36, 30)
+	piece(handle, Vector3.new(0.4, 0.3, 0.4), CFrame.new(0, 1.2, 0), BRASS, Enum.Material.Metal)
+	piece(handle, Vector3.new(0.55, 1.5, 0.55), CFrame.new(0, 2.05, 0), Color3.fromRGB(244, 240, 228), Enum.Material.Fabric)
+	piece(handle, Vector3.new(0.4, 1.3, 0.4), CFrame.new(0, 3.3, 0), Color3.fromRGB(236, 232, 218), Enum.Material.Fabric)
+	return 3.9
+end
+
+function Builders.spade(handle)
+	handle.Size = Vector3.new(0.34, 7.4, 0.34)
+	-- the flat spade at the top
+	piece(handle, Vector3.new(1.5, 0.3, 0.2), CFrame.new(0, 3.75, 0), STEEL, Enum.Material.Metal)
+	piece(handle, Vector3.new(1.9, 1.1, 0.14), CFrame.new(0, 4.4, 0), STEEL, Enum.Material.Metal)
+	-- the crescent at the foot
+	piece(handle, Vector3.new(0.5, 0.4, 0.5), CFrame.new(0, -3.7, 0), BRASS, Enum.Material.Metal)
+	for _, side in ipairs({ -1, 1 }) do
+		piece(handle, Vector3.new(1.1, 0.3, 0.14), CFrame.new(side * 0.5, -4.05, 0) * CFrame.Angles(0, 0, math.rad(side * -35)), STEEL, Enum.Material.Metal)
+	end
+	for i = 0, 1 do
+		piece(handle, Vector3.new(0.5, 0.5, 0.5), CFrame.new(0, 3.2 - i * 0.4, 0), BRASS, Enum.Material.Metal, Enum.PartType.Ball)
+	end
+	return 4.9
+end
+
+function Builders.wisdom_sword(handle)
+	handle.Size = Vector3.new(0.3, 1.3, 0.3)
+	handle.Color = BRASS
+	handle.Material = Enum.Material.Metal
+	piece(handle, Vector3.new(0.5, 0.5, 0.5), CFrame.new(0, -0.8, 0), BRASS, Enum.Material.Metal, Enum.PartType.Ball)
+	piece(handle, Vector3.new(1.5, 0.28, 0.4), CFrame.new(0, 0.75, 0), BRASS, Enum.Material.Metal)
+	local blade = piece(handle, Vector3.new(0.5, 4.4, 0.14), CFrame.new(0, 3.05, 0), Color3.fromRGB(255, 206, 110), Enum.Material.Neon)
+	piece(handle, Vector3.new(0.3, 0.6, 0.12), CFrame.new(0, 5.5, 0), Color3.fromRGB(255, 226, 150), Enum.Material.Neon)
+	local light = Instance.new("PointLight")
+	light.Color = Color3.fromRGB(255, 190, 90)
+	light.Range = 12
+	light.Brightness = 1.3
+	light.Shadows = false
+	light.Parent = blade
+	local flame = Instance.new("ParticleEmitter")
+	flame.Rate = 14
+	flame.Lifetime = NumberRange.new(0.4, 0.8)
+	flame.Speed = NumberRange.new(1, 2.5)
+	flame.SpreadAngle = Vector2.new(25, 25)
+	flame.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.45), NumberSequenceKeypoint.new(1, 0) })
+	flame.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.2), NumberSequenceKeypoint.new(1, 1) })
+	flame.Color = ColorSequence.new(Color3.fromRGB(255, 170, 60))
+	flame.LightEmission = 0.9
+	flame.Parent = blade
+	return 5.8
+end
+
+function Builders.conch(handle)
+	local shell = Color3.fromRGB(246, 242, 232)
+	handle.Size = Vector3.new(0.45, 1.2, 0.45)
+	handle.Color = shell
+	handle.Material = Enum.Material.SmoothPlastic
+	piece(handle, Vector3.new(0.6, 0.3, 0.6), CFrame.new(0, -0.75, 0), BRASS, Enum.Material.Metal)
+	piece(handle, Vector3.new(1.3, 1.3, 1.3), CFrame.new(0, 0.6, 0), shell, Enum.Material.SmoothPlastic, Enum.PartType.Ball)
+	piece(handle, Vector3.new(0.95, 0.95, 0.95), CFrame.new(0, 1.35, 0), shell, Enum.Material.SmoothPlastic, Enum.PartType.Ball)
+	piece(handle, Vector3.new(0.6, 0.6, 0.6), CFrame.new(0, 1.9, 0), shell, Enum.Material.SmoothPlastic, Enum.PartType.Ball)
+	piece(handle, Vector3.new(0.35, 0.35, 0.35), CFrame.new(0, 2.3, 0), BRASS, Enum.Material.Metal, Enum.PartType.Ball)
+	return 2.4
+end
+
+function Builders.bell(handle)
+	handle.Size = Vector3.new(0.25, 1.5, 0.25)
+	handle.Color = BRASS
+	handle.Material = Enum.Material.Metal
+	-- the half-vajra on top of the handle
+	piece(handle, Vector3.new(0.45, 0.45, 0.45), CFrame.new(0, 0.85, 0), BRASS, Enum.Material.Metal, Enum.PartType.Ball)
+	piece(handle, Vector3.new(0.2, 0.5, 0.2), CFrame.new(0, 1.25, 0), BRASS, Enum.Material.Metal)
+	-- the bell itself, hanging below the hand
+	piece(handle, Vector3.new(0.9, 0.3, 0.9), CFrame.new(0, -1.7, 0), BRASS, Enum.Material.Metal)
+	piece(handle, Vector3.new(1.25, 0.8, 1.25), CFrame.new(0, -2.2, 0), BRASS, Enum.Material.Metal)
+	piece(handle, Vector3.new(1.5, 0.2, 1.5), CFrame.new(0, -2.65, 0), BRASS, Enum.Material.Metal)
+	return 1.5
+end
+
+function Builders.phurba(handle)
+	handle.Size = Vector3.new(0.3, 1.2, 0.3)
+	handle.Color = BRASS
+	handle.Material = Enum.Material.Metal
+	piece(handle, Vector3.new(0.55, 0.55, 0.55), CFrame.new(0, -0.8, 0), BRASS, Enum.Material.Metal, Enum.PartType.Ball)
+	piece(handle, Vector3.new(0.7, 0.2, 0.7), CFrame.new(0, 0.65, 0), BRASS, Enum.Material.Metal)
+	piece(handle, Vector3.new(0.45, 1.2, 0.45), CFrame.new(0, 1.3, 0) * CFrame.Angles(0, math.rad(45), 0), STEEL, Enum.Material.Metal)
+	piece(handle, Vector3.new(0.3, 1, 0.3), CFrame.new(0, 2.3, 0) * CFrame.Angles(0, math.rad(45), 0), STEEL, Enum.Material.Metal)
+	piece(handle, Vector3.new(0.15, 0.7, 0.15), CFrame.new(0, 3.1, 0) * CFrame.Angles(0, math.rad(45), 0), STEEL, Enum.Material.Metal)
+	return 3.4
+end
+
+function Builders.chakra(handle)
+	local gold = Color3.fromRGB(255, 214, 110)
+	handle.Size = Vector3.new(0.25, 0.9, 0.25)
+	handle.Color = BRASS
+	handle.Material = Enum.Material.Metal
+	local centre = CFrame.new(0, 1.9, 0)
+	piece(handle, Vector3.new(0.7, 0.7, 0.7), centre, gold, Enum.Material.Neon, Enum.PartType.Ball)
+	for i = 0, 3 do
+		piece(handle, Vector3.new(0.16, 2.7, 0.2), centre * CFrame.Angles(0, 0, math.rad(i * 45)), BRASS, Enum.Material.Metal)
+	end
+	for i = 0, 7 do
+		piece(handle, Vector3.new(1.12, 0.22, 0.28), centre * CFrame.Angles(0, 0, math.rad(i * 45)) * CFrame.new(0, 1.35, 0), BRASS, Enum.Material.Metal)
+	end
+	return 3.3
+end
+
+function Builders.lantern(handle)
+	handle.Size = Vector3.new(0.2, 3, 0.2)
+	local red = Color3.fromRGB(176, 40, 36)
+	piece(handle, Vector3.new(1.3, 0.15, 1.3), CFrame.new(0, 1.6, 0), red, Enum.Material.Wood)
+	local paper = piece(handle, Vector3.new(1.15, 1.5, 1.15), CFrame.new(0, 2.4, 0), Color3.fromRGB(255, 214, 150), Enum.Material.Neon)
+	piece(handle, Vector3.new(1.3, 0.15, 1.3), CFrame.new(0, 3.2, 0), red, Enum.Material.Wood)
+	local light = Instance.new("PointLight")
+	light.Color = Color3.fromRGB(255, 200, 120)
+	light.Range = 16
+	light.Brightness = 1.4
+	light.Shadows = false
+	light.Parent = paper
+	return 3.3
+end
+
+-- Put the chosen weapon in the player's hand (or take it away for the open palm).
+function Combat.equipWeapon(player)
 	local profile = PlayerData.get(player)
 	local character = player.Character
-	if not profile or not character or not profile.abilities.staff then
+	if not profile or not character then
 		return
 	end
-	if character:FindFirstChild("WalkingStaff") then
-		return
+	local id = Combat.weapon(player)
+	local old = character:FindFirstChild("HeldWeapon")
+	if old then
+		if old:GetAttribute("Weapon") == id then
+			return
+		end
+		old:Destroy()
 	end
+	local build = Builders[id]
 	local hand = character:FindFirstChild("RightHand") or character:FindFirstChild("Right Arm")
-	if not hand then
+	if not build or not hand then
 		return
 	end
-	local staff = Instance.new("Part")
-	staff.Name = "WalkingStaff"
-	staff.Size = Vector3.new(0.3, 6.2, 0.3)
-	staff.Material = Enum.Material.Wood
-	staff.Color = Color3.fromRGB(110, 78, 50)
-	staff.CanCollide = false
-	staff.CanTouch = false
-	staff.CanQuery = false
-	staff.Massless = true
-	staff.CFrame = hand.CFrame * CFrame.new(0, 1.1, -0.55)
-	local weld = Instance.new("WeldConstraint")
-	weld.Part0 = hand
-	weld.Part1 = staff
-	weld.Parent = staff
-	for i = 0, 2 do
-		local ring = Instance.new("Part")
-		ring.Name = "Ring"
-		ring.Shape = Enum.PartType.Ball
-		ring.Size = Vector3.new(0.55 - i * 0.08, 0.55 - i * 0.08, 0.55 - i * 0.08)
-		ring.Material = Enum.Material.Metal
-		ring.Color = Color3.fromRGB(226, 178, 54)
-		ring.CanCollide = false
-		ring.CanTouch = false
-		ring.CanQuery = false
-		ring.Massless = true
-		ring.CFrame = staff.CFrame * CFrame.new(0, 2.5 + i * 0.36, 0)
-		local rw = Instance.new("WeldConstraint")
-		rw.Part0 = staff
-		rw.Part1 = ring
-		rw.Parent = ring
-		ring.Parent = staff
+	local handle = Instance.new("Part")
+	handle.Name = "HeldWeapon"
+	handle:SetAttribute("Weapon", id)
+	handle.Material = Enum.Material.Wood
+	handle.Color = WOOD
+	handle.CanCollide = false
+	handle.CanTouch = false
+	handle.CanQuery = false
+	handle.Massless = true
+	handle.CFrame = hand.CFrame * GRIP
+	local tip = build(handle)
+
+	-- a streak of light that follows the tip while the weapon is swung
+	local a0 = Instance.new("Attachment")
+	a0.Name = "TipTop"
+	a0.Position = Vector3.new(0, tip, 0)
+	a0.Parent = handle
+	local a1 = Instance.new("Attachment")
+	a1.Name = "TipLow"
+	a1.Position = Vector3.new(0, tip - 2.2, 0)
+	a1.Parent = handle
+	local trail = Instance.new("Trail")
+	trail.Name = "SwingTrail"
+	trail.Attachment0 = a0
+	trail.Attachment1 = a1
+	trail.Lifetime = 0.22
+	trail.MinLength = 0.05
+	trail.LightEmission = 0.8
+	trail.Color = ColorSequence.new(Color3.fromRGB(255, 232, 170))
+	trail.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.25), NumberSequenceKeypoint.new(1, 1) })
+	trail.Enabled = false
+	trail.Parent = handle
+
+	-- held by a joint, so that it can be swung
+	local grip = Instance.new("Weld")
+	grip.Name = "Grip"
+	grip.Part0 = hand
+	grip.Part1 = handle
+	grip.C0 = GRIP
+	grip.Parent = handle
+	handle.Parent = character
+end
+
+-- Sweep the held weapon forward and down in a wide arc, then bring it back.
+function Combat.swing(player)
+	local character = player.Character
+	local handle = character and character:FindFirstChild("HeldWeapon")
+	local grip = handle and handle:FindFirstChild("Grip")
+	local id, weapon = Combat.weapon(player)
+	if not grip or not weapon.swing or handle:GetAttribute("Swinging") then
+		return
 	end
-	staff.Parent = character
+	handle:SetAttribute("Swinging", true)
+	local trail = handle:FindFirstChild("SwingTrail")
+	if trail then
+		trail.Enabled = true
+	end
+	local out = math.min(0.16, weapon.cooldown * 0.3)
+	local back = math.min(0.22, weapon.cooldown * 0.45)
+	local raised = CFrame.Angles(math.rad(35), 0, 0) * GRIP
+	local swept = CFrame.Angles(math.rad(-weapon.swing), 0, math.rad(id == "whisk" and 35 or 0)) * GRIP
+	grip.C0 = raised
+	TweenService:Create(grip, TweenInfo.new(out, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { C0 = swept }):Play()
+	task.delay(out + 0.03, function()
+		if not grip.Parent then
+			return
+		end
+		TweenService:Create(grip, TweenInfo.new(back, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), { C0 = GRIP }):Play()
+		task.wait(back)
+		if handle.Parent then
+			if trail then
+				trail.Enabled = false
+			end
+			handle:SetAttribute("Swinging", false)
+		end
+	end)
+end
+
+-- Choose what to hold. Choosing the weapon already in hand puts it away.
+function Combat.chooseWeapon(player, id)
+	local profile = PlayerData.get(player)
+	if not profile or not Config.Weapons[id] or id == "palm" or (profile.inv[id] or 0) < 1 then
+		return
+	end
+	local current = Combat.weapon(player)
+	if current == id then
+		profile.weapon = "palm"
+		Remotes.notify(player, "You put away the " .. Config.Weapons[id].name .. ". Your hands are open.", "info")
+	else
+		profile.weapon = id
+		Remotes.notify(player, "You take up the " .. Config.Weapons[id].name .. ".", "good")
+	end
+	Combat.equipWeapon(player)
 end
 
 ----------------------------------------------------------------------
@@ -524,6 +928,7 @@ function Combat.start()
 	end)
 
 	RunService.Heartbeat:Connect(function(dt)
+		moveWheels(dt)
 		for i = #projectiles, 1, -1 do
 			local p = projectiles[i]
 			p.life = p.life - dt
@@ -549,9 +954,17 @@ function Combat.start()
 	-- when a step of the journey grants the staff, put it in the player's hand
 	Quests.onReward(function(player, reward)
 		if reward.ability == "staff" then
-			Combat.equipStaff(player)
+			PlayerData.give(player, "staff", 1)
+			local profile = PlayerData.get(player)
+			if profile and profile.weapon == "palm" then
+				profile.weapon = "staff"
+			end
+			Combat.equipWeapon(player)
+			PlayerData.push(player)
 		end
 	end)
+
+	Remotes.onDialog = Combat.beginTalk
 end
 
 return Combat

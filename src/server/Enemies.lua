@@ -182,7 +182,7 @@ local function think(enemy, now, players)
 		return
 	end
 
-	hum.WalkSpeed = cfg.speed
+	hum.WalkSpeed = cfg.speed * ((now < (enemy.slowUntil or 0)) and 0.4 or 1)
 	local reach = cfg.range * (cfg.scale or 1) * 0.8 + 2
 	if best > reach then
 		hum:MoveTo(targetPos)

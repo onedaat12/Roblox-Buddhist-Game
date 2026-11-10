@@ -203,6 +203,9 @@ function Fx.refreshWorld(state)
 	for id in pairs(state.lotus or {}) do
 		gone[id] = true
 	end
+	for id in pairs(state.symbols or {}) do
+		gone["symbol_" .. id] = true
+	end
 	for _, part in ipairs(CollectionService:GetTagged("GateBarrier")) do
 		applyGate(part)
 	end

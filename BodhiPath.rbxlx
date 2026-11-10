@@ -38,6 +38,15 @@ Config.Gates = {
 ----------------------------------------------------------------------
 -- Important places
 ----------------------------------------------------------------------
+-- Running water: every stream and river crosses the road from north to south at "x".
+Config.Rivers = {
+	{ x = 122, width = 12, depth = 6 },
+	{ x = 456, width = 12, depth = 6 },
+	{ x = 725, width = 48, depth = 10 }, -- the Anoma
+	{ x = 1040, width = 12, depth = 6 },
+	{ x = 1880, width = 72, depth = 10 }, -- the Neranjara
+}
+
 Config.Places = {
 	spawn = { x = 0, z = 0 },
 	temple = { x = -80, z = 0 },
@@ -114,8 +123,24 @@ Config.Abilities = {
 	bowl = { name = "Bowl", key = "G", cooldown = 18, range = 28, stun = 4, order = 4, hint = "The singing bowl stills every shadow that hears it." },
 	meditate = { name = "Meditate", key = "M", cooldown = 0.5, order = 5, hint = "Sit and return to the breath. Calm returns quickly." },
 }
-Config.StaffDamage = 22
-Config.StaffRange = 11
+
+-- What the Strike ability is done with. "palm" needs nothing; the others are items
+-- held in the hand (chosen in the Bag). "hits" is how many shadows one swing can touch,
+-- "all" reaches behind you as well, "swing" is how far the weapon sweeps (degrees).
+-- "stun" holds a struck shadow still (seconds), "push" throws it back (studs),
+-- "thrown" flies out and returns, "field" leaves a circle of light (seconds).
+Config.Weapons = {
+	palm = { name = "Open Palm", damage = 10, range = 8, cooldown = 0.45, hits = 3 },
+	staff = { name = "Walking Staff", damage = 22, range = 11, cooldown = 0.45, hits = 3, swing = 115 },
+	whisk = { name = "Fly Whisk", damage = 13, range = 10, cooldown = 0.28, hits = 5, all = true, swing = 140 },
+	spade = { name = "Monk's Spade", damage = 44, range = 14, cooldown = 0.85, hits = 4, swing = 125 },
+	wisdom_sword = { name = "Sword of Wisdom", damage = 36, range = 12, cooldown = 0.45, hits = 4, swing = 130 },
+	conch = { name = "Conch Horn", damage = 16, range = 18, cooldown = 1, hits = 8, all = true, push = 12, stun = 0.5, ring = true },
+	bell = { name = "Hand Bell", damage = 18, range = 12, cooldown = 0.7, hits = 3, all = true, swing = 80, stun = 0.5, ring = true },
+	phurba = { name = "Phurba", damage = 30, range = 9, cooldown = 0.5, hits = 1, swing = 150, stun = 3 },
+	chakra = { name = "Wheel of Light", damage = 24, range = 44, cooldown = 1.1, hits = 0, swing = 120, thrown = true },
+	lantern = { name = "Paper Lantern", damage = 6, range = 14, cooldown = 6, hits = 0, field = 5 },
+}
 
 ----------------------------------------------------------------------
 -- The Noble Eightfold Path: upgrades bought in order with merit at any shrine.
@@ -150,6 +175,15 @@ Config.Items = {
 	wheel_charm = { name = "Dharma Wheel", desc = "Eight spokes for the Eightfold Path. Earn 10% more merit.", keep = true, order = 12 },
 	long_mala = { name = "Mala of 108 Beads", desc = "A full mala. The Mala ability recovers twice as fast.", keep = true, order = 13 },
 	prayer_flags = { name = "Prayer Flags", desc = "Blue, white, red, green and yellow. Colourful flags trail behind you.", keep = true, order = 14 },
+	staff = { name = "Walking Staff", desc = "A ringed staff; the rings warn small creatures off the path. Reaches further and strikes harder than an open palm.", keep = true, use = "equip", order = 15 },
+	whisk = { name = "Fly Whisk", desc = "A whisk for brushing insects away without harming them: a sign of sweeping troubles from the mind. Very quick, and reaches every shadow around you.", keep = true, use = "equip", order = 16 },
+	spade = { name = "Monk's Spade", desc = "The crescent-bladed spade of the wandering monks of China, carried to clear the road and to bury the dead they found. Slow, heavy, and long.", keep = true, use = "equip", order = 17 },
+	wisdom_sword = { name = "Sword of Wisdom", desc = "The flaming sword of Manjushri. It cuts through ignorance and harms no living thing. Earned by finding the Eight Auspicious Symbols.", keep = true, use = "equip", order = 18 },
+	conch = { name = "Conch Horn", desc = "The white conch, whose deep note carries in every direction as the teaching does. One blast pushes back every shadow around you.", keep = true, use = "equip", order = 19 },
+	bell = { name = "Hand Bell", desc = "The ritual bell, held with the vajra. Its clear sound stands for wisdom. Shadows that hear it stop for a moment.", keep = true, use = "equip", order = 20 },
+	phurba = { name = "Phurba", desc = "The three-sided ritual peg of Tibet. It wounds nothing: it pins one obstacle in place so that it can be faced.", keep = true, use = "equip", order = 21 },
+	chakra = { name = "Wheel of Light", desc = "A wheel of eight spokes. In the Deer Park the Buddha set the wheel of the Dharma turning. Thrown, it flies out and comes back. A gift of the animals of the old stories.", keep = true, use = "equip", order = 22 },
+	lantern = { name = "Paper Lantern", desc = "A lantern for the dark road. Set down its light and shadows inside the circle grow slow and weak.", keep = true, use = "equip", order = 23 },
 }
 
 Config.Shops = {
@@ -162,6 +196,9 @@ Config.Shops = {
 			{ item = "incense", price = 15 },
 			{ item = "lamp", price = 20 },
 			{ item = "singing_bowl", price = 120, once = true },
+			{ item = "whisk", price = 140, once = true },
+			{ item = "conch", price = 180, once = true },
+			{ item = "lantern", price = 200, once = true },
 			{ item = "prayer_flags", price = 150, once = true },
 			{ item = "wheel_charm", price = 200, once = true },
 		},
@@ -177,6 +214,9 @@ Config.Shops = {
 			{ item = "singing_bowl", price = 120, once = true },
 			{ item = "long_mala", price = 250, once = true },
 			{ item = "vajra", price = 300, once = true },
+			{ item = "bell", price = 220, once = true },
+			{ item = "phurba", price = 260, once = true },
+			{ item = "spade", price = 320, once = true },
 		},
 	},
 }
@@ -296,6 +336,30 @@ Config.Lotus = {
 	{ x = 2656, z = 72 }, { x = 2666, z = 64 }, { x = 2658, z = -70 }, { x = 2668, z = -78 },
 }
 
+-- The Eight Auspicious Symbols (Ashtamangala), one hidden in each land.
+-- Finding all eight earns the Sword of Wisdom.
+Config.Symbols = {
+	{ id = "vase", name = "The Treasure Vase", x = -170, z = -60, text = "The treasure vase is never emptied, however much is taken from it. It stands for the teaching, which is not used up by being shared." },
+	{ id = "parasol", name = "The Parasol", x = 330, z = 120, text = "The parasol gives shade from the burning sun. It stands for shelter from suffering, offered to every being." },
+	{ id = "fishes", name = "The Golden Fishes", x = 756, z = -112, text = "Two golden fishes swim wherever they wish and do not fear the water. They stand for moving freely and without fear through the ocean of this world." },
+	{ id = "knot", name = "The Endless Knot", x = 1000, z = 120, text = "The endless knot has no beginning and no end. It stands for the way all things depend on one another, and for wisdom and compassion woven together." },
+	{ id = "conch", name = "The White Conch", x = 1370, z = -122, text = "The white conch is blown like a horn and heard far away. It stands for the sound of the teaching, which wakes those who hear it." },
+	{ id = "lotus", name = "The Lotus", x = 1780, z = -118, text = "The lotus roots in mud and opens clean above the water. It stands for a mind that grows pure in the middle of a troubled world." },
+	{ id = "banner", name = "The Victory Banner", x = 2300, z = -120, text = "The victory banner is raised when a battle is won. It stands for victory over Mara: over craving, fear, pride and death." },
+	{ id = "wheel", name = "The Dharma Wheel", x = 2790, z = 70, text = "The wheel has eight spokes for the Noble Eightfold Path. When the Buddha first taught, it is said he set the wheel turning." },
+}
+
+-- Animals of the Jataka tales, the stories of the Buddha's earlier lives.
+-- Share a little alms rice with each one to hear its story.
+Config.Animals = {
+	{ id = "hare", kind = "hare", name = "The Hare", x = 410, z = 62, yaw = 40, source = "Sasa Jataka, no. 316", text = "Long ago the Buddha-to-be was born as a hare. A hungry traveller came by, and the hare had no food to give, so he offered himself and leapt into the traveller's fire. The fire did not burn him. The traveller was the god Sakka, who drew the hare's shape on the moon so that his gift would be remembered." },
+	{ id = "deer", kind = "deer", name = "The Banyan Deer", x = 520, z = -90, yaw = 200, source = "Nigrodhamiga Jataka, no. 12", text = "Long ago the Buddha-to-be was born as a golden deer, king of his herd. When a mother deer was to be sent to the king's kitchen, he lay down on the block in her place. The king was so moved that he spared the deer, and then every creature in his land." },
+	{ id = "monkey", kind = "monkey", name = "The Monkey King", x = 770, z = 100, yaw = 250, source = "Mahakapi Jataka, no. 407", text = "Long ago the Buddha-to-be was born as a king of monkeys. When archers surrounded his troop, he stretched his own body across the river as a bridge, and every monkey crossed to safety over his back. The human king who saw it learned what a ruler is for." },
+	{ id = "quail", kind = "quail", name = "The Young Quail", x = 1280, z = -100, yaw = 120, source = "Vattaka Jataka, no. 35", text = "Long ago the Buddha-to-be was born as a baby quail, too young to fly. A forest fire came and his parents fled. He had nothing left but the truth, so he spoke it: 'I have wings that cannot fly and feet that cannot walk.' At his true words the fire turned back." },
+	{ id = "elephant", kind = "elephant", name = "The Six-Tusked Elephant", x = 1806, z = 112, yaw = 160, source = "Chaddanta Jataka, no. 514", text = "Long ago the Buddha-to-be was born as Chaddanta, a great white elephant king. A hunter wounded him for his tusks. Chaddanta felt no anger. He forgave the hunter and gave the tusks himself." },
+	{ id = "goose", kind = "goose", name = "The Golden Goose", x = 1830, z = -80, yaw = 300, source = "Suvannahamsa Jataka, no. 136", text = "Long ago the Buddha-to-be was born as a goose with feathers of gold. He gave his poor family one feather at a time, and they lived well. Then greed made them pluck him bare, and every stolen feather turned plain and white." },
+}
+
 return Config
 ]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX2"><Properties><string name="Name">Sounds</string><ProtectedString name="Source"><![CDATA[-- The Bodhi Path: music and sound effects.
 --
@@ -309,31 +373,32 @@ local Sounds = {}
 
 Sounds.MusicVolume = 0.4
 Sounds.EffectVolume = 0.7
+Sounds.WaterVolume = 0.6
 
 ----------------------------------------------------------------------
 -- MUSIC: one looping track for each of the 28 steps of the journey.
 ----------------------------------------------------------------------
 Sounds.Music = {
-	{ step = "arrive", id = 88321898452519 }, --  1  Arrival: calm, welcoming, morning
-	{ step = "bell", id = 0 }, --  2  The Temple Bell: very quiet, so the bell stands out
-	{ step = "breath", id = 0 }, --  3  The First Breath: still, slow meditation
-	{ step = "alms", id = 0 }, --  4  The Alms Round: light, warm village life
-	{ step = "store", id = 0 }, --  5  The Merit Store: friendly bazaar
-	{ step = "sights", id = 0 }, --  6  The Four Sights: thoughtful, bittersweet
-	{ step = "cross", id = 0 }, --  7  The Great Departure: night journey, resolve
-	{ step = "channa", id = 0 }, --  8  Channa's Farewell: tender parting
-	{ step = "hair", id = 0 }, --  9  The Wanderer's Robe: solemn turning point
-	{ step = "scouts", id = 0 }, -- 10  Shadows on the Road: uneasy, light tension
-	{ step = "alara", id = 0 }, -- 11  The First Teacher: deep forest calm
-	{ step = "uddaka", id = 0 }, -- 12  The Second Teacher: deeper, more spacious
-	{ step = "doubt", id = 0 }, -- 13  The Seventh Army: unsettled, shifting
-	{ step = "ascetics", id = 0 }, -- 14  The Five Companions: dry, sparse, austere
-	{ step = "austerity", id = 0 }, -- 15  Six Years of Austerity: harsh, weary
-	{ step = "sujata", id = 0 }, -- 16  Sujata's Offering: gentle relief, kindness
-	{ step = "eat", id = 0 }, -- 17  The Middle Way: uplifting, balanced
-	{ step = "bowl", id = 0 }, -- 18  The Golden Bowl: wonder, flowing water
-	{ step = "sotthiya", id = 0 }, -- 19  The Grass-Cutter: simple, earthy
-	{ step = "kusa", id = 0 }, -- 20  Eight Handfuls of Grass: quiet anticipation
+	{ step = "arrive", id = 100971756298760 }, --  1  Arrival: calm, welcoming, morning
+	{ step = "bell", id = 93946537663928 }, --  2  The Temple Bell: very quiet, so the bell stands out
+	{ step = "breath", id = 116130915379705 }, --  3  The First Breath: still, slow meditation
+	{ step = "alms", id = 1839894836 }, --  4  The Alms Round: light, warm village life
+	{ step = "store", id = 1840124474 }, --  5  The Merit Store: friendly bazaar
+	{ step = "sights", id = 104515600700947 }, --  6  The Four Sights: thoughtful, bittersweet
+	{ step = "cross", id = 1836376521 }, --  7  The Great Departure: night journey, resolve
+	{ step = "channa", id = 1845724239 }, --  8  Channa's Farewell: tender parting
+	{ step = "hair", id = 1842483589 }, --  9  The Wanderer's Robe: solemn turning point
+	{ step = "scouts", id = 77103661048765 }, -- 10  Shadows on the Road: uneasy, light tension
+	{ step = "alara", id = 135919250581860 }, -- 11  The First Teacher: deep forest calm
+	{ step = "uddaka", id = 84936650613249 }, -- 12  The Second Teacher: deeper, more spacious
+	{ step = "doubt", id = 1840843924 }, -- 13  The Seventh Army: unsettled, shifting
+	{ step = "ascetics", id = 83850416265658 }, -- 14  The Five Companions: dry, sparse, austere
+	{ step = "austerity", id = 76534453813986 }, -- 15  Six Years of Austerity: harsh, weary
+	{ step = "sujata", id = 73080860156849 }, -- 16  Sujata's Offering: gentle relief, kindness
+	{ step = "eat", id = 9046656223 }, -- 17  The Middle Way: uplifting, balanced
+	{ step = "bowl", id = 140422396863468 }, -- 18  The Golden Bowl: wonder, flowing water
+	{ step = "sotthiya", id = 111399415119885 }, -- 19  The Grass-Cutter: simple, earthy
+	{ step = "kusa", id = 92428953268139 }, -- 20  Eight Handfuls of Grass: quiet anticipation
 	{ step = "daughters", id = 0 }, -- 21  The Daughters of Mara: hypnotic, then dangerous
 	{ step = "armies", id = 0 }, -- 22  The Ten Armies: battle drums
 	{ step = "mara", id = 0 }, -- 23  Mara: the biggest, darkest track
@@ -348,12 +413,12 @@ Sounds.Music = {
 -- SOUND EFFECTS: short sounds that play once when something happens.
 ----------------------------------------------------------------------
 Sounds.Effects = {
-	bell = 0, -- the great temple bell is rung (deep bell or gong)
-	wheel = 0, -- a prayer wheel is spun (soft whirr or small chime)
-	strike = 0, -- your palm or staff swings (whoosh)
-	hit = 0, -- a strike lands on a shadow (soft thud)
-	beads = 0, -- a mala bead of light is sent (light shimmer or ping)
-	metta = 0, -- loving-kindness radiates (warm swell or chord)
+	bell = 106399723585350, -- the great temple bell is rung (deep bell or gong)
+	wheel = 9120658280, -- a prayer wheel is spun (soft whirr or small chime)
+	strike = 123890977510299, -- your palm or staff swings (whoosh)
+	hit = 9113818671, -- a strike lands on a shadow (soft thud)
+	beads = 6691605753, -- a mala bead of light is sent (light shimmer or ping)
+	metta = 99384056183835, -- loving-kindness radiates (warm swell or chord)
 	bowl = 0, -- the singing bowl (a long singing-bowl tone)
 	meditate = 0, -- you sit down to meditate (a single soft chime)
 	petals = 0, -- a shadow is dispelled into petals (gentle sparkle)
@@ -368,6 +433,16 @@ Sounds.Effects = {
 	storm = 0, -- Mara sends a storm (thunder crack)
 	quake = 0, -- the earth answers as your witness (deep rumble)
 	awaken = 0, -- the moment of awakening (long shimmering rise)
+	splash = 142431247, -- you drop into deep water (a splash)
+}
+
+----------------------------------------------------------------------
+-- SURROUNDINGS: looping sounds that grow louder as you come near something.
+----------------------------------------------------------------------
+Sounds.Ambient = {
+	stream = 110597779584354, -- running water, heard near every stream and river and on the bridges
+	wade = 78165223586115, -- walking through shallow water (sloshing footsteps)
+	swim = 9125777696, -- swimming (strokes and splashes)
 }
 
 return Sounds
@@ -540,7 +615,7 @@ Story.Quests = {
 	},
 	{
 		id = "alms", title = "The Alms Round",
-		intro = "A monk does not buy food or grow it. Each morning the village shares what it has. Cross the stream to the village and walk the alms round.",
+		intro = "A monk does not buy food or grow it. Each morning the village shares what it has. Cross the stream to the village. Four villagers wait by their doors beside the road: follow the golden marker to each one, walk up close, and choose \"Hold out your bowl\" (press E, or tap the button that appears). They will put food in it.",
 		objectives = {
 			{ kind = "alms", target = "alms", count = 4, text = "Receive alms from four villagers" },
 		},
@@ -1634,7 +1709,7 @@ function B.shop(parent, o, title, opts)
 	Kit.cyl(m, at(-6.5, 4.6, -d / 2 - 4.6), 0.4, 9.2, C.woodDark, M.Wood)
 	Kit.cyl(m, at(6.5, 4.6, -d / 2 - 4.6), 0.4, 9.2, C.woodDark, M.Wood)
 	local board = Kit.block(m, at(0, y0 + h + 1.4, -d / 2 - 0.4), V(15, 2.6, 0.4), C.woodDark, M.WoodPlanks, NOCOL)
-	Kit.sign(board, title, C.goldBright, 0, 130, UDim2.new(0, 260, 0, 48))
+	Kit.plaque(board, title, C.goldBright, { Enum.NormalId.Front })
 	return m
 end
 
@@ -2074,6 +2149,7 @@ return B
 -- shrine they prayed at.
 
 local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -2229,7 +2305,7 @@ function Combat.hurt(player, amount)
 		return false
 	end
 	local now = os.clock()
-	if now < session.graceUntil then
+	if now < session.graceUntil or now < session.talkUntil then
 		return false
 	end
 	if session.meditating then
@@ -2259,10 +2335,28 @@ end
 
 function Combat.canBeTargeted(player)
 	local session = PlayerData.session(player)
-	if not session or os.clock() < session.graceUntil then
+	if not session or os.clock() < session.graceUntil or os.clock() < session.talkUntil then
 		return false
 	end
 	return Combat.root(player) ~= nil
+end
+
+-- While someone is speaking to you (or the story is being told), Mara's shadows wait.
+-- The player's screen reports when the last line has been read.
+function Combat.beginTalk(player, lines)
+	local session = PlayerData.session(player)
+	if session then
+		local count = type(lines) == "table" and #lines or 1
+		local seconds = math.min(240, 20 * count + 5)
+		session.talkUntil = math.max(session.talkUntil, os.clock() + seconds)
+	end
+end
+
+function Combat.endTalk(player)
+	local session = PlayerData.session(player)
+	if session and os.clock() < session.talkUntil then
+		session.talkUntil = os.clock() + 3
+	end
 end
 
 ----------------------------------------------------------------------
@@ -2321,9 +2415,23 @@ local function ready(session, name, cooldown)
 	return true
 end
 
+-- Which weapon a player is holding: returns its id and its entry in Config.Weapons.
+function Combat.weapon(player)
+	local profile = PlayerData.get(player)
+	local id = profile and profile.weapon or "palm"
+	if id == "auto" then
+		id = profile.abilities.staff and "staff" or "palm"
+	end
+	if id ~= "palm" and (not Config.Weapons[id] or (profile.inv[id] or 0) < 1) then
+		id = "palm"
+	end
+	return id, Config.Weapons[id]
+end
+
 local function strikePower(player)
 	local profile = PlayerData.get(player)
-	local dmg = profile.abilities.staff and Config.StaffDamage or Config.Abilities.strike.damage
+	local _, weapon = Combat.weapon(player)
+	local dmg = weapon.damage
 	if PlayerData.hasPath(player, "action") then
 		dmg = dmg * 1.3
 	end
@@ -2333,25 +2441,164 @@ local function strikePower(player)
 	return dmg
 end
 
+-- The Wheel of Light: flies out, turns, and comes back to the hand.
+local wheels = {}
+
+local function throwWheel(player, root, weapon, dmg)
+	local disc = Instance.new("Part")
+	disc.Name = "ThrownWheel"
+	disc.Size = Vector3.new(3.2, 0.3, 3.2)
+	disc.Material = Enum.Material.Neon
+	disc.Color = Color3.fromRGB(255, 214, 110)
+	disc.Anchored = true
+	disc.CanCollide = false
+	disc.CanTouch = false
+	disc.CanQuery = false
+	disc.CastShadow = false
+	local look = root.CFrame.LookVector
+	local dir = Vector3.new(look.X, 0, look.Z)
+	if dir.Magnitude < 0.1 then
+		dir = Vector3.new(0, 0, -1)
+	end
+	dir = dir.Unit
+	disc.CFrame = CFrame.new(root.Position + Vector3.new(0, 1.5, 0) + dir * 2)
+	local light = Instance.new("PointLight")
+	light.Color = disc.Color
+	light.Range = 14
+	light.Parent = disc
+	disc.Parent = workspace
+	local speed = 90
+	table.insert(wheels, {
+		part = disc, dir = dir, speed = speed, out = weapon.range / speed, age = 0,
+		player = player, damage = dmg, struck = {},
+	})
+end
+
+local function moveWheels(dt)
+	for i = #wheels, 1, -1 do
+		local w = wheels[i]
+		w.age = w.age + dt
+		local pos = w.part.Position
+		local done = false
+		if w.age < w.out then
+			pos = pos + w.dir * w.speed * dt
+		else
+			local home = Combat.root(w.player)
+			if not home or w.age > 4 then
+				done = true
+			else
+				if not w.returning then
+					w.returning = true
+					w.struck = {} -- it may touch each shadow again on the way back
+				end
+				local to = (home.Position + Vector3.new(0, 1.5, 0)) - pos
+				local step = w.speed * dt
+				if to.Magnitude <= step + 2 then
+					done = true
+				else
+					pos = pos + to.Unit * step
+				end
+			end
+		end
+		w.part.CFrame = CFrame.new(pos) * CFrame.Angles(0, w.age * 18, 0)
+		for _, t in ipairs(Combat.targets) do
+			if t.alive and t.root and t.root.Parent and not w.struck[t] then
+				if (t.root.Position - pos).Magnitude <= 4.5 + (t.hitRadius or 0) then
+					w.struck[t] = true
+					Combat.damage(t, w.player, w.damage)
+				end
+			end
+		end
+		if done then
+			w.part:Destroy()
+			table.remove(wheels, i)
+		end
+	end
+end
+
+-- The Paper Lantern: a circle of light stays where you stood. Shadows inside it are
+-- slowed and worn away a little at a time.
+local function lightLantern(player, root, weapon, dmg)
+	local pos = root.Position
+	local glow = Instance.new("Part")
+	glow.Name = "LanternLight"
+	glow.Shape = Enum.PartType.Cylinder
+	glow.Size = Vector3.new(0.3, weapon.range * 2, weapon.range * 2)
+	glow.Material = Enum.Material.Neon
+	glow.Color = Color3.fromRGB(255, 206, 130)
+	glow.Transparency = 0.8
+	glow.Anchored = true
+	glow.CanCollide = false
+	glow.CanTouch = false
+	glow.CanQuery = false
+	glow.CastShadow = false
+	glow.CFrame = CFrame.new(pos - Vector3.new(0, 2.7, 0)) * CFrame.Angles(0, 0, math.rad(90))
+	local light = Instance.new("PointLight")
+	light.Color = glow.Color
+	light.Range = 30
+	light.Brightness = 1.6
+	light.Shadows = false
+	light.Parent = glow
+	glow.Parent = workspace
+	Remotes.fx("ring", { pos = pos, radius = weapon.range, color = glow.Color, time = 0.8 })
+	task.spawn(function()
+		for _ = 1, weapon.field * 2 do
+			task.wait(0.5)
+			local now = os.clock()
+			for _, entry in ipairs(targetsNear(pos, weapon.range)) do
+				local t = entry.target
+				t.slowUntil = now + 0.8
+				Combat.damage(t, player, dmg)
+			end
+		end
+		glow:Destroy()
+	end)
+end
+
 local Abilities = {}
 
 function Abilities.strike(player, session, profile, root)
-	if not ready(session, "strike", Config.Abilities.strike.cooldown - 0.08) then
+	local _, weapon = Combat.weapon(player)
+	if not ready(session, "strike", weapon.cooldown - 0.08) then
 		return
 	end
 	Combat.setMeditating(player, false)
-	local range = profile.abilities.staff and Config.StaffRange or Config.Abilities.strike.range
+	Combat.swing(player)
+	local range = weapon.range
 	local look = root.CFrame.LookVector
 	local dmg = strikePower(player)
+	if weapon.thrown then
+		throwWheel(player, root, weapon, dmg)
+		return
+	end
+	if weapon.field then
+		lightLantern(player, root, weapon, dmg)
+		return
+	end
+	if weapon.ring then
+		Remotes.fx("ring", { pos = root.Position, radius = range, color = Color3.fromRGB(255, 244, 214), time = 0.5 })
+	end
+	local now = os.clock()
 	local hits = 0
 	for _, entry in ipairs(targetsNear(root.Position, range)) do
 		local t = entry.target
 		local to = t.root.Position - root.Position
 		local flat = Vector3.new(to.X, 0, to.Z)
-		if flat.Magnitude < 3 + (t.hitRadius or 0) or flat.Unit:Dot(look) > 0.1 then
+		if weapon.all or flat.Magnitude < 3 + (t.hitRadius or 0) or flat.Unit:Dot(look) > 0.1 then
 			Combat.damage(t, player, dmg)
+			if t.alive and not t.static then
+				if weapon.stun then
+					local seconds = t.big and weapon.stun * 0.25 or weapon.stun
+					t.stunUntil = math.max(t.stunUntil or 0, now + seconds)
+				end
+				if weapon.push and not t.big and t.model and flat.Magnitude > 0.1 then
+					local at = t.root.Position
+					local dest = at + flat.Unit * weapon.push
+					t.model:PivotTo(CFrame.new(dest.X, at.Y + 0.5, dest.Z))
+				end
+			end
 			hits = hits + 1
-			if hits >= 3 then
+			if hits >= weapon.hits then
 				break
 			end
 		end
@@ -2472,58 +2719,290 @@ function Combat.use(player, name, arg)
 	if not session or not profile or not root or not fn then
 		return
 	end
+	session.talkUntil = 0 -- acting ends the pause that a conversation gives
 	fn(player, session, profile, root, arg)
 end
 
 ----------------------------------------------------------------------
--- The walking staff
+-- The weapon in the player's hand
 ----------------------------------------------------------------------
-function Combat.equipStaff(player)
+local GRIP = CFrame.new(0, 1.1, -0.55)
+local WOOD = Color3.fromRGB(110, 78, 50)
+local BRASS = Color3.fromRGB(226, 178, 54)
+local STEEL = Color3.fromRGB(196, 200, 208)
+
+-- One piece of a weapon, fixed to its handle.
+local function piece(handle, size, offset, color, material, shape)
+	local p = Instance.new("Part")
+	p.Name = "Piece"
+	if shape then
+		p.Shape = shape
+	end
+	p.Size = size
+	p.Material = material or Enum.Material.Wood
+	p.Color = color
+	p.CanCollide = false
+	p.CanTouch = false
+	p.CanQuery = false
+	p.Massless = true
+	p.CastShadow = false
+	p.CFrame = handle.CFrame * offset
+	local w = Instance.new("WeldConstraint")
+	w.Part0 = handle
+	w.Part1 = p
+	w.Parent = p
+	p.Parent = handle
+	return p
+end
+
+-- Each builder shapes the handle, adds the pieces, and returns the height of the
+-- weapon's tip above the middle of the handle.
+local Builders = {}
+
+function Builders.staff(handle)
+	handle.Size = Vector3.new(0.3, 6.2, 0.3)
+	for i = 0, 2 do
+		local d = 0.55 - i * 0.08
+		piece(handle, Vector3.new(d, d, d), CFrame.new(0, 2.5 + i * 0.36, 0), BRASS, Enum.Material.Metal, Enum.PartType.Ball)
+	end
+	return 3.1
+end
+
+function Builders.whisk(handle)
+	handle.Size = Vector3.new(0.26, 2.2, 0.26)
+	handle.Color = Color3.fromRGB(120, 36, 30)
+	piece(handle, Vector3.new(0.4, 0.3, 0.4), CFrame.new(0, 1.2, 0), BRASS, Enum.Material.Metal)
+	piece(handle, Vector3.new(0.55, 1.5, 0.55), CFrame.new(0, 2.05, 0), Color3.fromRGB(244, 240, 228), Enum.Material.Fabric)
+	piece(handle, Vector3.new(0.4, 1.3, 0.4), CFrame.new(0, 3.3, 0), Color3.fromRGB(236, 232, 218), Enum.Material.Fabric)
+	return 3.9
+end
+
+function Builders.spade(handle)
+	handle.Size = Vector3.new(0.34, 7.4, 0.34)
+	-- the flat spade at the top
+	piece(handle, Vector3.new(1.5, 0.3, 0.2), CFrame.new(0, 3.75, 0), STEEL, Enum.Material.Metal)
+	piece(handle, Vector3.new(1.9, 1.1, 0.14), CFrame.new(0, 4.4, 0), STEEL, Enum.Material.Metal)
+	-- the crescent at the foot
+	piece(handle, Vector3.new(0.5, 0.4, 0.5), CFrame.new(0, -3.7, 0), BRASS, Enum.Material.Metal)
+	for _, side in ipairs({ -1, 1 }) do
+		piece(handle, Vector3.new(1.1, 0.3, 0.14), CFrame.new(side * 0.5, -4.05, 0) * CFrame.Angles(0, 0, math.rad(side * -35)), STEEL, Enum.Material.Metal)
+	end
+	for i = 0, 1 do
+		piece(handle, Vector3.new(0.5, 0.5, 0.5), CFrame.new(0, 3.2 - i * 0.4, 0), BRASS, Enum.Material.Metal, Enum.PartType.Ball)
+	end
+	return 4.9
+end
+
+function Builders.wisdom_sword(handle)
+	handle.Size = Vector3.new(0.3, 1.3, 0.3)
+	handle.Color = BRASS
+	handle.Material = Enum.Material.Metal
+	piece(handle, Vector3.new(0.5, 0.5, 0.5), CFrame.new(0, -0.8, 0), BRASS, Enum.Material.Metal, Enum.PartType.Ball)
+	piece(handle, Vector3.new(1.5, 0.28, 0.4), CFrame.new(0, 0.75, 0), BRASS, Enum.Material.Metal)
+	local blade = piece(handle, Vector3.new(0.5, 4.4, 0.14), CFrame.new(0, 3.05, 0), Color3.fromRGB(255, 206, 110), Enum.Material.Neon)
+	piece(handle, Vector3.new(0.3, 0.6, 0.12), CFrame.new(0, 5.5, 0), Color3.fromRGB(255, 226, 150), Enum.Material.Neon)
+	local light = Instance.new("PointLight")
+	light.Color = Color3.fromRGB(255, 190, 90)
+	light.Range = 12
+	light.Brightness = 1.3
+	light.Shadows = false
+	light.Parent = blade
+	local flame = Instance.new("ParticleEmitter")
+	flame.Rate = 14
+	flame.Lifetime = NumberRange.new(0.4, 0.8)
+	flame.Speed = NumberRange.new(1, 2.5)
+	flame.SpreadAngle = Vector2.new(25, 25)
+	flame.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.45), NumberSequenceKeypoint.new(1, 0) })
+	flame.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.2), NumberSequenceKeypoint.new(1, 1) })
+	flame.Color = ColorSequence.new(Color3.fromRGB(255, 170, 60))
+	flame.LightEmission = 0.9
+	flame.Parent = blade
+	return 5.8
+end
+
+function Builders.conch(handle)
+	local shell = Color3.fromRGB(246, 242, 232)
+	handle.Size = Vector3.new(0.45, 1.2, 0.45)
+	handle.Color = shell
+	handle.Material = Enum.Material.SmoothPlastic
+	piece(handle, Vector3.new(0.6, 0.3, 0.6), CFrame.new(0, -0.75, 0), BRASS, Enum.Material.Metal)
+	piece(handle, Vector3.new(1.3, 1.3, 1.3), CFrame.new(0, 0.6, 0), shell, Enum.Material.SmoothPlastic, Enum.PartType.Ball)
+	piece(handle, Vector3.new(0.95, 0.95, 0.95), CFrame.new(0, 1.35, 0), shell, Enum.Material.SmoothPlastic, Enum.PartType.Ball)
+	piece(handle, Vector3.new(0.6, 0.6, 0.6), CFrame.new(0, 1.9, 0), shell, Enum.Material.SmoothPlastic, Enum.PartType.Ball)
+	piece(handle, Vector3.new(0.35, 0.35, 0.35), CFrame.new(0, 2.3, 0), BRASS, Enum.Material.Metal, Enum.PartType.Ball)
+	return 2.4
+end
+
+function Builders.bell(handle)
+	handle.Size = Vector3.new(0.25, 1.5, 0.25)
+	handle.Color = BRASS
+	handle.Material = Enum.Material.Metal
+	-- the half-vajra on top of the handle
+	piece(handle, Vector3.new(0.45, 0.45, 0.45), CFrame.new(0, 0.85, 0), BRASS, Enum.Material.Metal, Enum.PartType.Ball)
+	piece(handle, Vector3.new(0.2, 0.5, 0.2), CFrame.new(0, 1.25, 0), BRASS, Enum.Material.Metal)
+	-- the bell itself, hanging below the hand
+	piece(handle, Vector3.new(0.9, 0.3, 0.9), CFrame.new(0, -1.7, 0), BRASS, Enum.Material.Metal)
+	piece(handle, Vector3.new(1.25, 0.8, 1.25), CFrame.new(0, -2.2, 0), BRASS, Enum.Material.Metal)
+	piece(handle, Vector3.new(1.5, 0.2, 1.5), CFrame.new(0, -2.65, 0), BRASS, Enum.Material.Metal)
+	return 1.5
+end
+
+function Builders.phurba(handle)
+	handle.Size = Vector3.new(0.3, 1.2, 0.3)
+	handle.Color = BRASS
+	handle.Material = Enum.Material.Metal
+	piece(handle, Vector3.new(0.55, 0.55, 0.55), CFrame.new(0, -0.8, 0), BRASS, Enum.Material.Metal, Enum.PartType.Ball)
+	piece(handle, Vector3.new(0.7, 0.2, 0.7), CFrame.new(0, 0.65, 0), BRASS, Enum.Material.Metal)
+	piece(handle, Vector3.new(0.45, 1.2, 0.45), CFrame.new(0, 1.3, 0) * CFrame.Angles(0, math.rad(45), 0), STEEL, Enum.Material.Metal)
+	piece(handle, Vector3.new(0.3, 1, 0.3), CFrame.new(0, 2.3, 0) * CFrame.Angles(0, math.rad(45), 0), STEEL, Enum.Material.Metal)
+	piece(handle, Vector3.new(0.15, 0.7, 0.15), CFrame.new(0, 3.1, 0) * CFrame.Angles(0, math.rad(45), 0), STEEL, Enum.Material.Metal)
+	return 3.4
+end
+
+function Builders.chakra(handle)
+	local gold = Color3.fromRGB(255, 214, 110)
+	handle.Size = Vector3.new(0.25, 0.9, 0.25)
+	handle.Color = BRASS
+	handle.Material = Enum.Material.Metal
+	local centre = CFrame.new(0, 1.9, 0)
+	piece(handle, Vector3.new(0.7, 0.7, 0.7), centre, gold, Enum.Material.Neon, Enum.PartType.Ball)
+	for i = 0, 3 do
+		piece(handle, Vector3.new(0.16, 2.7, 0.2), centre * CFrame.Angles(0, 0, math.rad(i * 45)), BRASS, Enum.Material.Metal)
+	end
+	for i = 0, 7 do
+		piece(handle, Vector3.new(1.12, 0.22, 0.28), centre * CFrame.Angles(0, 0, math.rad(i * 45)) * CFrame.new(0, 1.35, 0), BRASS, Enum.Material.Metal)
+	end
+	return 3.3
+end
+
+function Builders.lantern(handle)
+	handle.Size = Vector3.new(0.2, 3, 0.2)
+	local red = Color3.fromRGB(176, 40, 36)
+	piece(handle, Vector3.new(1.3, 0.15, 1.3), CFrame.new(0, 1.6, 0), red, Enum.Material.Wood)
+	local paper = piece(handle, Vector3.new(1.15, 1.5, 1.15), CFrame.new(0, 2.4, 0), Color3.fromRGB(255, 214, 150), Enum.Material.Neon)
+	piece(handle, Vector3.new(1.3, 0.15, 1.3), CFrame.new(0, 3.2, 0), red, Enum.Material.Wood)
+	local light = Instance.new("PointLight")
+	light.Color = Color3.fromRGB(255, 200, 120)
+	light.Range = 16
+	light.Brightness = 1.4
+	light.Shadows = false
+	light.Parent = paper
+	return 3.3
+end
+
+-- Put the chosen weapon in the player's hand (or take it away for the open palm).
+function Combat.equipWeapon(player)
 	local profile = PlayerData.get(player)
 	local character = player.Character
-	if not profile or not character or not profile.abilities.staff then
+	if not profile or not character then
 		return
 	end
-	if character:FindFirstChild("WalkingStaff") then
-		return
+	local id = Combat.weapon(player)
+	local old = character:FindFirstChild("HeldWeapon")
+	if old then
+		if old:GetAttribute("Weapon") == id then
+			return
+		end
+		old:Destroy()
 	end
+	local build = Builders[id]
 	local hand = character:FindFirstChild("RightHand") or character:FindFirstChild("Right Arm")
-	if not hand then
+	if not build or not hand then
 		return
 	end
-	local staff = Instance.new("Part")
-	staff.Name = "WalkingStaff"
-	staff.Size = Vector3.new(0.3, 6.2, 0.3)
-	staff.Material = Enum.Material.Wood
-	staff.Color = Color3.fromRGB(110, 78, 50)
-	staff.CanCollide = false
-	staff.CanTouch = false
-	staff.CanQuery = false
-	staff.Massless = true
-	staff.CFrame = hand.CFrame * CFrame.new(0, 1.1, -0.55)
-	local weld = Instance.new("WeldConstraint")
-	weld.Part0 = hand
-	weld.Part1 = staff
-	weld.Parent = staff
-	for i = 0, 2 do
-		local ring = Instance.new("Part")
-		ring.Name = "Ring"
-		ring.Shape = Enum.PartType.Ball
-		ring.Size = Vector3.new(0.55 - i * 0.08, 0.55 - i * 0.08, 0.55 - i * 0.08)
-		ring.Material = Enum.Material.Metal
-		ring.Color = Color3.fromRGB(226, 178, 54)
-		ring.CanCollide = false
-		ring.CanTouch = false
-		ring.CanQuery = false
-		ring.Massless = true
-		ring.CFrame = staff.CFrame * CFrame.new(0, 2.5 + i * 0.36, 0)
-		local rw = Instance.new("WeldConstraint")
-		rw.Part0 = staff
-		rw.Part1 = ring
-		rw.Parent = ring
-		ring.Parent = staff
+	local handle = Instance.new("Part")
+	handle.Name = "HeldWeapon"
+	handle:SetAttribute("Weapon", id)
+	handle.Material = Enum.Material.Wood
+	handle.Color = WOOD
+	handle.CanCollide = false
+	handle.CanTouch = false
+	handle.CanQuery = false
+	handle.Massless = true
+	handle.CFrame = hand.CFrame * GRIP
+	local tip = build(handle)
+
+	-- a streak of light that follows the tip while the weapon is swung
+	local a0 = Instance.new("Attachment")
+	a0.Name = "TipTop"
+	a0.Position = Vector3.new(0, tip, 0)
+	a0.Parent = handle
+	local a1 = Instance.new("Attachment")
+	a1.Name = "TipLow"
+	a1.Position = Vector3.new(0, tip - 2.2, 0)
+	a1.Parent = handle
+	local trail = Instance.new("Trail")
+	trail.Name = "SwingTrail"
+	trail.Attachment0 = a0
+	trail.Attachment1 = a1
+	trail.Lifetime = 0.22
+	trail.MinLength = 0.05
+	trail.LightEmission = 0.8
+	trail.Color = ColorSequence.new(Color3.fromRGB(255, 232, 170))
+	trail.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.25), NumberSequenceKeypoint.new(1, 1) })
+	trail.Enabled = false
+	trail.Parent = handle
+
+	-- held by a joint, so that it can be swung
+	local grip = Instance.new("Weld")
+	grip.Name = "Grip"
+	grip.Part0 = hand
+	grip.Part1 = handle
+	grip.C0 = GRIP
+	grip.Parent = handle
+	handle.Parent = character
+end
+
+-- Sweep the held weapon forward and down in a wide arc, then bring it back.
+function Combat.swing(player)
+	local character = player.Character
+	local handle = character and character:FindFirstChild("HeldWeapon")
+	local grip = handle and handle:FindFirstChild("Grip")
+	local id, weapon = Combat.weapon(player)
+	if not grip or not weapon.swing or handle:GetAttribute("Swinging") then
+		return
 	end
-	staff.Parent = character
+	handle:SetAttribute("Swinging", true)
+	local trail = handle:FindFirstChild("SwingTrail")
+	if trail then
+		trail.Enabled = true
+	end
+	local out = math.min(0.16, weapon.cooldown * 0.3)
+	local back = math.min(0.22, weapon.cooldown * 0.45)
+	local raised = CFrame.Angles(math.rad(35), 0, 0) * GRIP
+	local swept = CFrame.Angles(math.rad(-weapon.swing), 0, math.rad(id == "whisk" and 35 or 0)) * GRIP
+	grip.C0 = raised
+	TweenService:Create(grip, TweenInfo.new(out, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { C0 = swept }):Play()
+	task.delay(out + 0.03, function()
+		if not grip.Parent then
+			return
+		end
+		TweenService:Create(grip, TweenInfo.new(back, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), { C0 = GRIP }):Play()
+		task.wait(back)
+		if handle.Parent then
+			if trail then
+				trail.Enabled = false
+			end
+			handle:SetAttribute("Swinging", false)
+		end
+	end)
+end
+
+-- Choose what to hold. Choosing the weapon already in hand puts it away.
+function Combat.chooseWeapon(player, id)
+	local profile = PlayerData.get(player)
+	if not profile or not Config.Weapons[id] or id == "palm" or (profile.inv[id] or 0) < 1 then
+		return
+	end
+	local current = Combat.weapon(player)
+	if current == id then
+		profile.weapon = "palm"
+		Remotes.notify(player, "You put away the " .. Config.Weapons[id].name .. ". Your hands are open.", "info")
+	else
+		profile.weapon = id
+		Remotes.notify(player, "You take up the " .. Config.Weapons[id].name .. ".", "good")
+	end
+	Combat.equipWeapon(player)
 end
 
 ----------------------------------------------------------------------
@@ -2592,6 +3071,7 @@ function Combat.start()
 	end)
 
 	RunService.Heartbeat:Connect(function(dt)
+		moveWheels(dt)
 		for i = #projectiles, 1, -1 do
 			local p = projectiles[i]
 			p.life = p.life - dt
@@ -2617,9 +3097,17 @@ function Combat.start()
 	-- when a step of the journey grants the staff, put it in the player's hand
 	Quests.onReward(function(player, reward)
 		if reward.ability == "staff" then
-			Combat.equipStaff(player)
+			PlayerData.give(player, "staff", 1)
+			local profile = PlayerData.get(player)
+			if profile and profile.weapon == "palm" then
+				profile.weapon = "staff"
+			end
+			Combat.equipWeapon(player)
+			PlayerData.push(player)
 		end
 	end)
+
+	Remotes.onDialog = Combat.beginTalk
 end
 
 return Combat
@@ -2807,7 +3295,7 @@ local function think(enemy, now, players)
 		return
 	end
 
-	hum.WalkSpeed = cfg.speed
+	hum.WalkSpeed = cfg.speed * ((now < (enemy.slowUntil or 0)) and 0.4 or 1)
 	local reach = cfg.range * (cfg.scale or 1) * 0.8 + 2
 	if best > reach then
 		hum:MoveTo(targetPos)
@@ -2941,12 +3429,91 @@ local function nearShrine(player, distance)
 	return nil
 end
 
-local function leafCount(profile)
+local function countOf(list)
 	local n = 0
-	for _ in pairs(profile.leaves) do
+	for _ in pairs(list) do
 		n = n + 1
 	end
 	return n
+end
+
+local function leafCount(profile)
+	return countOf(profile.leaves)
+end
+
+local symbolById = {}
+for _, def in ipairs(Config.Symbols) do
+	symbolById["symbol_" .. def.id] = def
+end
+local animalById = {}
+for _, def in ipairs(Config.Animals) do
+	animalById["animal_" .. def.id] = def
+end
+
+local function foundSymbol(player, profile, def)
+	if not profile.symbols[def.id] then
+		profile.symbols[def.id] = true
+		PlayerData.addMerit(player, 15)
+		local n = countOf(profile.symbols)
+		Remotes.notify(player, "Auspicious symbols found: " .. n .. " of " .. #Config.Symbols, "good")
+		if n >= #Config.Symbols and (profile.inv.wisdom_sword or 0) < 1 then
+			PlayerData.give(player, "wisdom_sword", 1)
+			profile.weapon = "wisdom_sword"
+			Combat.equipWeapon(player)
+			Remotes.notify(player, "You have found all eight symbols. The Sword of Wisdom is yours.", "good")
+		end
+		PlayerData.push(player)
+	end
+	Remotes.dialog(player, { { def.name, def.text } }, def.name)
+end
+
+local function wheelGift(player, profile)
+	if countOf(profile.friends) >= #Config.Animals and (profile.inv.chakra or 0) < 1 then
+		PlayerData.give(player, "chakra", 1)
+		profile.weapon = "chakra"
+		Combat.equipWeapon(player)
+		Remotes.notify(player, "The animals have given you the Wheel of Light.", "good")
+		PlayerData.push(player)
+	end
+end
+
+local function metAnimal(player, profile, session, def)
+	wheelGift(player, profile)
+	local known = profile.friends[def.id]
+	local tale = { { def.name, def.text }, { "", "(" .. def.source .. ", retold)" } }
+	if PlayerData.count(player, "rice") < 1 then
+		if known then
+			Remotes.dialog(player, tale, def.name)
+		else
+			Remotes.notify(player, def.name .. " watches you hopefully. Bring some Alms Rice to share.", "info")
+		end
+		return
+	end
+	local now = os.clock()
+	if known and now < (session.fed[def.id] or 0) then
+		Remotes.dialog(player, tale, def.name)
+		return
+	end
+	PlayerData.take(player, "rice", 1)
+	session.fed[def.id] = now + 300
+	if known then
+		PlayerData.addMerit(player, livelihood(player, 3))
+		Remotes.notify(player, "You share your rice with " .. def.name .. ".", "good")
+	else
+		profile.friends[def.id] = true
+		PlayerData.addMerit(player, 20)
+		local n = countOf(profile.friends)
+		Remotes.notify(player, "Animal friends: " .. n .. " of " .. #Config.Animals, "good")
+		if n >= #Config.Animals and not profile.bought.all_friends then
+			profile.bought.all_friends = true
+			profile.bonusCalm = profile.bonusCalm + 20
+			PlayerData.refreshCalm(player)
+			Remotes.notify(player, "Every animal of the old stories is your friend. Your Calm grows by 20.", "good")
+		end
+		wheelGift(player, profile)
+		Remotes.dialog(player, tale, def.name)
+	end
+	PlayerData.push(player)
 end
 
 ----------------------------------------------------------------------
@@ -3139,6 +3706,14 @@ local function setupCollectibles(objects)
 				else
 					Remotes.notify(player, "Kusa grass. Sotthiya the grass-cutter tends this bank; speak with him first.", "info")
 				end
+			elseif item.kind == "symbol" then
+				if symbolById[item.id] then
+					foundSymbol(player, profile, symbolById[item.id])
+				end
+			elseif item.kind == "animal" then
+				if animalById[item.id] then
+					metAnimal(player, profile, session, animalById[item.id])
+				end
 			elseif item.kind == "lotus" then
 				if session.lotus[item.id] then
 					Remotes.notify(player, "You have already picked this lotus today.", "info")
@@ -3193,6 +3768,8 @@ function Actions.UseItem(player, itemId)
 			session.shieldUntil = now + 180
 			Remotes.notify(player, "The lamp is lit. You are protected for a while.", "good")
 		end
+	elseif def.use == "equip" then
+		Combat.chooseWeapon(player, itemId)
 	elseif def.use == "quest" then
 		if not Quests.active(player, "use", itemId) then
 			Remotes.notify(player, "Not yet.", "info")
@@ -3240,6 +3817,10 @@ function Actions.Buy(player, shopId, itemId)
 			Remotes.notify(player, "Received: " .. def.name, "good")
 			if itemId == "prayer_flags" then
 				task.spawn(Robes.apply, player)
+			end
+			if Config.Weapons[itemId] then
+				profile.weapon = itemId
+				Combat.equipWeapon(player)
 			end
 			PlayerData.push(player)
 			return
@@ -3613,7 +4194,9 @@ function Kit.sign(parent, text, color, height, maxDistance, size)
 	local gui = Instance.new("BillboardGui")
 	gui.Name = "Sign"
 	gui.Size = size or UDim2.new(0, 220, 0, 44)
-	gui.StudsOffset = Vector3.new(0, height or 4, 0)
+	-- the third number brings the words towards the viewer, so that nearby walls
+	-- and roofs do not cut through them
+	gui.StudsOffset = Vector3.new(0, height or 4, 6)
 	gui.AlwaysOnTop = false
 	gui.MaxDistance = maxDistance or 110
 	gui.LightInfluence = 0
@@ -3630,6 +4213,32 @@ function Kit.sign(parent, text, color, height, maxDistance, size)
 	label.Parent = gui
 	gui.Parent = parent
 	return gui
+end
+
+-- Words painted flat on the faces of a board, like a real sign. Nothing can cut
+-- through them. "faces" is a list such as { Enum.NormalId.Front, Enum.NormalId.Back }.
+function Kit.plaque(part, text, color, faces)
+	for _, face in ipairs(faces or { Enum.NormalId.Front }) do
+		local gui = Instance.new("SurfaceGui")
+		gui.Name = "Plaque"
+		gui.Face = face
+		gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+		gui.PixelsPerStud = 40
+		gui.LightInfluence = 0
+		local label = Instance.new("TextLabel")
+		label.Name = "Label"
+		label.Size = UDim2.new(0.92, 0, 0.84, 0)
+		label.Position = UDim2.new(0.04, 0, 0.08, 0)
+		label.BackgroundTransparency = 1
+		label.Text = text
+		label.TextColor3 = color or Kit.C.goldBright
+		label.TextStrokeColor3 = Color3.fromRGB(40, 20, 10)
+		label.TextStrokeTransparency = 0.2
+		label.Font = Enum.Font.Fondamento
+		label.TextScaled = true
+		label.Parent = gui
+		gui.Parent = part
+	end
 end
 
 -- An interaction prompt (works with keyboard, touch and gamepad).
@@ -3734,6 +4343,8 @@ Remotes.Action.OnServerEvent:Connect(function(player, kind, a, b)
 			Combat.use(player, kind, a)
 		elseif kind == "TouchEarth" then
 			Boss.touchEarth(player)
+		elseif kind == "DialogDone" then
+			Combat.endTalk(player)
 		elseif kind == "Ready" then
 			PlayerData.push(player)
 		else
@@ -3907,6 +4518,30 @@ local function talk(player, npc)
 	Remotes.dialog(player, { { def.name, line } }, def.name)
 end
 
+-- The villagers who only walk about: they greet you, and during the alms round they
+-- point you to someone who has food ready.
+local GREETINGS = {
+	"Peace to you, traveller.",
+	"May your road be an easy one.",
+	"A fine morning for walking.",
+	"Go gently.",
+}
+
+local function greet(player, npc)
+	local session = PlayerData.session(player)
+	local name = npc.def.name
+	if session and Quests.active(player, "alms", "alms") then
+		local now = os.clock()
+		for _, def in ipairs(Story.NPCs) do
+			if def.alms and now >= ((session.alms or {})[def.id] or 0) then
+				Remotes.dialog(player, { { name, "I have nothing cooked yet, but " .. def.name .. " is waiting by the door with rice for you. Follow the golden marker." } }, name)
+				return
+			end
+		end
+	end
+	Remotes.dialog(player, { { name, GREETINGS[rng:NextInteger(1, #GREETINGS)] } }, name)
+end
+
 local function makePerson(def, folder)
 	local model, hum = Rig.make(def.name, def.look)
 	hum.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
@@ -3933,7 +4568,9 @@ function NPCs.start()
 		if ok then
 			local npc = result
 			local action = "Talk"
-			if def.shop then
+			if def.alms then
+				action = "Hold out your bowl"
+			elseif def.shop then
 				action = "Trade"
 			elseif def.robes then
 				action = "Robes"
@@ -3965,6 +4602,11 @@ function NPCs.start()
 		if ok then
 			result.nextMove = 0
 			table.insert(wanderers, result)
+			local walker = result
+			local prompt = Kit.prompt(walker.root, "Greet", def.name, 9)
+			prompt.Triggered:Connect(function(player)
+				greet(player, walker)
+			end)
 		end
 	end
 
@@ -4052,6 +4694,9 @@ local function defaults()
 		dispelled = 0,
 		bought = {},
 		bossWins = 0,
+		weapon = "auto",
+		symbols = {},
+		friends = {},
 	}
 end
 
@@ -4075,6 +4720,9 @@ local function sanitize(data)
 	data.abilities.meditate = true
 	data.robes.own = true
 	data.robes.novice = true
+	if data.abilities.staff then
+		data.inv.staff = 1
+	end
 	return data
 end
 
@@ -4124,6 +4772,8 @@ function PlayerData.load(player)
 		shieldUntil = 0,
 		slowUntil = 0,
 		graceUntil = 0,
+		talkUntil = 0,
+		fed = {},
 		meditating = false,
 		lotus = {},
 		wheels = {},
@@ -4295,6 +4945,17 @@ function PlayerData.push(player)
 	if not profile then
 		return
 	end
+	-- which villagers have already filled the bowl this morning
+	local almsGiven = {}
+	local given = sessions[player] and sessions[player].alms
+	if given then
+		local now = os.clock()
+		for id, untilTime in pairs(given) do
+			if now < untilTime then
+				almsGiven[id] = true
+			end
+		end
+	end
 	player:SetAttribute("Stage", profile.stage)
 	local stats = player:FindFirstChild("leaderstats")
 	if stats and stats:FindFirstChild("Journey") then
@@ -4315,6 +4976,10 @@ function PlayerData.push(player)
 		checkpoint = profile.checkpoint,
 		awakened = profile.awakened,
 		bought = profile.bought,
+		weapon = profile.weapon,
+		symbols = profile.symbols,
+		friends = profile.friends,
+		almsGiven = almsGiven,
 		lotus = sessions[player] and sessions[player].lotus or {},
 	})
 end
@@ -4647,7 +5312,7 @@ end
 function Props.signpost(parent, o, text)
 	Kit.cyl(parent, o * CFrame.new(0, 3, 0), 0.5, 6, C.woodDark, M.Wood)
 	local board = Kit.block(parent, o * CFrame.new(0, 5.4, 0), V(6, 1.8, 0.3), C.wood, M.WoodPlanks, NOCOL)
-	Kit.sign(board, text, C.ivory, 0, 90, UDim2.new(0, 200, 0, 40))
+	Kit.plaque(board, text, C.ivory, { Enum.NormalId.Front, Enum.NormalId.Back })
 	return board
 end
 
@@ -4706,8 +5371,8 @@ function Props.horse(parent, o)
 	return m
 end
 
-function Props.deer(parent, o)
-	local c = Color3.fromRGB(176, 124, 76)
+function Props.deer(parent, o, color)
+	local c = color or Color3.fromRGB(176, 124, 76)
 	Kit.block(parent, o * CFrame.new(0, 2.6, 0), V(1.3, 1.5, 3.4), c, M.SmoothPlastic, NOCOL)
 	Kit.block(parent, o * CFrame.new(0, 3.9, -1.7) * CFrame.Angles(rad(-25), 0, 0), V(0.8, 2, 0.8), c, M.SmoothPlastic, SOFT)
 	Kit.block(parent, o * CFrame.new(0, 4.9, -2.4), V(0.8, 0.8, 1.4), c, M.SmoothPlastic, SOFT)
@@ -4748,6 +5413,118 @@ function Props.elephant(parent, o, s, color, opts)
 		Kit.blob(m, o * CFrame.new(0, 12.4 * s, -7.4 * s), V(4 * s, 1.4 * s, 4 * s), opts.cloth, M.Fabric, SOFT)
 	end
 	return m
+end
+
+----------------------------------------------------------------------
+-- Animals of the Jataka tales (small still figures)
+----------------------------------------------------------------------
+
+function Props.hare(parent, o)
+	local c = Color3.fromRGB(206, 186, 154)
+	Kit.blob(parent, o * CFrame.new(0, 0.75, 0), V(1.2, 1.1, 1.8), c, M.SmoothPlastic, NOCOL)
+	Kit.ball(parent, o * CFrame.new(0, 1.4, -0.9), 0.9, c, M.SmoothPlastic, SOFT)
+	for _, sx in ipairs({ -1, 1 }) do
+		Kit.block(parent, o * CFrame.new(sx * 0.22, 2.2, -0.8) * CFrame.Angles(rad(-10), 0, rad(sx * -8)), V(0.2, 1, 0.3), c, M.SmoothPlastic, SOFT)
+		Kit.ball(parent, o * CFrame.new(sx * 0.3, 1.5, -1.25), 0.14, C.black, M.SmoothPlastic, SOFT)
+	end
+	Kit.ball(parent, o * CFrame.new(0, 0.9, 0.95), 0.45, C.white, M.SmoothPlastic, SOFT)
+end
+
+function Props.monkey(parent, o)
+	local c = Color3.fromRGB(140, 100, 70)
+	local face = Color3.fromRGB(222, 190, 160)
+	Kit.blob(parent, o * CFrame.new(0, 1.2, 0), V(1.4, 1.9, 1.3), c, M.SmoothPlastic, NOCOL)
+	Kit.ball(parent, o * CFrame.new(0, 2.6, -0.2), 1.1, c, M.SmoothPlastic, SOFT)
+	Kit.blob(parent, o * CFrame.new(0, 2.5, -0.65), V(0.75, 0.65, 0.45), face, M.SmoothPlastic, SOFT)
+	for _, sx in ipairs({ -1, 1 }) do
+		Kit.block(parent, o * CFrame.new(sx * 0.85, 1.4, -0.2) * CFrame.Angles(rad(-15), 0, rad(sx * 8)), V(0.35, 1.5, 0.35), c, M.SmoothPlastic, SOFT)
+		Kit.block(parent, o * CFrame.new(sx * 0.5, 0.25, -0.7), V(0.4, 0.4, 1.1), c, M.SmoothPlastic, SOFT)
+		Kit.ball(parent, o * CFrame.new(sx * 0.6, 2.7, -0.2), 0.4, face, M.SmoothPlastic, SOFT)
+		Kit.ball(parent, o * CFrame.new(sx * 0.2, 2.65, -0.85), 0.12, C.black, M.SmoothPlastic, SOFT)
+	end
+	Kit.block(parent, o * CFrame.new(0, 0.9, 1.3) * CFrame.Angles(rad(40), 0, 0), V(0.2, 0.2, 2.2), c, M.SmoothPlastic, SOFT)
+end
+
+function Props.goose(parent, o)
+	local c = C.goldBright
+	local beak = Color3.fromRGB(226, 120, 40)
+	Kit.blob(parent, o * CFrame.new(0, 1.3, 0), V(1.4, 1.3, 2.4), c, M.Metal, NOCOL)
+	Kit.block(parent, o * CFrame.new(0, 2.4, -1) * CFrame.Angles(rad(-15), 0, 0), V(0.4, 1.7, 0.4), c, M.Metal, SOFT)
+	Kit.ball(parent, o * CFrame.new(0, 3.3, -1.25), 0.7, c, M.Metal, SOFT)
+	Kit.block(parent, o * CFrame.new(0, 3.25, -1.75), V(0.25, 0.2, 0.6), beak, M.SmoothPlastic, SOFT)
+	Kit.block(parent, o * CFrame.new(0, 1.7, 1.3) * CFrame.Angles(rad(25), 0, 0), V(0.9, 0.2, 0.9), c, M.Metal, SOFT)
+	for _, sx in ipairs({ -1, 1 }) do
+		Kit.block(parent, o * CFrame.new(sx * 0.3, 0.35, 0), V(0.15, 0.7, 0.15), beak, M.SmoothPlastic, SOFT)
+		Kit.blob(parent, o * CFrame.new(sx * 0.7, 1.45, 0.15), V(0.3, 0.9, 1.8), c, M.Metal, SOFT)
+		Kit.ball(parent, o * CFrame.new(sx * 0.3, 3.4, -1.45), 0.12, C.black, M.SmoothPlastic, SOFT)
+	end
+end
+
+function Props.quail(parent, o)
+	local c = Color3.fromRGB(150, 120, 90)
+	Kit.blob(parent, o * CFrame.new(0, 0.6, 0), V(1, 0.9, 1.3), c, M.SmoothPlastic, NOCOL)
+	Kit.ball(parent, o * CFrame.new(0, 1.1, -0.5), 0.55, c, M.SmoothPlastic, SOFT)
+	Kit.block(parent, o * CFrame.new(0, 1.05, -0.85), V(0.14, 0.12, 0.25), Color3.fromRGB(60, 50, 40), M.SmoothPlastic, SOFT)
+	Kit.block(parent, o * CFrame.new(0, 1.55, -0.5) * CFrame.Angles(rad(-20), 0, 0), V(0.08, 0.45, 0.08), C.black, M.SmoothPlastic, SOFT)
+	Kit.blob(parent, o * CFrame.new(0, 0.55, 0.1), V(1.05, 0.5, 0.9), Color3.fromRGB(196, 170, 130), M.SmoothPlastic, SOFT)
+	for _, sx in ipairs({ -1, 1 }) do
+		Kit.ball(parent, o * CFrame.new(sx * 0.22, 1.18, -0.7), 0.09, C.black, M.SmoothPlastic, SOFT)
+	end
+end
+
+----------------------------------------------------------------------
+-- The Eight Auspicious Symbols (floating golden figures). "o" is the centre.
+----------------------------------------------------------------------
+local FIND = { collide = false, shadow = false }
+
+function Props.symbol(parent, o, id)
+	local gold = C.goldBright
+	local red = Color3.fromRGB(190, 40, 44)
+	if id == "vase" then
+		Kit.blob(parent, o, V(1.9, 1.9, 1.9), gold, M.Metal, FIND)
+		Kit.cyl(parent, o * CFrame.new(0, -1, 0), 1.1, 0.3, gold, M.Metal, FIND)
+		Kit.cyl(parent, o * CFrame.new(0, 1.1, 0), 0.9, 0.7, gold, M.Metal, FIND)
+		Kit.cyl(parent, o * CFrame.new(0, 1.5, 0), 1.4, 0.2, gold, M.Metal, FIND)
+		Kit.ball(parent, o * CFrame.new(0, 1.95, 0), 0.6, red, M.Neon, FIND)
+	elseif id == "parasol" then
+		Kit.cyl(parent, o, 0.2, 3.2, gold, M.Metal, FIND)
+		Kit.blob(parent, o * CFrame.new(0, 1.7, 0), V(3, 1.3, 3), gold, M.Metal, FIND)
+		Kit.cyl(parent, o * CFrame.new(0, 1.3, 0), 3, 0.3, red, M.Fabric, FIND)
+		Kit.ball(parent, o * CFrame.new(0, 2.45, 0), 0.45, gold, M.Neon, FIND)
+	elseif id == "fishes" then
+		for _, sx in ipairs({ -1, 1 }) do
+			local f = o * CFrame.new(sx * 0.6, 0, 0) * CFrame.Angles(rad(sx * 90 - 90), rad(sx * 12), 0)
+			Kit.blob(parent, f, V(0.7, 1, 2.3), gold, M.Metal, FIND)
+			Kit.block(parent, f * CFrame.new(0, 0, 1.35), V(0.1, 0.9, 0.6), gold, M.Metal, FIND)
+			Kit.ball(parent, f * CFrame.new(0.3, 0.15, -0.75), 0.16, C.black, M.SmoothPlastic, FIND)
+		end
+	elseif id == "knot" then
+		local k = o * CFrame.Angles(0, 0, rad(45))
+		for _, d in ipairs({ -0.75, 0, 0.75 }) do
+			Kit.block(parent, k * CFrame.new(d, 0, 0), V(0.3, 2.6, 0.3), gold, M.Metal, FIND)
+			Kit.block(parent, k * CFrame.new(0, d, 0), V(2.6, 0.3, 0.34), gold, M.Metal, FIND)
+		end
+	elseif id == "conch" then
+		Kit.blob(parent, o, V(1.5, 1.5, 2.4), C.white, M.SmoothPlastic, FIND)
+		Kit.blob(parent, o * CFrame.new(0, 0, -1.2), V(1, 1, 1.5), C.white, M.SmoothPlastic, FIND)
+		Kit.ball(parent, o * CFrame.new(0, 0, 1.3), 0.6, gold, M.Metal, FIND)
+		Kit.ball(parent, o * CFrame.new(0, 0, -2), 0.4, gold, M.Metal, FIND)
+	elseif id == "lotus" then
+		Props.lotus(parent, o * CFrame.new(0, -0.6, 0), gold, true)
+	elseif id == "banner" then
+		Kit.cyl(parent, o, 0.2, 3.8, gold, M.Metal, FIND)
+		Kit.cyl(parent, o * CFrame.new(0, 0.6, 0), 1.3, 1.6, red, M.Fabric, FIND)
+		Kit.cyl(parent, o * CFrame.new(0, -0.3, 0), 1.5, 0.2, gold, M.Metal, FIND)
+		Kit.cyl(parent, o * CFrame.new(0, 1.5, 0), 1.7, 0.25, gold, M.Metal, FIND)
+		Kit.ball(parent, o * CFrame.new(0, 2.1, 0), 0.5, gold, M.Neon, FIND)
+	else -- the wheel
+		local face = o * CFrame.Angles(rad(90), 0, 0)
+		Kit.cyl(parent, face, 2.8, 0.25, gold, M.Metal, FIND)
+		Kit.cyl(parent, face, 0.8, 0.5, red, M.Metal, FIND)
+		for i = 0, 3 do
+			Kit.block(parent, o * CFrame.Angles(0, 0, rad(i * 45)), V(0.18, 3.3, 0.3), gold, M.Metal, FIND)
+		end
+	end
 end
 
 return Props
@@ -4971,6 +5748,9 @@ end
 
 -- lines: a list of { speaker, text }. An empty speaker is the storyteller.
 function Remotes.dialog(player, lines, title)
+	if Remotes.onDialog then
+		Remotes.onDialog(player, lines)
+	end
 	Remotes.Dialog:FireClient(player, lines, title)
 end
 
@@ -5540,8 +6320,9 @@ end
 
 return Rig
 ]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX19"><Properties><string name="Name">Robes</string><ProtectedString name="Source"><![CDATA[-- Robes: dresses a player's avatar as a monastic.
--- The avatar keeps its own face, hair and body; shirt and trousers are replaced by a robe
--- in the chosen colours, with a wrap and a sash. "My Own Clothes" restores the avatar.
+-- The avatar keeps its own face, hair and body. Everything it was wearing (shirt, trousers,
+-- jackets, shoes, hats, backpacks and the like) is taken off and replaced by a robe in the
+-- chosen colours, with a wrap and a sash. "My Own Clothes" restores the avatar.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -5565,9 +6346,40 @@ local function robeDef(id)
 end
 Robes.def = robeDef
 
+-- Kinds of worn thing that stay on with a robe: they are part of the face and head.
+local KEPT = {
+	[Enum.AccessoryType.Hair] = true,
+	[Enum.AccessoryType.Face] = true,
+	[Enum.AccessoryType.Eyebrow] = true,
+	[Enum.AccessoryType.Eyelash] = true,
+}
+
+-- Take off everything the avatar was wearing.
+local function undress(desc)
+	desc.Shirt = 0
+	desc.Pants = 0
+	desc.GraphicTShirt = 0
+	desc.HatAccessory = ""
+	desc.BackAccessory = ""
+	desc.FrontAccessory = ""
+	desc.NeckAccessory = ""
+	desc.ShouldersAccessory = ""
+	desc.WaistAccessory = ""
+	-- layered clothing: jackets, sweaters, trousers, skirts, shoes ...
+	pcall(function()
+		local kept = {}
+		for _, worn in ipairs(desc:GetAccessories(false)) do
+			if KEPT[worn.AccessoryType] then
+				table.insert(kept, worn)
+			end
+		end
+		desc:SetAccessories(kept, false)
+	end)
+end
+
 local function clearPieces(character)
 	for _, child in ipairs(character:GetChildren()) do
-		if child.Name == "RobePiece" or child.Name == "WalkingStaff" then
+		if child.Name == "RobePiece" then
 			child:Destroy()
 		end
 	end
@@ -5617,9 +6429,7 @@ function Robes.apply(player)
 		if original then
 			pcall(function()
 				local desc = original:Clone()
-				desc.Shirt = 0
-				desc.Pants = 0
-				desc.GraphicTShirt = 0
+				undress(desc)
 				desc.TorsoColor = main
 				desc.LeftArmColor = main
 				desc.LeftLegColor = main
@@ -5692,7 +6502,7 @@ function Robes.apply(player)
 		trail.Parent = root
 	end
 
-	Combat.equipStaff(player)
+	Combat.equipWeapon(player)
 end
 
 return Robes
@@ -6013,6 +6823,27 @@ local function buildCollectibles()
 		Kit.sparkle(root, Color3.fromRGB(200, 240, 140), 3)
 		ctx.reserve(p.x, p.z, 4)
 	end
+	-- the Eight Auspicious Symbols, one hidden in each land
+	for _, p in ipairs(Config.Symbols) do
+		local y = 4
+		local root = ctx.collectible("symbol", "symbol_" .. p.id, p.x, y, p.z, "Look closely", p.name)
+		Props.symbol(root, CFrame.new(p.x, y, p.z), p.id)
+		Kit.sparkle(root, C.goldBright, 10)
+		Kit.light(root, Color3.fromRGB(255, 220, 130), 16, 1.4)
+	end
+	-- animals of the Jataka tales
+	for _, p in ipairs(Config.Animals) do
+		local root = ctx.collectible("animal", "animal_" .. p.id, p.x, 2.2, p.z, "Share rice", p.name)
+		local o = Kit.at(p.x, p.z, p.yaw or 0)
+		if p.kind == "deer" then
+			Props.deer(root, o, Color3.fromRGB(226, 180, 84))
+		elseif p.kind == "elephant" then
+			Props.elephant(root, o, 0.42, Color3.fromRGB(238, 234, 226), { name = "Chaddanta" })
+		elseif Props[p.kind] then
+			Props[p.kind](root, o)
+		end
+		Kit.sparkle(root, Color3.fromRGB(255, 240, 190), 2)
+	end
 	-- lotus flowers in the ponds
 	for i, p in ipairs(Config.Lotus) do
 		local root = ctx.collectible("lotus", "lotus_" .. i, p.x, -0.4, p.z, "Pick", "Lotus Flower")
@@ -6058,16 +6889,20 @@ function World.build()
 	for _, p in ipairs(Config.Kusa) do
 		ctx.reserve(p.x, p.z, 5)
 	end
+	for _, p in ipairs(Config.Symbols) do
+		ctx.reserve(p.x, p.z, 6)
+	end
+	for _, p in ipairs(Config.Animals) do
+		ctx.reserve(p.x, p.z, p.kind == "elephant" and 10 or 6)
+	end
 	for _, s in ipairs(Config.Spawns) do
 		ctx.reserve(s.x, s.z, 4)
 	end
 
 	-- rivers first, so that everything else can keep clear of them
-	ctx.river(122, 12, 6)
-	ctx.river(456, 12, 6)
-	ctx.river(Config.Places.anoma_river.x, Config.Places.anoma_river.width, 10)
-	ctx.river(1040, 12, 6)
-	ctx.river(Config.Places.neranjara.x, Config.Places.neranjara.width, 10)
+	for _, river in ipairs(Config.Rivers) do
+		ctx.river(river.x, river.width, river.depth)
+	end
 
 	buildGates()
 	buildShrines()
@@ -6858,6 +7693,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Sounds = require(Shared:WaitForChild("Sounds"))
 local Story = require(Shared:WaitForChild("Story"))
+local Config = require(Shared:WaitForChild("Config"))
 
 local Audio = {}
 
@@ -6957,6 +7793,101 @@ function Audio.play(name, pos, volume)
 	task.delay(12, function()
 		s:Destroy()
 	end)
+end
+
+----------------------------------------------------------------------
+-- Running water: louder the closer you are to a stream or river
+----------------------------------------------------------------------
+local HEAR = 75 -- studs from the bank at which water can first be heard
+
+-- 0 (out of earshot) to 1 (standing at the water or on a bridge over it).
+local function waterNearness(x)
+	local best = 0
+	for _, river in ipairs(Config.Rivers) do
+		local fromBank = math.max(0, math.abs(x - river.x) - river.width / 2)
+		local near = 1 - fromBank / HEAR
+		if river.width < 20 then
+			near = near * 0.75 -- a small stream is gentler than a great river
+		end
+		if near > best then
+			best = near
+		end
+	end
+	return best * best -- fades in gently, swells close by
+end
+Audio.waterNearness = waterNearness
+
+-- Are you standing in a river's shallows (below the banks, not up on a bridge)?
+local function inRiver(pos)
+	if pos.Y > 1.2 then
+		return false
+	end
+	for _, river in ipairs(Config.Rivers) do
+		if math.abs(pos.X - river.x) < river.width / 2 + 3 then
+			return true
+		end
+	end
+	return false
+end
+
+-- A looping sound that is faded up and down. Returns nil if no sound has been chosen.
+local function loop(name)
+	local id = Sounds.Ambient and Sounds.Ambient[name]
+	if type(id) ~= "number" or id <= 0 then
+		return nil
+	end
+	local sound = Instance.new("Sound")
+	sound.Name = name
+	sound.SoundId = asset(id)
+	sound.Looped = true
+	sound.Volume = 0
+	sound.Parent = folder
+	return function(want, quickness)
+		sound.Volume = sound.Volume + (want - sound.Volume) * quickness
+		if sound.Volume > 0.01 then
+			if not sound.IsPlaying then
+				sound:Play()
+			end
+		elseif sound.IsPlaying then
+			sound:Stop()
+		end
+	end
+end
+
+do
+	local stream, wade, swim = loop("stream"), loop("wade"), loop("swim")
+	if stream or wade or swim or (Sounds.Effects.splash or 0) > 0 then
+		task.spawn(function()
+			local wasInWater = false
+			while true do
+				task.wait(0.15)
+				local character = player.Character
+				local root = character and character:FindFirstChild("HumanoidRootPart")
+				local hum = character and character:FindFirstChildOfClass("Humanoid")
+				local near, wading, swimming = 0, false, false
+				if root and hum then
+					near = waterNearness(root.Position.X)
+					local moving = hum.MoveDirection.Magnitude > 0.1
+					local inWater = hum:GetState() == Enum.HumanoidStateType.Swimming
+					if inWater and not wasInWater then
+						Audio.play("splash")
+					end
+					wasInWater = inWater
+					swimming = inWater and moving
+					wading = moving and not inWater and inRiver(root.Position)
+				end
+				if stream then
+					stream(near * Sounds.WaterVolume, 0.25)
+				end
+				if wade then
+					wade(wading and Sounds.EffectVolume or 0, 0.5)
+				end
+				if swim then
+					swim(swimming and Sounds.EffectVolume or 0, 0.5)
+				end
+			end
+		end)
+	end
 end
 
 return Audio
@@ -7165,6 +8096,9 @@ function Fx.refreshWorld(state)
 	for id in pairs(state.lotus or {}) do
 		gone[id] = true
 	end
+	for id in pairs(state.symbols or {}) do
+		gone["symbol_" .. id] = true
+	end
 	for _, part in ipairs(CollectionService:GetTagged("GateBarrier")) do
 		applyGate(part)
 	end
@@ -7206,6 +8140,7 @@ local Action = Remotes:WaitForChild("Action")
 local state = {
 	merit = 0, stage = 1, prog = {}, inv = {}, abilities = { strike = true, meditate = true },
 	robes = {}, robe = "novice", path = 0, leaves = {}, collected = {}, shrines = {}, bought = {}, lotus = {},
+	weapon = "auto", symbols = {}, friends = {},
 }
 
 pcall(function()
@@ -7328,6 +8263,9 @@ local dialogOpen = false
 local function showNextLine()
 	local line = table.remove(dialogQueue, 1)
 	if not line then
+		if dialogOpen then
+			Action:FireServer("DialogDone")
+		end
 		dialogOpen = false
 		dialog.Visible = false
 		return
@@ -7407,6 +8345,26 @@ local function leafCount()
 	return n
 end
 
+local function countOf(list)
+	local n = 0
+	for _ in pairs(list or {}) do
+		n = n + 1
+	end
+	return n
+end
+
+-- The weapon in hand: its id and its entry in Config.Weapons.
+local function heldWeapon()
+	local id = state.weapon or "auto"
+	if id == "auto" then
+		id = state.abilities.staff and "staff" or "palm"
+	end
+	if id ~= "palm" and (not Config.Weapons[id] or (state.inv[id] or 0) < 1) then
+		id = "palm"
+	end
+	return id, Config.Weapons[id]
+end
+
 local Windows = {}
 
 function Windows.bag()
@@ -7431,8 +8389,11 @@ function Windows.bag()
 			label = (def.use == "heal" or def.use == "quest") and "Eat" or "Use"
 		elseif def.use == "offer" then
 			label = "Offer"
+		elseif def.use == "equip" then
+			label = (heldWeapon() == id) and "Put away" or "Hold"
 		end
-		row(def.name .. "  x" .. state.inv[id], def.desc, label, nil, label and function()
+		local color = (label == "Put away") and T.green or nil
+		row(def.name .. ((def.use == "equip") and "" or ("  x" .. state.inv[id])), def.desc, label, color, label and function()
 			Action:FireServer("UseItem", id)
 		end or nil)
 	end
@@ -7502,8 +8463,25 @@ function Windows.path()
 end
 
 function Windows.leaves()
-	windowTitle.Text = "Bodhi Leaves"
-	windowSub.Text = "Found " .. leafCount() .. " of " .. #Config.Leaves .. ". Each leaf carries a teaching."
+	windowTitle.Text = "Things Found"
+	windowSub.Text = "Leaves " .. leafCount() .. " of " .. #Config.Leaves .. "    Symbols " .. countOf(state.symbols) .. " of " .. #Config.Symbols .. "    Animal friends " .. countOf(state.friends) .. " of " .. #Config.Animals
+	heading("The Eight Auspicious Symbols")
+	for _, def in ipairs(Config.Symbols) do
+		if state.symbols and state.symbols[def.id] then
+			row(def.name, def.text, nil, nil, nil, 76)
+		else
+			row("A hidden symbol", "Not yet found. One is hidden in each land, far from the road. Find all eight to earn the Sword of Wisdom.", nil, nil, nil, 60)
+		end
+	end
+	heading("Animals of the Jataka Tales")
+	for _, def in ipairs(Config.Animals) do
+		if state.friends and state.friends[def.id] then
+			row(def.name, def.text .. "  (" .. def.source .. ", retold)", nil, nil, nil, 112)
+		else
+			row("An animal you have not met", "Somewhere along the road an animal is waiting. Share Alms Rice with it to hear its story. Befriend all six to earn the Wheel of Light.", nil, nil, nil, 50)
+		end
+	end
+	heading("Bodhi Leaves")
 	for i, teaching in ipairs(Story.Teachings) do
 		if state.leaves["leaf_" .. i] then
 			row("Leaf " .. i, teaching.text .. "  (" .. teaching.source .. ", paraphrased)", nil, nil, nil, 76)
@@ -7579,7 +8557,7 @@ end
 menuButton("Bag (B)", "bag")
 menuButton("Path (P)", "path")
 menuButton("Robes", "robes")
-menuButton("Leaves", "leaves")
+menuButton("Finds", "leaves")
 
 ----------------------------------------------------------------------
 -- Abilities (bottom centre)
@@ -7655,6 +8633,10 @@ local function useAbility(name)
 	if name == "beads" and (state.inv.long_mala or 0) > 0 then
 		cd = cd / 2
 	end
+	if name == "strike" then
+		local _, weapon = heldWeapon()
+		cd = weapon.cooldown
+	end
 	cooldownEnds[name] = now + cd
 	cooldownLength[name] = cd
 	if meditating then
@@ -7723,6 +8705,12 @@ local function goalFor(obj)
 	elseif obj.kind == "interact" then
 		return Config.Places[INTERACT_PLACE[obj.target] or ""]
 	elseif obj.kind == "alms" then
+		-- the next villager who has not yet filled the bowl
+		for _, npc in ipairs(Story.NPCs) do
+			if npc.alms and not (state.almsGiven and state.almsGiven[npc.id]) then
+				return npc
+			end
+		end
 		return { x = 190, z = 0 }
 	elseif obj.kind == "meditate" then
 		for _, s in ipairs(Config.MeditationSpots) do

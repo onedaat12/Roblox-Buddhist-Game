@@ -226,7 +226,9 @@ function Kit.sign(parent, text, color, height, maxDistance, size)
 	local gui = Instance.new("BillboardGui")
 	gui.Name = "Sign"
 	gui.Size = size or UDim2.new(0, 220, 0, 44)
-	gui.StudsOffset = Vector3.new(0, height or 4, 0)
+	-- the third number brings the words towards the viewer, so that nearby walls
+	-- and roofs do not cut through them
+	gui.StudsOffset = Vector3.new(0, height or 4, 6)
 	gui.AlwaysOnTop = false
 	gui.MaxDistance = maxDistance or 110
 	gui.LightInfluence = 0
@@ -243,6 +245,32 @@ function Kit.sign(parent, text, color, height, maxDistance, size)
 	label.Parent = gui
 	gui.Parent = parent
 	return gui
+end
+
+-- Words painted flat on the faces of a board, like a real sign. Nothing can cut
+-- through them. "faces" is a list such as { Enum.NormalId.Front, Enum.NormalId.Back }.
+function Kit.plaque(part, text, color, faces)
+	for _, face in ipairs(faces or { Enum.NormalId.Front }) do
+		local gui = Instance.new("SurfaceGui")
+		gui.Name = "Plaque"
+		gui.Face = face
+		gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+		gui.PixelsPerStud = 40
+		gui.LightInfluence = 0
+		local label = Instance.new("TextLabel")
+		label.Name = "Label"
+		label.Size = UDim2.new(0.92, 0, 0.84, 0)
+		label.Position = UDim2.new(0.04, 0, 0.08, 0)
+		label.BackgroundTransparency = 1
+		label.Text = text
+		label.TextColor3 = color or Kit.C.goldBright
+		label.TextStrokeColor3 = Color3.fromRGB(40, 20, 10)
+		label.TextStrokeTransparency = 0.2
+		label.Font = Enum.Font.Fondamento
+		label.TextScaled = true
+		label.Parent = gui
+		gui.Parent = part
+	end
 end
 
 -- An interaction prompt (works with keyboard, touch and gamepad).

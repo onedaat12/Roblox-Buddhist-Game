@@ -1,6 +1,7 @@
 -- Robes: dresses a player's avatar as a monastic.
--- The avatar keeps its own face, hair and body; shirt and trousers are replaced by a robe
--- in the chosen colours, with a wrap and a sash. "My Own Clothes" restores the avatar.
+-- The avatar keeps its own face, hair and body. Everything it was wearing (shirt, trousers,
+-- jackets, shoes, hats, backpacks and the like) is taken off and replaced by a robe in the
+-- chosen colours, with a wrap and a sash. "My Own Clothes" restores the avatar.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -24,9 +25,40 @@ local function robeDef(id)
 end
 Robes.def = robeDef
 
+-- Kinds of worn thing that stay on with a robe: they are part of the face and head.
+local KEPT = {
+	[Enum.AccessoryType.Hair] = true,
+	[Enum.AccessoryType.Face] = true,
+	[Enum.AccessoryType.Eyebrow] = true,
+	[Enum.AccessoryType.Eyelash] = true,
+}
+
+-- Take off everything the avatar was wearing.
+local function undress(desc)
+	desc.Shirt = 0
+	desc.Pants = 0
+	desc.GraphicTShirt = 0
+	desc.HatAccessory = ""
+	desc.BackAccessory = ""
+	desc.FrontAccessory = ""
+	desc.NeckAccessory = ""
+	desc.ShouldersAccessory = ""
+	desc.WaistAccessory = ""
+	-- layered clothing: jackets, sweaters, trousers, skirts, shoes ...
+	pcall(function()
+		local kept = {}
+		for _, worn in ipairs(desc:GetAccessories(false)) do
+			if KEPT[worn.AccessoryType] then
+				table.insert(kept, worn)
+			end
+		end
+		desc:SetAccessories(kept, false)
+	end)
+end
+
 local function clearPieces(character)
 	for _, child in ipairs(character:GetChildren()) do
-		if child.Name == "RobePiece" or child.Name == "WalkingStaff" then
+		if child.Name == "RobePiece" then
 			child:Destroy()
 		end
 	end
@@ -76,9 +108,7 @@ function Robes.apply(player)
 		if original then
 			pcall(function()
 				local desc = original:Clone()
-				desc.Shirt = 0
-				desc.Pants = 0
-				desc.GraphicTShirt = 0
+				undress(desc)
 				desc.TorsoColor = main
 				desc.LeftArmColor = main
 				desc.LeftLegColor = main
@@ -151,7 +181,7 @@ function Robes.apply(player)
 		trail.Parent = root
 	end
 
-	Combat.equipStaff(player)
+	Combat.equipWeapon(player)
 end
 
 return Robes

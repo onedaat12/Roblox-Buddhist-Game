@@ -315,6 +315,27 @@ local function buildCollectibles()
 		Kit.sparkle(root, Color3.fromRGB(200, 240, 140), 3)
 		ctx.reserve(p.x, p.z, 4)
 	end
+	-- the Eight Auspicious Symbols, one hidden in each land
+	for _, p in ipairs(Config.Symbols) do
+		local y = 4
+		local root = ctx.collectible("symbol", "symbol_" .. p.id, p.x, y, p.z, "Look closely", p.name)
+		Props.symbol(root, CFrame.new(p.x, y, p.z), p.id)
+		Kit.sparkle(root, C.goldBright, 10)
+		Kit.light(root, Color3.fromRGB(255, 220, 130), 16, 1.4)
+	end
+	-- animals of the Jataka tales
+	for _, p in ipairs(Config.Animals) do
+		local root = ctx.collectible("animal", "animal_" .. p.id, p.x, 2.2, p.z, "Share rice", p.name)
+		local o = Kit.at(p.x, p.z, p.yaw or 0)
+		if p.kind == "deer" then
+			Props.deer(root, o, Color3.fromRGB(226, 180, 84))
+		elseif p.kind == "elephant" then
+			Props.elephant(root, o, 0.42, Color3.fromRGB(238, 234, 226), { name = "Chaddanta" })
+		elseif Props[p.kind] then
+			Props[p.kind](root, o)
+		end
+		Kit.sparkle(root, Color3.fromRGB(255, 240, 190), 2)
+	end
 	-- lotus flowers in the ponds
 	for i, p in ipairs(Config.Lotus) do
 		local root = ctx.collectible("lotus", "lotus_" .. i, p.x, -0.4, p.z, "Pick", "Lotus Flower")
@@ -360,16 +381,20 @@ function World.build()
 	for _, p in ipairs(Config.Kusa) do
 		ctx.reserve(p.x, p.z, 5)
 	end
+	for _, p in ipairs(Config.Symbols) do
+		ctx.reserve(p.x, p.z, 6)
+	end
+	for _, p in ipairs(Config.Animals) do
+		ctx.reserve(p.x, p.z, p.kind == "elephant" and 10 or 6)
+	end
 	for _, s in ipairs(Config.Spawns) do
 		ctx.reserve(s.x, s.z, 4)
 	end
 
 	-- rivers first, so that everything else can keep clear of them
-	ctx.river(122, 12, 6)
-	ctx.river(456, 12, 6)
-	ctx.river(Config.Places.anoma_river.x, Config.Places.anoma_river.width, 10)
-	ctx.river(1040, 12, 6)
-	ctx.river(Config.Places.neranjara.x, Config.Places.neranjara.width, 10)
+	for _, river in ipairs(Config.Rivers) do
+		ctx.river(river.x, river.width, river.depth)
+	end
 
 	buildGates()
 	buildShrines()

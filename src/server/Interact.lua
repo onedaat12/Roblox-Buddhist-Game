@@ -39,12 +39,91 @@ local function nearShrine(player, distance)
 	return nil
 end
 
-local function leafCount(profile)
+local function countOf(list)
 	local n = 0
-	for _ in pairs(profile.leaves) do
+	for _ in pairs(list) do
 		n = n + 1
 	end
 	return n
+end
+
+local function leafCount(profile)
+	return countOf(profile.leaves)
+end
+
+local symbolById = {}
+for _, def in ipairs(Config.Symbols) do
+	symbolById["symbol_" .. def.id] = def
+end
+local animalById = {}
+for _, def in ipairs(Config.Animals) do
+	animalById["animal_" .. def.id] = def
+end
+
+local function foundSymbol(player, profile, def)
+	if not profile.symbols[def.id] then
+		profile.symbols[def.id] = true
+		PlayerData.addMerit(player, 15)
+		local n = countOf(profile.symbols)
+		Remotes.notify(player, "Auspicious symbols found: " .. n .. " of " .. #Config.Symbols, "good")
+		if n >= #Config.Symbols and (profile.inv.wisdom_sword or 0) < 1 then
+			PlayerData.give(player, "wisdom_sword", 1)
+			profile.weapon = "wisdom_sword"
+			Combat.equipWeapon(player)
+			Remotes.notify(player, "You have found all eight symbols. The Sword of Wisdom is yours.", "good")
+		end
+		PlayerData.push(player)
+	end
+	Remotes.dialog(player, { { def.name, def.text } }, def.name)
+end
+
+local function wheelGift(player, profile)
+	if countOf(profile.friends) >= #Config.Animals and (profile.inv.chakra or 0) < 1 then
+		PlayerData.give(player, "chakra", 1)
+		profile.weapon = "chakra"
+		Combat.equipWeapon(player)
+		Remotes.notify(player, "The animals have given you the Wheel of Light.", "good")
+		PlayerData.push(player)
+	end
+end
+
+local function metAnimal(player, profile, session, def)
+	wheelGift(player, profile)
+	local known = profile.friends[def.id]
+	local tale = { { def.name, def.text }, { "", "(" .. def.source .. ", retold)" } }
+	if PlayerData.count(player, "rice") < 1 then
+		if known then
+			Remotes.dialog(player, tale, def.name)
+		else
+			Remotes.notify(player, def.name .. " watches you hopefully. Bring some Alms Rice to share.", "info")
+		end
+		return
+	end
+	local now = os.clock()
+	if known and now < (session.fed[def.id] or 0) then
+		Remotes.dialog(player, tale, def.name)
+		return
+	end
+	PlayerData.take(player, "rice", 1)
+	session.fed[def.id] = now + 300
+	if known then
+		PlayerData.addMerit(player, livelihood(player, 3))
+		Remotes.notify(player, "You share your rice with " .. def.name .. ".", "good")
+	else
+		profile.friends[def.id] = true
+		PlayerData.addMerit(player, 20)
+		local n = countOf(profile.friends)
+		Remotes.notify(player, "Animal friends: " .. n .. " of " .. #Config.Animals, "good")
+		if n >= #Config.Animals and not profile.bought.all_friends then
+			profile.bought.all_friends = true
+			profile.bonusCalm = profile.bonusCalm + 20
+			PlayerData.refreshCalm(player)
+			Remotes.notify(player, "Every animal of the old stories is your friend. Your Calm grows by 20.", "good")
+		end
+		wheelGift(player, profile)
+		Remotes.dialog(player, tale, def.name)
+	end
+	PlayerData.push(player)
 end
 
 ----------------------------------------------------------------------
@@ -237,6 +316,14 @@ local function setupCollectibles(objects)
 				else
 					Remotes.notify(player, "Kusa grass. Sotthiya the grass-cutter tends this bank; speak with him first.", "info")
 				end
+			elseif item.kind == "symbol" then
+				if symbolById[item.id] then
+					foundSymbol(player, profile, symbolById[item.id])
+				end
+			elseif item.kind == "animal" then
+				if animalById[item.id] then
+					metAnimal(player, profile, session, animalById[item.id])
+				end
 			elseif item.kind == "lotus" then
 				if session.lotus[item.id] then
 					Remotes.notify(player, "You have already picked this lotus today.", "info")
@@ -291,6 +378,8 @@ function Actions.UseItem(player, itemId)
 			session.shieldUntil = now + 180
 			Remotes.notify(player, "The lamp is lit. You are protected for a while.", "good")
 		end
+	elseif def.use == "equip" then
+		Combat.chooseWeapon(player, itemId)
 	elseif def.use == "quest" then
 		if not Quests.active(player, "use", itemId) then
 			Remotes.notify(player, "Not yet.", "info")
@@ -338,6 +427,10 @@ function Actions.Buy(player, shopId, itemId)
 			Remotes.notify(player, "Received: " .. def.name, "good")
 			if itemId == "prayer_flags" then
 				task.spawn(Robes.apply, player)
+			end
+			if Config.Weapons[itemId] then
+				profile.weapon = itemId
+				Combat.equipWeapon(player)
 			end
 			PlayerData.push(player)
 			return

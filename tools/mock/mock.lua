@@ -811,6 +811,22 @@ classMethods.Humanoid = {
 	end,
 	LoadAnimation = function() return newTrack() end,
 }
+classMethods.HumanoidDescription = {
+	GetAccessories = function(self, includeRigid)
+		if type(includeRigid) ~= "boolean" then fail("GetAccessories needs true or false", 2) end
+		return {
+			{ AssetId = 1, AccessoryType = Enum.AccessoryType.Jacket, Order = 1 },
+			{ AssetId = 2, AccessoryType = Enum.AccessoryType.Hair, Order = 2 },
+		}
+	end,
+	SetAccessories = function(self, list, includeRigid)
+		if type(list) ~= "table" or type(includeRigid) ~= "boolean" then fail("SetAccessories needs a list and true or false", 2) end
+		for _, worn in ipairs(list) do
+			if typeof(worn.AccessoryType) ~= "EnumItem" then fail("each accessory needs an AccessoryType", 2) end
+		end
+		Mock.keptAccessories = #list
+	end,
+}
 classMethods.Animator = {
 	LoadAnimation = function(self, anim)
 		if typeof(anim) ~= "Instance" or data[anim].class ~= "Animation" then fail("LoadAnimation needs an Animation", 2) end

@@ -165,6 +165,11 @@ local function attack(t)
 	act("beads")
 	act("metta")
 	act("bowl")
+	-- eat when Calm runs low, as a careful player would
+	if (player:GetAttribute("Calm") or 0) < 60 then
+		profile.inv.rice = math.max(profile.inv.rice or 0, 1)
+		act("UseItem", "rice")
+	end
 end
 
 local overwhelmed = 0
@@ -332,6 +337,80 @@ for _, def in ipairs(Story.NPCs) do
 	trigger(def.name)
 end
 Mock.run(3)
+-- the new things to find, the new weapons, and safety while talking
+for _, def in ipairs(Config.Symbols) do
+	trigger(def.name)
+end
+profile.inv.rice = 0
+trigger(Config.Animals[1].name)
+for round = 1, 2 do
+	for _, def in ipairs(Config.Animals) do
+		profile.inv.rice = 3
+		trigger(def.name)
+	end
+end
+Mock.run(1)
+local symbols, friends = 0, 0
+for _ in pairs(profile.symbols) do
+	symbols = symbols + 1
+end
+for _ in pairs(profile.friends) do
+	friends = friends + 1
+end
+print("  symbols: " .. symbols .. "/" .. #Config.Symbols .. ", animal friends: " .. friends .. "/" .. #Config.Animals .. ", sword of wisdom: " .. tostring((profile.inv.wisdom_sword or 0) > 0))
+if symbols ~= #Config.Symbols or friends ~= #Config.Animals or (profile.inv.wisdom_sword or 0) < 1 then
+	Mock.errors = Mock.errors + 1
+	print("  ERROR: the symbols, the animals or the sword did not complete")
+end
+for _, id in ipairs({ "conch", "bell", "phurba", "lantern" }) do
+	PlayerData.give(player, id, 1) -- the weapons sold in the shops
+end
+for id in pairs(Config.Weapons) do
+	if id ~= "palm" then
+		if (profile.inv[id] or 0) < 1 then
+			Mock.errors = Mock.errors + 1
+			print("  ERROR: weapon not owned: " .. id)
+		end
+		if Combat.weapon(player) == id then
+			act("UseItem", id) -- put it away first
+			Mock.run(0.2)
+		end
+		act("UseItem", id)
+		Mock.run(0.2)
+		local held = player.Character:FindFirstChild("HeldWeapon")
+		if Combat.weapon(player) ~= id or not held or held:GetAttribute("Weapon") ~= id then
+			Mock.errors = Mock.errors + 1
+			print("  ERROR: could not hold weapon: " .. id)
+		end
+		act("strike")
+		Mock.run(1.2)
+	end
+end
+act("UseItem", "staff")
+Mock.run(0.2)
+act("UseItem", "staff")
+Mock.run(0.2)
+if Combat.weapon(player) ~= "palm" or player.Character:FindFirstChild("HeldWeapon") then
+	Mock.errors = Mock.errors + 1
+	print("  ERROR: the weapon could not be put away")
+end
+act("UseItem", "wisdom_sword")
+Mock.run(0.2)
+do
+	local calm = player:GetAttribute("Calm")
+	module("Remotes").dialog(player, { { "Test", "One." }, { "Test", "Two." } }, "Test")
+	local safe = not Combat.canBeTargeted(player) and not Combat.hurt(player, 5)
+	Mock.run(0.2)
+	act("DialogDone")
+	Mock.run(4)
+	local after = Combat.canBeTargeted(player)
+	print("  safe while talking: " .. tostring(safe) .. ", targetable again afterwards: " .. tostring(after) .. ", clothes kept with a robe: " .. tostring(Mock.keptAccessories))
+	if not safe or not after or player:GetAttribute("Calm") ~= calm or Mock.keptAccessories ~= 1 then
+		Mock.errors = Mock.errors + 1
+		print("  ERROR: talking safety or robe dressing is wrong")
+	end
+end
+
 local leaves = 0
 for _ in pairs(profile.leaves) do
 	leaves = leaves + 1

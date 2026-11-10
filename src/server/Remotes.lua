@@ -44,6 +44,9 @@ end
 
 -- lines: a list of { speaker, text }. An empty speaker is the storyteller.
 function Remotes.dialog(player, lines, title)
+	if Remotes.onDialog then
+		Remotes.onDialog(player, lines)
+	end
 	Remotes.Dialog:FireClient(player, lines, title)
 end
 

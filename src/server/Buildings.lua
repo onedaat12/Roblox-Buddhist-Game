@@ -294,7 +294,7 @@ function B.shop(parent, o, title, opts)
 	Kit.cyl(m, at(-6.5, 4.6, -d / 2 - 4.6), 0.4, 9.2, C.woodDark, M.Wood)
 	Kit.cyl(m, at(6.5, 4.6, -d / 2 - 4.6), 0.4, 9.2, C.woodDark, M.Wood)
 	local board = Kit.block(m, at(0, y0 + h + 1.4, -d / 2 - 0.4), V(15, 2.6, 0.4), C.woodDark, M.WoodPlanks, NOCOL)
-	Kit.sign(board, title, C.goldBright, 0, 130, UDim2.new(0, 260, 0, 48))
+	Kit.plaque(board, title, C.goldBright, { Enum.NormalId.Front })
 	return m
 end
 

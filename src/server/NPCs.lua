@@ -73,6 +73,30 @@ local function talk(player, npc)
 	Remotes.dialog(player, { { def.name, line } }, def.name)
 end
 
+-- The villagers who only walk about: they greet you, and during the alms round they
+-- point you to someone who has food ready.
+local GREETINGS = {
+	"Peace to you, traveller.",
+	"May your road be an easy one.",
+	"A fine morning for walking.",
+	"Go gently.",
+}
+
+local function greet(player, npc)
+	local session = PlayerData.session(player)
+	local name = npc.def.name
+	if session and Quests.active(player, "alms", "alms") then
+		local now = os.clock()
+		for _, def in ipairs(Story.NPCs) do
+			if def.alms and now >= ((session.alms or {})[def.id] or 0) then
+				Remotes.dialog(player, { { name, "I have nothing cooked yet, but " .. def.name .. " is waiting by the door with rice for you. Follow the golden marker." } }, name)
+				return
+			end
+		end
+	end
+	Remotes.dialog(player, { { name, GREETINGS[rng:NextInteger(1, #GREETINGS)] } }, name)
+end
+
 local function makePerson(def, folder)
 	local model, hum = Rig.make(def.name, def.look)
 	hum.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
@@ -99,7 +123,9 @@ function NPCs.start()
 		if ok then
 			local npc = result
 			local action = "Talk"
-			if def.shop then
+			if def.alms then
+				action = "Hold out your bowl"
+			elseif def.shop then
 				action = "Trade"
 			elseif def.robes then
 				action = "Robes"
@@ -131,6 +157,11 @@ function NPCs.start()
 		if ok then
 			result.nextMove = 0
 			table.insert(wanderers, result)
+			local walker = result
+			local prompt = Kit.prompt(walker.root, "Greet", def.name, 9)
+			prompt.Triggered:Connect(function(player)
+				greet(player, walker)
+			end)
 		end
 	end
 

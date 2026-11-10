@@ -23,6 +23,7 @@ local Action = Remotes:WaitForChild("Action")
 local state = {
 	merit = 0, stage = 1, prog = {}, inv = {}, abilities = { strike = true, meditate = true },
 	robes = {}, robe = "novice", path = 0, leaves = {}, collected = {}, shrines = {}, bought = {}, lotus = {},
+	weapon = "auto", symbols = {}, friends = {},
 }
 
 pcall(function()
@@ -145,6 +146,9 @@ local dialogOpen = false
 local function showNextLine()
 	local line = table.remove(dialogQueue, 1)
 	if not line then
+		if dialogOpen then
+			Action:FireServer("DialogDone")
+		end
 		dialogOpen = false
 		dialog.Visible = false
 		return
@@ -224,6 +228,26 @@ local function leafCount()
 	return n
 end
 
+local function countOf(list)
+	local n = 0
+	for _ in pairs(list or {}) do
+		n = n + 1
+	end
+	return n
+end
+
+-- The weapon in hand: its id and its entry in Config.Weapons.
+local function heldWeapon()
+	local id = state.weapon or "auto"
+	if id == "auto" then
+		id = state.abilities.staff and "staff" or "palm"
+	end
+	if id ~= "palm" and (not Config.Weapons[id] or (state.inv[id] or 0) < 1) then
+		id = "palm"
+	end
+	return id, Config.Weapons[id]
+end
+
 local Windows = {}
 
 function Windows.bag()
@@ -248,8 +272,11 @@ function Windows.bag()
 			label = (def.use == "heal" or def.use == "quest") and "Eat" or "Use"
 		elseif def.use == "offer" then
 			label = "Offer"
+		elseif def.use == "equip" then
+			label = (heldWeapon() == id) and "Put away" or "Hold"
 		end
-		row(def.name .. "  x" .. state.inv[id], def.desc, label, nil, label and function()
+		local color = (label == "Put away") and T.green or nil
+		row(def.name .. ((def.use == "equip") and "" or ("  x" .. state.inv[id])), def.desc, label, color, label and function()
 			Action:FireServer("UseItem", id)
 		end or nil)
 	end
@@ -319,8 +346,25 @@ function Windows.path()
 end
 
 function Windows.leaves()
-	windowTitle.Text = "Bodhi Leaves"
-	windowSub.Text = "Found " .. leafCount() .. " of " .. #Config.Leaves .. ". Each leaf carries a teaching."
+	windowTitle.Text = "Things Found"
+	windowSub.Text = "Leaves " .. leafCount() .. " of " .. #Config.Leaves .. "    Symbols " .. countOf(state.symbols) .. " of " .. #Config.Symbols .. "    Animal friends " .. countOf(state.friends) .. " of " .. #Config.Animals
+	heading("The Eight Auspicious Symbols")
+	for _, def in ipairs(Config.Symbols) do
+		if state.symbols and state.symbols[def.id] then
+			row(def.name, def.text, nil, nil, nil, 76)
+		else
+			row("A hidden symbol", "Not yet found. One is hidden in each land, far from the road. Find all eight to earn the Sword of Wisdom.", nil, nil, nil, 60)
+		end
+	end
+	heading("Animals of the Jataka Tales")
+	for _, def in ipairs(Config.Animals) do
+		if state.friends and state.friends[def.id] then
+			row(def.name, def.text .. "  (" .. def.source .. ", retold)", nil, nil, nil, 112)
+		else
+			row("An animal you have not met", "Somewhere along the road an animal is waiting. Share Alms Rice with it to hear its story. Befriend all six to earn the Wheel of Light.", nil, nil, nil, 50)
+		end
+	end
+	heading("Bodhi Leaves")
 	for i, teaching in ipairs(Story.Teachings) do
 		if state.leaves["leaf_" .. i] then
 			row("Leaf " .. i, teaching.text .. "  (" .. teaching.source .. ", paraphrased)", nil, nil, nil, 76)
@@ -396,7 +440,7 @@ end
 menuButton("Bag (B)", "bag")
 menuButton("Path (P)", "path")
 menuButton("Robes", "robes")
-menuButton("Leaves", "leaves")
+menuButton("Finds", "leaves")
 
 ----------------------------------------------------------------------
 -- Abilities (bottom centre)
@@ -472,6 +516,10 @@ local function useAbility(name)
 	if name == "beads" and (state.inv.long_mala or 0) > 0 then
 		cd = cd / 2
 	end
+	if name == "strike" then
+		local _, weapon = heldWeapon()
+		cd = weapon.cooldown
+	end
 	cooldownEnds[name] = now + cd
 	cooldownLength[name] = cd
 	if meditating then
@@ -540,6 +588,12 @@ local function goalFor(obj)
 	elseif obj.kind == "interact" then
 		return Config.Places[INTERACT_PLACE[obj.target] or ""]
 	elseif obj.kind == "alms" then
+		-- the next villager who has not yet filled the bowl
+		for _, npc in ipairs(Story.NPCs) do
+			if npc.alms and not (state.almsGiven and state.almsGiven[npc.id]) then
+				return npc
+			end
+		end
 		return { x = 190, z = 0 }
 	elseif obj.kind == "meditate" then
 		for _, s in ipairs(Config.MeditationSpots) do
