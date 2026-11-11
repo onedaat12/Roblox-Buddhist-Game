@@ -202,10 +202,11 @@ function Garden.start(objects)
 			end
 			local now = os.clock()
 			if now < (session.teaAt or 0) then
-				Remotes.notify(player, "The pot is still steeping. Give it a moment.", "info")
+				local left = math.ceil(session.teaAt - now)
+				Remotes.notify(player, "The pot is still steeping. Ready in " .. left .. (left == 1 and " second." or " seconds."), "info")
 				return
 			end
-			session.teaAt = now + 45
+			session.teaAt = now + 20
 			Combat.heal(player, 30)
 			local friends = 0
 			for _, other in ipairs(Players:GetPlayers()) do

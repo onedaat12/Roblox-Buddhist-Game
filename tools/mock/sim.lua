@@ -337,6 +337,30 @@ for _, def in ipairs(Story.NPCs) do
 	trigger(def.name)
 end
 Mock.run(3)
+-- the shadows wait while a window is open, but not twice in a row
+do
+	act("WindowClosed")
+	Mock.run(0.2)
+	PlayerData.session(player).pauseReadyAt = 0
+	Mock.run(4)
+	local before = Combat.canBeTargeted(player)
+	act("WindowOpen")
+	Mock.run(0.2)
+	local during = Combat.canBeTargeted(player)
+	act("WindowClosed")
+	Mock.run(3)
+	local after = Combat.canBeTargeted(player)
+	act("WindowOpen")
+	Mock.run(0.2)
+	local again = Combat.canBeTargeted(player)
+	act("WindowClosed")
+	print("  window pause: targetable before " .. tostring(before) .. ", while open " .. tostring(during) .. ", after closing " .. tostring(after) .. ", reopened at once " .. tostring(again))
+	if not before or during or not after or not again then
+		Mock.errors = Mock.errors + 1
+		print("  ERROR: the pause while a window is open is wrong")
+	end
+end
+
 -- the Pilgrims' Garden
 do
 	local before = Mock.errors

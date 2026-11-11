@@ -81,6 +81,10 @@ Remotes.Action.OnServerEvent:Connect(function(player, kind, a, b)
 			Boss.touchEarth(player)
 		elseif kind == "DialogDone" then
 			Combat.endTalk(player)
+		elseif kind == "WindowOpen" then
+			Combat.beginPause(player)
+		elseif kind == "WindowClosed" then
+			Combat.endPause(player)
 		elseif kind == "Ready" then
 			PlayerData.push(player)
 		else

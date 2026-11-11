@@ -216,6 +216,44 @@ function Combat.endTalk(player)
 	end
 end
 
+-- While the Bag or another window is open, the shadows wait: for up to 25 seconds,
+-- and then not again until 15 seconds have passed, so it cannot be used to hide
+-- in the middle of a fight.
+local PAUSE, PAUSE_REST = 25, 15
+
+function Combat.beginPause(player)
+	local session = PlayerData.session(player)
+	local root = Combat.root(player)
+	if not session or not root then
+		return
+	end
+	local now = os.clock()
+	if now < (session.pauseReadyAt or 0) then
+		if #Combat.targetsNear(root.Position, 45) > 0 then
+			Remotes.notify(player, "The shadows will not wait again so soon. Be quick.", "warn")
+		end
+		return
+	end
+	session.pauseReadyAt = now + PAUSE + PAUSE_REST
+	session.pausedUntil = now + PAUSE
+	session.talkUntil = math.max(session.talkUntil, now + PAUSE)
+end
+
+function Combat.endPause(player)
+	local session = PlayerData.session(player)
+	if not session then
+		return
+	end
+	local now = os.clock()
+	if now < (session.pausedUntil or 0) then
+		session.pausedUntil = 0
+		session.pauseReadyAt = now + PAUSE_REST
+		if now < session.talkUntil then
+			session.talkUntil = now + 2
+		end
+	end
+end
+
 ----------------------------------------------------------------------
 -- Striking targets
 ----------------------------------------------------------------------

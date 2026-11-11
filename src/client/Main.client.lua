@@ -189,6 +189,9 @@ UI.new("UIListLayout", { Padding = UDim.new(0, 8), Parent = windowList })
 local openWindow = nil -- { kind = ..., arg = ... }
 
 local function closeWindow()
+	if openWindow then
+		Action:FireServer("WindowClosed")
+	end
 	openWindow = nil
 	window.Visible = false
 end
@@ -454,6 +457,9 @@ local function showWindow(kind, arg)
 	if openWindow and openWindow.kind == kind and kind ~= "shop" and kind ~= "shrine" then
 		closeWindow()
 		return
+	end
+	if not openWindow then
+		Action:FireServer("WindowOpen") -- the shadows wait while you look in your Bag
 	end
 	openWindow = { kind = kind, arg = arg }
 	window.Visible = true

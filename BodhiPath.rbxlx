@@ -2420,6 +2420,44 @@ function Combat.endTalk(player)
 	end
 end
 
+-- While the Bag or another window is open, the shadows wait: for up to 25 seconds,
+-- and then not again until 15 seconds have passed, so it cannot be used to hide
+-- in the middle of a fight.
+local PAUSE, PAUSE_REST = 25, 15
+
+function Combat.beginPause(player)
+	local session = PlayerData.session(player)
+	local root = Combat.root(player)
+	if not session or not root then
+		return
+	end
+	local now = os.clock()
+	if now < (session.pauseReadyAt or 0) then
+		if #Combat.targetsNear(root.Position, 45) > 0 then
+			Remotes.notify(player, "The shadows will not wait again so soon. Be quick.", "warn")
+		end
+		return
+	end
+	session.pauseReadyAt = now + PAUSE + PAUSE_REST
+	session.pausedUntil = now + PAUSE
+	session.talkUntil = math.max(session.talkUntil, now + PAUSE)
+end
+
+function Combat.endPause(player)
+	local session = PlayerData.session(player)
+	if not session then
+		return
+	end
+	local now = os.clock()
+	if now < (session.pausedUntil or 0) then
+		session.pausedUntil = 0
+		session.pauseReadyAt = now + PAUSE_REST
+		if now < session.talkUntil then
+			session.talkUntil = now + 2
+		end
+	end
+end
+
 ----------------------------------------------------------------------
 -- Striking targets
 ----------------------------------------------------------------------
@@ -3858,10 +3896,11 @@ function Garden.start(objects)
 			end
 			local now = os.clock()
 			if now < (session.teaAt or 0) then
-				Remotes.notify(player, "The pot is still steeping. Give it a moment.", "info")
+				local left = math.ceil(session.teaAt - now)
+				Remotes.notify(player, "The pot is still steeping. Ready in " .. left .. (left == 1 and " second." or " seconds."), "info")
 				return
 			end
-			session.teaAt = now + 45
+			session.teaAt = now + 20
 			Combat.heal(player, 30)
 			local friends = 0
 			for _, other in ipairs(Players:GetPlayers()) do
@@ -4956,6 +4995,10 @@ Remotes.Action.OnServerEvent:Connect(function(player, kind, a, b)
 			Boss.touchEarth(player)
 		elseif kind == "DialogDone" then
 			Combat.endTalk(player)
+		elseif kind == "WindowOpen" then
+			Combat.beginPause(player)
+		elseif kind == "WindowClosed" then
+			Combat.endPause(player)
 		elseif kind == "Ready" then
 			PlayerData.push(player)
 		else
@@ -9128,6 +9171,9 @@ UI.new("UIListLayout", { Padding = UDim.new(0, 8), Parent = windowList })
 local openWindow = nil -- { kind = ..., arg = ... }
 
 local function closeWindow()
+	if openWindow then
+		Action:FireServer("WindowClosed")
+	end
 	openWindow = nil
 	window.Visible = false
 end
@@ -9393,6 +9439,9 @@ local function showWindow(kind, arg)
 	if openWindow and openWindow.kind == kind and kind ~= "shop" and kind ~= "shrine" then
 		closeWindow()
 		return
+	end
+	if not openWindow then
+		Action:FireServer("WindowOpen") -- the shadows wait while you look in your Bag
 	end
 	openWindow = { kind = kind, arg = arg }
 	window.Visible = true
