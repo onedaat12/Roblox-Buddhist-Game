@@ -111,7 +111,8 @@ Config.Player = {
 	BaseSpeed = 16,
 	PassiveRegen = 1.5, -- calm per second when not recently hurt
 	MeditateRegen = 9, -- calm per second while meditating
-	MeditateShield = 0.5, -- damage multiplier while meditating
+	MeditateShield = 0.5, -- damage multiplier during the first moment of sitting down
+	MeditateSettle = 1, -- seconds of sitting before no shadow can touch you at all
 	HurtRegenDelay = 5,
 	OverwhelmGrace = 4,
 }
@@ -122,7 +123,7 @@ Config.Abilities = {
 	beads = { name = "Mala", key = "R", cooldown = 1.2, range = 80, damage = 16, order = 2, hint = "Send a bead of light at the nearest shadow." },
 	metta = { name = "Metta", key = "Q", cooldown = 14, range = 24, damage = 45, order = 3, hint = "Radiate loving-kindness in every direction." },
 	bowl = { name = "Bowl", key = "G", cooldown = 18, range = 28, stun = 4, order = 4, hint = "The singing bowl stills every shadow that hears it." },
-	meditate = { name = "Meditate", key = "M", cooldown = 0.5, order = 5, hint = "Sit and return to the breath. Calm returns quickly." },
+	meditate = { name = "Meditate", key = "M", cooldown = 0.5, order = 5, hint = "Sit and return to the breath. Calm returns quickly, and no shadow can touch a settled mind." },
 }
 
 -- What the Strike ability is done with. "palm" needs nothing; the others are items

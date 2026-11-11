@@ -132,6 +132,7 @@ function Combat.setMeditating(player, on)
 		return
 	end
 	session.meditating = on
+	session.meditateSince = os.clock()
 	session.meditateAt = root and root.Position or nil
 	player:SetAttribute("Meditating", on)
 end
@@ -166,6 +167,15 @@ function Combat.hurt(player, amount)
 		return false
 	end
 	if session.meditating then
+		if now - (session.meditateSince or now) >= Config.Player.MeditateSettle then
+			-- a settled mind cannot be touched: the blow falls as flowers, as Mara's
+			-- weapons did before they reached the Buddha
+			if now >= (session.flowersAt or 0) then
+				session.flowersAt = now + 1.5
+				Remotes.fx("petals", { pos = Combat.root(player).Position + Vector3.new(0, 3, 0), color = Color3.fromRGB(255, 200, 220) })
+			end
+			return false
+		end
 		amount = amount * Config.Player.MeditateShield
 	end
 	if now < session.shieldUntil then

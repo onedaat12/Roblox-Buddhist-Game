@@ -306,7 +306,7 @@ Story.Quests = {
 	},
 	{
 		id = "austerity", title = "Six Years of Austerity",
-		intro = "For six years Siddhartha starved himself until he could feel his spine through his belly. Face what he faced, then sit in the cave to the north.",
+		intro = "For six years Siddhartha starved himself until he could feel his spine through his belly. Face what he faced, then sit in the cave to the north. Hunger and Thirst wear you down from a distance: a pale thread shows where each one is.",
 		objectives = {
 			{ kind = "dispel", target = "hunger", count = 6, text = "Endure Hunger and Thirst" },
 			{ kind = "dispel", target = "sloth", count = 3, text = "Overcome Sloth and Torpor" },

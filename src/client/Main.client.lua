@@ -139,9 +139,19 @@ end
 local dialog = UI.panel({ Name = "Dialog", Visible = false, AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -130), Size = UDim2.new(0, 900, 0, 180), ZIndex = 20, Parent = root })
 local dialogWho = UI.label({ Text = "", Font = UI.TitleFont, TextSize = 26, TextColor3 = T.goldBright, Position = UDim2.new(0, 22, 0, 10), Size = UDim2.new(1, -44, 0, 32), ZIndex = 21, Parent = dialog })
 local dialogText = UI.label({ Text = "", TextSize = 19, TextYAlignment = Enum.TextYAlignment.Top, Position = UDim2.new(0, 22, 0, 48), Size = UDim2.new(1, -44, 0, 88), ZIndex = 21, Parent = dialog })
-local dialogNext = UI.button({ Text = "Continue", AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -16, 1, -12), Size = UDim2.new(0, 150, 0, 34), ZIndex = 22, Parent = dialog })
+local dialogNext = UI.button({ Modal = true, Text = "Continue", AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -16, 1, -12), Size = UDim2.new(0, 150, 0, 34), ZIndex = 22, Parent = dialog })
 local dialogQueue = {}
 local dialogOpen = false
+local dialogWaiting = {} -- what is being said or still to be said, so it is never queued twice
+local PromptService = game:GetService("ProximityPromptService")
+
+local function signature(lines)
+	local parts = {}
+	for _, line in ipairs(lines) do
+		table.insert(parts, tostring(line[1]) .. ":" .. tostring(line[2]))
+	end
+	return table.concat(parts, "|")
+end
 
 local function showNextLine()
 	local line = table.remove(dialogQueue, 1)
@@ -151,10 +161,15 @@ local function showNextLine()
 		end
 		dialogOpen = false
 		dialog.Visible = false
+		dialogWaiting = {}
+		PromptService.Enabled = true
 		return
 	end
 	dialogOpen = true
 	dialog.Visible = true
+	-- while someone is speaking, the "talk" buttons in the world are put away, so that
+	-- pressing the key again cannot start the same conversation a second time
+	PromptService.Enabled = false
 	local who = line[1] or ""
 	dialogWho.Text = (who == "") and "The Story" or who
 	dialogWho.TextColor3 = (who == "") and T.dim or T.goldBright
@@ -168,6 +183,11 @@ local function queueDialog(lines)
 	if type(lines) ~= "table" then
 		return
 	end
+	local key = signature(lines)
+	if dialogOpen and dialogWaiting[key] then
+		return -- the very same words are already on screen or about to be
+	end
+	dialogWaiting[key] = true
 	for _, line in ipairs(lines) do
 		table.insert(dialogQueue, line)
 	end
@@ -195,7 +215,7 @@ local function closeWindow()
 	openWindow = nil
 	window.Visible = false
 end
-UI.button({ Text = "X", TextSize = 20, BackgroundColor3 = T.red, TextColor3 = T.cream, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -14, 0, 14), Size = UDim2.new(0, 40, 0, 36), ZIndex = 32, Parent = window }, closeWindow)
+UI.button({ Modal = true, Text = "X", TextSize = 20, BackgroundColor3 = T.red, TextColor3 = T.cream, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -14, 0, 14), Size = UDim2.new(0, 40, 0, 36), ZIndex = 32, Parent = window }, closeWindow)
 
 -- One row in a window: a name, a description, and (optionally) a button.
 local function row(name, desc, buttonText, buttonColor, onClick, height)
@@ -758,6 +778,7 @@ local Effects = {}
 Effects.petals = Fx.petals
 Effects.ring = Fx.ring
 Effects.hit = Fx.hit
+Effects.thread = Fx.thread
 function Effects.bell()
 	Fx.shake(0.4, 0.25)
 end

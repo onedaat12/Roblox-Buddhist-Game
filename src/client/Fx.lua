@@ -73,6 +73,31 @@ function Fx.ring(data)
 	Debris:AddItem(ring, (data.time or 0.8) + 0.2)
 end
 
+-- A thread of light between two points, fading quickly (a shadow draining Calm from afar).
+function Fx.thread(data)
+	if not data.from or not data.to then
+		return
+	end
+	local length = (data.to - data.from).Magnitude
+	if length < 0.5 then
+		return
+	end
+	local line = Instance.new("Part")
+	line.Anchored = true
+	line.CanCollide = false
+	line.CanTouch = false
+	line.CanQuery = false
+	line.CastShadow = false
+	line.Material = Enum.Material.Neon
+	line.Color = data.color or Color3.fromRGB(230, 200, 120)
+	line.Transparency = 0.25
+	line.Size = Vector3.new(0.35, 0.35, length)
+	line.CFrame = CFrame.new((data.from + data.to) / 2, data.to)
+	line.Parent = workspace
+	TweenService:Create(line, TweenInfo.new(0.8), { Transparency = 1, Size = Vector3.new(0.05, 0.05, length) }):Play()
+	Debris:AddItem(line, 0.9)
+end
+
 -- A number that floats up where a strike landed.
 function Fx.hit(data)
 	local p = tempPart(data.pos)

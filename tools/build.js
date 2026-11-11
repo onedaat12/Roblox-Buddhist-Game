@@ -47,7 +47,10 @@ function build() {
     item("Lighting", "Lighting", `<token name="Technology">1</token>`) +
     item("ReplicatedStorage", "ReplicatedStorage", "", [item("Folder", "Shared", "", scriptsIn(path.join(src, "shared")))]) +
     item("ServerScriptService", "ServerScriptService", "", [item("Folder", "Server", "", scriptsIn(path.join(src, "server")))]) +
-    item("StarterPlayer", "StarterPlayer", "", [
+    // The mouse must never get trapped in the game window: no "Shift Lock" (the Shift key
+    // would lock the pointer to the middle of the screen), and the camera cannot zoom all
+    // the way in to first person (which locks the pointer too).
+    item("StarterPlayer", "StarterPlayer", `<bool name="EnableMouseLockOption">false</bool><float name="CameraMinZoomDistance">5</float>`, [
       item("StarterPlayerScripts", "StarterPlayerScripts", "", [item("Folder", "Client", "", scriptsIn(path.join(src, "client")))]),
     ]) +
     `</roblox>\n`;

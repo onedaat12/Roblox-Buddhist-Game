@@ -111,7 +111,8 @@ Config.Player = {
 	BaseSpeed = 16,
 	PassiveRegen = 1.5, -- calm per second when not recently hurt
 	MeditateRegen = 9, -- calm per second while meditating
-	MeditateShield = 0.5, -- damage multiplier while meditating
+	MeditateShield = 0.5, -- damage multiplier during the first moment of sitting down
+	MeditateSettle = 1, -- seconds of sitting before no shadow can touch you at all
 	HurtRegenDelay = 5,
 	OverwhelmGrace = 4,
 }
@@ -122,7 +123,7 @@ Config.Abilities = {
 	beads = { name = "Mala", key = "R", cooldown = 1.2, range = 80, damage = 16, order = 2, hint = "Send a bead of light at the nearest shadow." },
 	metta = { name = "Metta", key = "Q", cooldown = 14, range = 24, damage = 45, order = 3, hint = "Radiate loving-kindness in every direction." },
 	bowl = { name = "Bowl", key = "G", cooldown = 18, range = 28, stun = 4, order = 4, hint = "The singing bowl stills every shadow that hears it." },
-	meditate = { name = "Meditate", key = "M", cooldown = 0.5, order = 5, hint = "Sit and return to the breath. Calm returns quickly." },
+	meditate = { name = "Meditate", key = "M", cooldown = 0.5, order = 5, hint = "Sit and return to the breath. Calm returns quickly, and no shadow can touch a settled mind." },
 }
 
 -- What the Strike ability is done with. "palm" needs nothing; the others are items
@@ -813,7 +814,7 @@ Story.Quests = {
 	},
 	{
 		id = "austerity", title = "Six Years of Austerity",
-		intro = "For six years Siddhartha starved himself until he could feel his spine through his belly. Face what he faced, then sit in the cave to the north.",
+		intro = "For six years Siddhartha starved himself until he could feel his spine through his belly. Face what he faced, then sit in the cave to the north. Hunger and Thirst wear you down from a distance: a pale thread shows where each one is.",
 		objectives = {
 			{ kind = "dispel", target = "hunger", count = 6, text = "Endure Hunger and Thirst" },
 			{ kind = "dispel", target = "sloth", count = 3, text = "Overcome Sloth and Torpor" },
@@ -2336,6 +2337,7 @@ function Combat.setMeditating(player, on)
 		return
 	end
 	session.meditating = on
+	session.meditateSince = os.clock()
 	session.meditateAt = root and root.Position or nil
 	player:SetAttribute("Meditating", on)
 end
@@ -2370,6 +2372,15 @@ function Combat.hurt(player, amount)
 		return false
 	end
 	if session.meditating then
+		if now - (session.meditateSince or now) >= Config.Player.MeditateSettle then
+			-- a settled mind cannot be touched: the blow falls as flowers, as Mara's
+			-- weapons did before they reached the Buddha
+			if now >= (session.flowersAt or 0) then
+				session.flowersAt = now + 1.5
+				Remotes.fx("petals", { pos = Combat.root(player).Position + Vector3.new(0, 3, 0), color = Color3.fromRGB(255, 200, 220) })
+			end
+			return false
+		end
 		amount = amount * Config.Player.MeditateShield
 	end
 	if now < session.shieldUntil then
@@ -3622,9 +3633,17 @@ local function think(enemy, now, players)
 	end
 
 	-- special behaviours
-	if cfg.special == "drain" and best < 22 and now >= enemy.nextSpecial then
+	if cfg.special == "drain" and best < 18 and now >= enemy.nextSpecial then
 		enemy.nextSpecial = now + 1
-		Combat.hurt(target, enemy.big and 4 or 2)
+		if Combat.hurt(target, enemy.big and 4 or 2) then
+			-- show where it is coming from: a pale thread from the shadow to the player
+			Remotes.fx("thread", { from = pos + Vector3.new(0, 2, 0), to = targetPos, color = glowColor(cfg) })
+			local session = PlayerData.session(target)
+			if session and not session.drainTold then
+				session.drainTold = true
+				Remotes.notify(target, cfg.name .. " gnaws at you from a distance: follow the pale thread to its source and dispel it, or sit and meditate.", "warn")
+			end
+		end
 	elseif cfg.special == "pull" and best < 26 then
 		Combat.slow(target, 0.8)
 	elseif cfg.special == "blink" and best > 12 and now >= enemy.nextSpecial then
@@ -8509,7 +8528,7 @@ function Zones.build(ctx)
 end
 
 return Zones
-]]></ProtectedString></Properties></Item></Item></Item><Item class="StarterPlayer" referent="RBX35"><Properties><string name="Name">StarterPlayer</string></Properties><Item class="StarterPlayerScripts" referent="RBX34"><Properties><string name="Name">StarterPlayerScripts</string></Properties><Item class="Folder" referent="RBX33"><Properties><string name="Name">Client</string></Properties><Item class="ModuleScript" referent="RBX29"><Properties><string name="Name">Audio</string><ProtectedString name="Source"><![CDATA[-- Audio: plays the music for the current step of the journey and the sound effects.
+]]></ProtectedString></Properties></Item></Item></Item><Item class="StarterPlayer" referent="RBX35"><Properties><string name="Name">StarterPlayer</string><bool name="EnableMouseLockOption">false</bool><float name="CameraMinZoomDistance">5</float></Properties><Item class="StarterPlayerScripts" referent="RBX34"><Properties><string name="Name">StarterPlayerScripts</string></Properties><Item class="Folder" referent="RBX33"><Properties><string name="Name">Client</string></Properties><Item class="ModuleScript" referent="RBX29"><Properties><string name="Name">Audio</string><ProtectedString name="Source"><![CDATA[-- Audio: plays the music for the current step of the journey and the sound effects.
 -- The sound IDs themselves live in ReplicatedStorage.Shared.Sounds.
 
 local Players = game:GetService("Players")
@@ -8831,6 +8850,31 @@ function Fx.ring(data)
 	Debris:AddItem(ring, (data.time or 0.8) + 0.2)
 end
 
+-- A thread of light between two points, fading quickly (a shadow draining Calm from afar).
+function Fx.thread(data)
+	if not data.from or not data.to then
+		return
+	end
+	local length = (data.to - data.from).Magnitude
+	if length < 0.5 then
+		return
+	end
+	local line = Instance.new("Part")
+	line.Anchored = true
+	line.CanCollide = false
+	line.CanTouch = false
+	line.CanQuery = false
+	line.CastShadow = false
+	line.Material = Enum.Material.Neon
+	line.Color = data.color or Color3.fromRGB(230, 200, 120)
+	line.Transparency = 0.25
+	line.Size = Vector3.new(0.35, 0.35, length)
+	line.CFrame = CFrame.new((data.from + data.to) / 2, data.to)
+	line.Parent = workspace
+	TweenService:Create(line, TweenInfo.new(0.8), { Transparency = 1, Size = Vector3.new(0.05, 0.05, length) }):Play()
+	Debris:AddItem(line, 0.9)
+end
+
 -- A number that floats up where a strike landed.
 function Fx.hit(data)
 	local p = tempPart(data.pos)
@@ -9121,9 +9165,19 @@ end
 local dialog = UI.panel({ Name = "Dialog", Visible = false, AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -130), Size = UDim2.new(0, 900, 0, 180), ZIndex = 20, Parent = root })
 local dialogWho = UI.label({ Text = "", Font = UI.TitleFont, TextSize = 26, TextColor3 = T.goldBright, Position = UDim2.new(0, 22, 0, 10), Size = UDim2.new(1, -44, 0, 32), ZIndex = 21, Parent = dialog })
 local dialogText = UI.label({ Text = "", TextSize = 19, TextYAlignment = Enum.TextYAlignment.Top, Position = UDim2.new(0, 22, 0, 48), Size = UDim2.new(1, -44, 0, 88), ZIndex = 21, Parent = dialog })
-local dialogNext = UI.button({ Text = "Continue", AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -16, 1, -12), Size = UDim2.new(0, 150, 0, 34), ZIndex = 22, Parent = dialog })
+local dialogNext = UI.button({ Modal = true, Text = "Continue", AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -16, 1, -12), Size = UDim2.new(0, 150, 0, 34), ZIndex = 22, Parent = dialog })
 local dialogQueue = {}
 local dialogOpen = false
+local dialogWaiting = {} -- what is being said or still to be said, so it is never queued twice
+local PromptService = game:GetService("ProximityPromptService")
+
+local function signature(lines)
+	local parts = {}
+	for _, line in ipairs(lines) do
+		table.insert(parts, tostring(line[1]) .. ":" .. tostring(line[2]))
+	end
+	return table.concat(parts, "|")
+end
 
 local function showNextLine()
 	local line = table.remove(dialogQueue, 1)
@@ -9133,10 +9187,15 @@ local function showNextLine()
 		end
 		dialogOpen = false
 		dialog.Visible = false
+		dialogWaiting = {}
+		PromptService.Enabled = true
 		return
 	end
 	dialogOpen = true
 	dialog.Visible = true
+	-- while someone is speaking, the "talk" buttons in the world are put away, so that
+	-- pressing the key again cannot start the same conversation a second time
+	PromptService.Enabled = false
 	local who = line[1] or ""
 	dialogWho.Text = (who == "") and "The Story" or who
 	dialogWho.TextColor3 = (who == "") and T.dim or T.goldBright
@@ -9150,6 +9209,11 @@ local function queueDialog(lines)
 	if type(lines) ~= "table" then
 		return
 	end
+	local key = signature(lines)
+	if dialogOpen and dialogWaiting[key] then
+		return -- the very same words are already on screen or about to be
+	end
+	dialogWaiting[key] = true
 	for _, line in ipairs(lines) do
 		table.insert(dialogQueue, line)
 	end
@@ -9177,7 +9241,7 @@ local function closeWindow()
 	openWindow = nil
 	window.Visible = false
 end
-UI.button({ Text = "X", TextSize = 20, BackgroundColor3 = T.red, TextColor3 = T.cream, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -14, 0, 14), Size = UDim2.new(0, 40, 0, 36), ZIndex = 32, Parent = window }, closeWindow)
+UI.button({ Modal = true, Text = "X", TextSize = 20, BackgroundColor3 = T.red, TextColor3 = T.cream, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -14, 0, 14), Size = UDim2.new(0, 40, 0, 36), ZIndex = 32, Parent = window }, closeWindow)
 
 -- One row in a window: a name, a description, and (optionally) a button.
 local function row(name, desc, buttonText, buttonColor, onClick, height)
@@ -9740,6 +9804,7 @@ local Effects = {}
 Effects.petals = Fx.petals
 Effects.ring = Fx.ring
 Effects.hit = Fx.hit
+Effects.thread = Fx.thread
 function Effects.bell()
 	Fx.shake(0.4, 0.25)
 end

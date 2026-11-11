@@ -205,9 +205,17 @@ local function think(enemy, now, players)
 	end
 
 	-- special behaviours
-	if cfg.special == "drain" and best < 22 and now >= enemy.nextSpecial then
+	if cfg.special == "drain" and best < 18 and now >= enemy.nextSpecial then
 		enemy.nextSpecial = now + 1
-		Combat.hurt(target, enemy.big and 4 or 2)
+		if Combat.hurt(target, enemy.big and 4 or 2) then
+			-- show where it is coming from: a pale thread from the shadow to the player
+			Remotes.fx("thread", { from = pos + Vector3.new(0, 2, 0), to = targetPos, color = glowColor(cfg) })
+			local session = PlayerData.session(target)
+			if session and not session.drainTold then
+				session.drainTold = true
+				Remotes.notify(target, cfg.name .. " gnaws at you from a distance: follow the pale thread to its source and dispel it, or sit and meditate.", "warn")
+			end
+		end
 	elseif cfg.special == "pull" and best < 26 then
 		Combat.slow(target, 0.8)
 	elseif cfg.special == "blink" and best > 12 and now >= enemy.nextSpecial then

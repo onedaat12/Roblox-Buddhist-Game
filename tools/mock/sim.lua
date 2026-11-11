@@ -337,6 +337,30 @@ for _, def in ipairs(Story.NPCs) do
 	trigger(def.name)
 end
 Mock.run(3)
+-- no shadow can touch a settled mind
+do
+	Mock.run(4)
+	PlayerData.session(player).talkUntil = 0
+	PlayerData.session(player).graceUntil = 0
+	player:SetAttribute("Calm", PlayerData.maxCalm(player))
+	local standing = Combat.hurt(player, 1)
+	act("meditate", true)
+	Mock.run(0.3)
+	local settling = Combat.hurt(player, 1)
+	Mock.run(1.5)
+	local calm = player:GetAttribute("Calm")
+	local seated = Combat.hurt(player, 50)
+	local kept = player:GetAttribute("Calm") >= calm
+	act("meditate", false)
+	Mock.run(0.5)
+	local risen = Combat.hurt(player, 1)
+	print("  meditation: hit while standing " .. tostring(standing) .. ", while sitting down " .. tostring(settling) .. ", once settled " .. tostring(seated) .. ", after rising " .. tostring(risen))
+	if not standing or not settling or seated or not kept or not risen then
+		Mock.errors = Mock.errors + 1
+		print("  ERROR: meditation does not protect as planned")
+	end
+end
+
 -- the shadows wait while a window is open, but not twice in a row
 do
 	act("WindowClosed")
