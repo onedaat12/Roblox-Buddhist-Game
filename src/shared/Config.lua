@@ -85,6 +85,7 @@ Config.Shrines = {
 	{ id = "mara_edge", name = "Edge of Mara's Field", x = 2064, z = 14 },
 	{ id = "mara_gate", name = "Before the Host", x = 2384, z = 14 },
 	{ id = "bodhgaya", name = "Bodh Gaya", x = 2592, z = 14 },
+	{ id = "garden", name = "Pilgrims' Garden", x = -2, z = -80 },
 }
 
 -- Places where meditating counts toward a quest.
@@ -184,6 +185,18 @@ Config.Items = {
 	phurba = { name = "Phurba", desc = "The three-sided ritual peg of Tibet. It wounds nothing: it pins one obstacle in place so that it can be faced.", keep = true, use = "equip", order = 21 },
 	chakra = { name = "Wheel of Light", desc = "A wheel of eight spokes. In the Deer Park the Buddha set the wheel of the Dharma turning. Thrown, it flies out and comes back. A gift of the animals of the old stories.", keep = true, use = "equip", order = 22 },
 	lantern = { name = "Paper Lantern", desc = "A lantern for the dark road. Set down its light and shadows inside the circle grow slow and weak.", keep = true, use = "equip", order = 23 },
+
+	-- Things that change only how you look (from the Garden Stall). "slot" items are
+	-- worn one at a time; lantern colours are used for the sky lanterns you release.
+	lantern_lotus = { name = "Lotus-Pink Lanterns", desc = "Your sky lanterns can glow the pink of a lotus at dawn.", keep = true, lanternColor = { 255, 150, 190 }, order = 30 },
+	lantern_jade = { name = "Jade Lanterns", desc = "Your sky lanterns can glow a soft jade green.", keep = true, lanternColor = { 120, 220, 160 }, order = 31 },
+	lantern_sky = { name = "Sky-Blue Lanterns", desc = "Your sky lanterns can glow the blue of a clear morning.", keep = true, lanternColor = { 130, 190, 255 }, order = 32 },
+	lantern_gold = { name = "Golden Lanterns", desc = "Your sky lanterns can glow bright gold. A patron's gift.", keep = true, lanternColor = { 255, 215, 80 }, order = 33 },
+	trail_petals = { name = "Trail of Petals", desc = "Flower petals drift down behind you as you walk.", keep = true, use = "wear", slot = "trail", order = 34 },
+	trail_light = { name = "Path of Light", desc = "A soft ribbon of light follows your footsteps.", keep = true, use = "wear", slot = "trail", order = 35 },
+	trail_gold = { name = "Golden Path", desc = "A wide ribbon of gold follows your footsteps. A patron's gift.", keep = true, use = "wear", slot = "trail", order = 36 },
+	firefly = { name = "Firefly Companion", desc = "A firefly keeps you company and lights your way a little.", keep = true, use = "wear", slot = "companion", order = 37 },
+	butterfly = { name = "Butterfly Companion", desc = "A butterfly rides at your shoulder.", keep = true, use = "wear", slot = "companion", order = 38 },
 }
 
 Config.Shops = {
@@ -219,6 +232,40 @@ Config.Shops = {
 			{ item = "spade", price = 320, once = true },
 		},
 	},
+	garden = {
+		name = "The Garden Stall",
+		keeper = "Sumana the Garland-Maker",
+		robux = true, -- the Robux items (Config.Robux) are listed at the bottom of this shop
+		stock = {
+			{ item = "tea", price = 15 },
+			{ item = "lantern_lotus", price = 60, once = true },
+			{ item = "lantern_jade", price = 60, once = true },
+			{ item = "lantern_sky", price = 60, once = true },
+			{ item = "trail_petals", price = 180, once = true },
+			{ item = "firefly", price = 200, once = true },
+			{ item = "trail_light", price = 240, once = true },
+			{ item = "butterfly", price = 260, once = true },
+		},
+	},
+}
+
+----------------------------------------------------------------------
+-- Things sold for Robux. They change only how things look, or are a gift to
+-- everyone in the game. Nothing here makes the journey easier.
+--
+-- HOW TO SWITCH ONE ON
+--   1. On create.roblox.com open the game, then Monetization.
+--   2. Make a Pass (for "passes") or a Developer Product (for "products"), set its price.
+--   3. Copy its ID number and put it below in place of the 0.
+-- While the number is 0 the item shows as "Coming soon" and cannot be bought.
+----------------------------------------------------------------------
+Config.Robux = {
+	passes = {
+		{ id = "patron", passId = 0, name = "Patron of the Temple", desc = "A thank-you for supporting the game: the white-and-gold Robe of the Patron, the Golden Path trail, and Golden Lanterns.", robe = "patron", items = { "trail_gold", "lantern_gold" } },
+	},
+	products = {
+		{ id = "flowers", productId = 0, name = "Offering of Flowers", desc = "Petals fall around every player in the game, with your name. It gives you nothing but the joy of giving. Can be offered again and again." },
+	},
 }
 
 ----------------------------------------------------------------------
@@ -236,6 +283,7 @@ Config.Robes = {
 	{ id = "black", name = "Black Robe", desc = "The black koromo of the Zen tradition of Japan.", price = 340, main = { 34, 34, 38 }, sash = { 110, 84, 50 }, bare = false },
 	{ id = "pilgrim", name = "Pilgrim's Robe", desc = "For one who has found all twenty Bodhi leaves.", reward = true, main = { 70, 122, 78 }, sash = { 214, 178, 80 }, bare = true },
 	{ id = "golden", name = "Robe of Awakening", desc = "For one who has sat beneath the Bodhi tree through the three watches of the night.", reward = true, main = { 244, 196, 70 }, sash = { 255, 232, 150 }, bare = true, glow = true },
+	{ id = "patron", name = "Robe of the Patron", desc = "White edged with gold: the dress of the lay supporters who have kept the temples standing for two and a half thousand years. Comes with Patron of the Temple.", pass = "patron", main = { 248, 244, 232 }, sash = { 226, 178, 54 }, bare = false },
 }
 
 ----------------------------------------------------------------------

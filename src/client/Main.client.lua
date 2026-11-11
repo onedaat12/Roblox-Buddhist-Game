@@ -23,7 +23,7 @@ local Action = Remotes:WaitForChild("Action")
 local state = {
 	merit = 0, stage = 1, prog = {}, inv = {}, abilities = { strike = true, meditate = true },
 	robes = {}, robe = "novice", path = 0, leaves = {}, collected = {}, shrines = {}, bought = {}, lotus = {},
-	weapon = "auto", symbols = {}, friends = {},
+	weapon = "auto", symbols = {}, friends = {}, worn = {},
 }
 
 pcall(function()
@@ -274,9 +274,12 @@ function Windows.bag()
 			label = "Offer"
 		elseif def.use == "equip" then
 			label = (heldWeapon() == id) and "Put away" or "Hold"
+		elseif def.use == "wear" then
+			label = (state.worn and state.worn[def.slot] == id) and "Take off" or "Wear"
 		end
-		local color = (label == "Put away") and T.green or nil
-		row(def.name .. ((def.use == "equip") and "" or ("  x" .. state.inv[id])), def.desc, label, color, label and function()
+		local color = (label == "Put away" or label == "Take off") and T.green or nil
+		local single = def.use == "equip" or def.use == "wear" or def.lanternColor
+		row(def.name .. (single and "" or ("  x" .. state.inv[id])), def.desc, label, color, label and function()
 			Action:FireServer("UseItem", id)
 		end or nil)
 	end
@@ -301,6 +304,30 @@ function Windows.shop(shopId)
 			end)
 		end
 	end
+	if shop.robux then
+		heading("Support the temple (Robux)")
+		row("About these", "These change only how things look, or are a gift to everyone. Nothing here makes the journey easier.", nil, nil, nil, 50)
+		for _, def in ipairs(Config.Robux.passes) do
+			if state.bought["pass_" .. def.id] then
+				row(def.name, def.desc, "Owned", T.green, nil, 76)
+			elseif def.passId > 0 then
+				row(def.name, def.desc, "Robux", T.goldBright, function()
+					Action:FireServer("BuyPass", def.id)
+				end, 76)
+			else
+				row(def.name, def.desc, "Coming soon", T.dim, nil, 76)
+			end
+		end
+		for _, def in ipairs(Config.Robux.products) do
+			if def.productId > 0 then
+				row(def.name, def.desc, "Robux", T.goldBright, function()
+					Action:FireServer("BuyProduct", def.id)
+				end, 76)
+			else
+				row(def.name, def.desc, "Coming soon", T.dim, nil, 76)
+			end
+		end
+	end
 end
 
 function Windows.robes()
@@ -313,6 +340,8 @@ function Windows.robes()
 			row(def.name, def.desc, "Wear", T.goldBright, function()
 				Action:FireServer("WearRobe", def.id)
 			end)
+		elseif def.pass then
+			row(def.name, def.desc, "A patron's gift", T.dim, nil)
 		elseif def.quest or def.reward then
 			row(def.name, def.desc, "Earned on the journey", T.dim, nil)
 		else
@@ -725,6 +754,13 @@ Effects.ring = Fx.ring
 Effects.hit = Fx.hit
 function Effects.bell()
 	Fx.shake(0.4, 0.25)
+end
+-- the song bells and the drum in the Pilgrims' Garden
+function Effects.note(data)
+	Audio.play("pray", data.pos, 1, data.pitch or 1)
+end
+function Effects.drum(data)
+	Audio.play("hit", data.pos, 1.5, 0.5)
 end
 function Effects.hurt()
 	vignette.BackgroundTransparency = 0.72

@@ -50,6 +50,7 @@ local function defaults()
 		weapon = "auto",
 		symbols = {},
 		friends = {},
+		worn = {},
 	}
 end
 
@@ -333,6 +334,7 @@ function PlayerData.push(player)
 		symbols = profile.symbols,
 		friends = profile.friends,
 		almsGiven = almsGiven,
+		worn = profile.worn,
 		lotus = sessions[player] and sessions[player].lotus or {},
 	})
 end

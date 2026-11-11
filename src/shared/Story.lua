@@ -41,6 +41,8 @@ Story.NPCs = {
 		lines = { "Tea, incense, lamps for the shrine. Take what helps you on the road." } },
 	{ id = "tailor", name = "Visakha the Robe-Maker", look = "villager_f", x = 204, z = -66, face = { x = 204, z = -40 }, robes = true,
 		lines = { "A robe is only cloth, friend. But it reminds the one who wears it what they have set out to do." } },
+	{ id = "garland", name = "Sumana the Garland-Maker", look = "villager_m", x = 4, z = -109, face = { x = 4, z = -90 }, shop = "garden",
+		lines = { "Flowers fade by evening. That is why they are worth offering." } },
 	{ id = "alms1", name = "Farmer Gopal", look = "farmer", x = 150, z = -13, face = { x = 150, z = 0 }, alms = true,
 		lines = { "The rains were kind this year. There is enough rice to share." } },
 	{ id = "alms2", name = "Grandmother Amba", look = "elder_f", x = 180, z = 13, face = { x = 180, z = 0 }, alms = true,

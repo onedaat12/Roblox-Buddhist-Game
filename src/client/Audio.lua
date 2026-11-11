@@ -83,7 +83,8 @@ end
 local lastPlayed = {}
 
 -- Play an effect by name. If "pos" is given, it is only heard when you are near it.
-function Audio.play(name, pos, volume)
+-- "pitch" plays it higher (above 1) or lower (below 1): used for the song bells.
+function Audio.play(name, pos, volume, pitch)
 	local id = Sounds.Effects[name]
 	if type(id) ~= "number" or id <= 0 then
 		return
@@ -104,11 +105,48 @@ function Audio.play(name, pos, volume)
 	s.Name = name
 	s.SoundId = asset(id)
 	s.Volume = (volume or 1) * Sounds.EffectVolume
+	if pitch then
+		s.PlaybackSpeed = pitch
+	end
 	s.Parent = folder
-	s:Play()
-	task.delay(12, function()
-		s:Destroy()
-	end)
+	local tail = Sounds.EffectTail and Sounds.EffectTail[name]
+	if type(tail) == "number" and tail > 0 then
+		-- only the ending is wanted: wait until the sound has arrived, then start near its end
+		local full = s.Volume
+		s.Volume = 0
+		task.spawn(function()
+			local waited = 0
+			while not s.IsLoaded and waited < 3 do
+				task.wait(0.05)
+				waited = waited + 0.05
+			end
+			if not s.Parent then
+				return
+			end
+			s.TimePosition = math.max(0, s.TimeLength - tail)
+			s:Play()
+			TweenService:Create(s, TweenInfo.new(0.12), { Volume = full }):Play()
+		end)
+	else
+		s:Play()
+	end
+	local length = Sounds.EffectLength and Sounds.EffectLength[name]
+	if type(length) == "number" and length > 0 and length < 12 then
+		-- a long recording: let it ring, then fade it away over the last two seconds
+		local fade = math.min(2, length / 2)
+		task.delay(length - fade, function()
+			if s.Parent then
+				TweenService:Create(s, TweenInfo.new(fade), { Volume = 0 }):Play()
+			end
+		end)
+		task.delay(length + 0.2, function()
+			s:Destroy()
+		end)
+	else
+		task.delay(12, function()
+			s:Destroy()
+		end)
+	end
 end
 
 ----------------------------------------------------------------------

@@ -56,21 +56,32 @@ Sounds.Effects = {
 	hit = 9113818671, -- a strike lands on a shadow (soft thud)
 	beads = 6691605753, -- a mala bead of light is sent (light shimmer or ping)
 	metta = 99384056183835, -- loving-kindness radiates (warm swell or chord)
-	bowl = 0, -- the singing bowl (a long singing-bowl tone)
-	meditate = 0, -- you sit down to meditate (a single soft chime)
-	petals = 0, -- a shadow is dispelled into petals (gentle sparkle)
-	hurt = 0, -- your Calm is struck (dull low hit)
-	overwhelm = 0, -- your Calm runs out (low fading tone)
-	merit = 0, -- you earn merit (small bright chime)
-	quest = 0, -- a new step of the journey begins (short gong or fanfare)
-	pickup = 0, -- you pick something up: leaf, lotus, kusa (soft pluck)
-	talk = 0, -- someone begins to speak (soft page-turn or blip)
-	buy = 0, -- you buy something or put on a robe (cloth or coin sound)
-	pray = 0, -- you pray at a shrine (small bell)
-	storm = 0, -- Mara sends a storm (thunder crack)
-	quake = 0, -- the earth answers as your witness (deep rumble)
-	awaken = 0, -- the moment of awakening (long shimmering rise)
+	bowl = 138570431689848, -- the singing bowl (a long singing-bowl tone)
+	meditate = 9116395089, -- you sit down to meditate (a single soft chime)
+	petals = 110241936966089, -- a shadow is dispelled into petals (gentle sparkle)
+	hurt = 9113486062, -- your Calm is struck (dull low hit)
+	overwhelm = 107073250463751, -- your Calm runs out (low fading tone)
+	merit = 1839901345, -- you earn merit (small bright chime)
+	quest = 89056648074625, -- a new step of the journey begins (short gong or fanfare)
+	pickup = 1008455422378, -- you pick something up: leaf, lotus, kusa (soft pluck)
+	talk = 132723137731070, -- someone begins to speak (soft page-turn or blip)
+	buy = 607662191, -- you buy something or put on a robe (cloth or coin sound)
+	pray = 9113420607, -- you pray at a shrine (small bell)
+	storm = 71511119515611, -- Mara sends a storm (thunder crack)
+	quake = 9114220333, -- the earth answers as your witness (deep rumble)
+	awaken = 121538758381608, -- the moment of awakening (long shimmering rise)
 	splash = 142431247, -- you drop into deep water (a splash)
+}
+
+-- Effects that are too long: how many seconds to play before fading away gently.
+-- (Any effect not listed here plays in full, up to 12 seconds.)
+Sounds.EffectLength = {
+	bowl = 6,
+}
+
+-- Effects where only the ending is wanted: play just the last so-many seconds.
+Sounds.EffectTail = {
+	merit = 2,
 }
 
 ----------------------------------------------------------------------

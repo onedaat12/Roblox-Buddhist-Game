@@ -10,6 +10,7 @@ local Config = require(Shared:WaitForChild("Config"))
 local PlayerData = require(script.Parent.PlayerData)
 local Combat = require(script.Parent.Combat)
 local Rig = require(script.Parent.Rig)
+local Cosmetics = require(script.Parent.Cosmetics)
 
 local Robes = {}
 
@@ -182,6 +183,7 @@ function Robes.apply(player)
 	end
 
 	Combat.equipWeapon(player)
+	Cosmetics.apply(player)
 end
 
 return Robes

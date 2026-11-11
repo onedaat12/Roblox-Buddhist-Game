@@ -42,6 +42,9 @@ function build() {
   const src = path.join(rootDir, "src");
   const xml =
     `<roblox version="4">` +
+    // Voxel lighting (Technology 1). Without this the place opens in the retired
+    // "Compatibility" lighting and Studio shows a migration notice every time.
+    item("Lighting", "Lighting", `<token name="Technology">1</token>`) +
     item("ReplicatedStorage", "ReplicatedStorage", "", [item("Folder", "Shared", "", scriptsIn(path.join(src, "shared")))]) +
     item("ServerScriptService", "ServerScriptService", "", [item("Folder", "Server", "", scriptsIn(path.join(src, "server")))]) +
     item("StarterPlayer", "StarterPlayer", "", [

@@ -5,6 +5,7 @@
 local Kit = require(script.Parent.Kit)
 local Props = require(script.Parent.Props)
 local B = require(script.Parent.Buildings)
+local Garden = require(script.Parent.Garden)
 
 local C = Kit.C
 local M = Enum.Material
@@ -103,6 +104,9 @@ local function village(ctx)
 	-- the temple elephant
 	Props.elephant(root, Kit.at(84, -66, Kit.FACE_NEG_X), 0.8, nil, { cloth = C.maroon })
 	ctx.reserve(84, -66, 14)
+
+	-- the Pilgrims' Garden: a place to meet, south of the courtyard
+	Garden.build(ctx, root)
 
 	-- trees and flowers inside the compound
 	ctx.scatter(-128, 100, 16, 9, function(o)

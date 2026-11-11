@@ -337,6 +337,101 @@ for _, def in ipairs(Story.NPCs) do
 	trigger(def.name)
 end
 Mock.run(3)
+-- the Pilgrims' Garden
+do
+	local before = Mock.errors
+	local merit = profile.merit
+	trigger("Song Bell", true)
+	trigger("Garden Drum")
+	trigger("Teapot")
+	trigger("Teapot")
+	trigger("Lantern Table")
+	Mock.run(1)
+	local lanterns = 0
+	for _, d in ipairs(workspace:GetChildren()) do
+		if d.Name == "SkyLantern" then
+			lanterns = lanterns + 1
+		end
+	end
+	local garden = workspace:FindFirstChild("PilgrimsGarden", true)
+	local seats = 0
+	if garden then
+		for _, d in ipairs(garden:GetDescendants()) do
+			if d:IsA("Seat") then
+				seats = seats + 1
+			end
+		end
+	end
+	tp(-10, -96)
+	act("meditate", true)
+	Mock.run(20)
+	act("meditate", false)
+	Mock.run(34)
+	local left = 0
+	for _, d in ipairs(workspace:GetChildren()) do
+		if d.Name == "SkyLantern" then
+			left = left + 1
+		end
+	end
+	print("  garden: seats " .. seats .. ", lanterns released " .. lanterns .. ", lanterns left afterwards " .. left .. ", merit alone in the circle " .. (profile.merit - merit))
+	if not garden or seats ~= 8 or lanterns ~= 1 or left ~= 0 or profile.merit ~= merit or Mock.errors ~= before then
+		Mock.errors = Mock.errors + 1
+		print("  ERROR: the Pilgrims' Garden is not working as planned")
+	end
+end
+
+-- cosmetics from the Garden Stall, and the Robux items
+do
+	local Robux = module("Robux")
+	local character = player.Character
+	local rootPart = character:FindFirstChild("HumanoidRootPart")
+	local function wearing()
+		local parts, onRoot = 0, 0
+		for _, c in ipairs(character:GetChildren()) do
+			if c.Name == "CosmeticPart" then
+				parts = parts + 1
+			end
+		end
+		for _, c in ipairs(rootPart:GetChildren()) do
+			if c.Name == "Cosmetic" then
+				onRoot = onRoot + 1
+			end
+		end
+		return parts, onRoot
+	end
+	local owned = (profile.inv.firefly or 0) > 0 and (profile.inv.trail_light or 0) > 0 and (profile.inv.lantern_jade or 0) > 0
+	if profile.worn.companion then
+		act("UseItem", profile.worn.companion)
+	end
+	if profile.worn.trail then
+		act("UseItem", profile.worn.trail)
+	end
+	Mock.run(0.2)
+	local p0, r0 = wearing()
+	act("UseItem", "firefly")
+	act("UseItem", "trail_light")
+	Mock.run(0.2)
+	local p1, r1 = wearing()
+	act("UseItem", "firefly")
+	Mock.run(0.2)
+	local p2 = wearing()
+	act("BuyPass", "patron")
+	act("BuyProduct", "flowers")
+	local hadRobe = profile.robes.patron == true
+	Robux.grantPass(player, "patron")
+	Robux.grantPass(player, "patron")
+	Robux.flowers(player)
+	act("UseItem", "trail_gold")
+	act("WearRobe", "patron")
+	Mock.run(8)
+	local _, r3 = wearing()
+	print("  stall: owned " .. tostring(owned) .. ", worn " .. p0 .. "/" .. r0 .. " then " .. p1 .. "/" .. r1 .. " then " .. p2 .. "; patron robe before " .. tostring(hadRobe) .. ", after " .. tostring(profile.robes.patron) .. ", robe worn " .. tostring(profile.robe) .. ", gold trail pieces " .. r3)
+	if not owned or p0 ~= 0 or r0 ~= 0 or p1 ~= 1 or r1 < 3 or p2 ~= 0 or hadRobe or not profile.robes.patron or profile.robe ~= "patron" or (profile.inv.trail_gold or 0) ~= 1 or r3 < 4 then
+		Mock.errors = Mock.errors + 1
+		print("  ERROR: the Garden Stall or the Robux items are not working as planned")
+	end
+end
+
 -- the new things to find, the new weapons, and safety while talking
 for _, def in ipairs(Config.Symbols) do
 	trigger(def.name)

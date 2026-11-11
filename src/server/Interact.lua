@@ -15,6 +15,9 @@ local Quests = require(script.Parent.Quests)
 local Combat = require(script.Parent.Combat)
 local Robes = require(script.Parent.Robes)
 local Kit = require(script.Parent.Kit)
+local Garden = require(script.Parent.Garden)
+local Cosmetics = require(script.Parent.Cosmetics)
+local Robux = require(script.Parent.Robux)
 
 local Interact = {}
 
@@ -380,6 +383,8 @@ function Actions.UseItem(player, itemId)
 		end
 	elseif def.use == "equip" then
 		Combat.chooseWeapon(player, itemId)
+	elseif def.use == "wear" then
+		Cosmetics.toggle(player, itemId)
 	elseif def.use == "quest" then
 		if not Quests.active(player, "use", itemId) then
 			Remotes.notify(player, "Not yet.", "info")
@@ -432,6 +437,10 @@ function Actions.Buy(player, shopId, itemId)
 				profile.weapon = itemId
 				Combat.equipWeapon(player)
 			end
+			if def.use == "wear" then
+				profile.worn[def.slot] = itemId
+				Cosmetics.apply(player)
+			end
 			PlayerData.push(player)
 			return
 		end
@@ -442,6 +451,10 @@ function Actions.BuyRobe(player, robeId)
 	local profile = PlayerData.get(player)
 	local def = type(robeId) == "string" and Robes.def(robeId) or nil
 	if not profile or not def or profile.robes[robeId] then
+		return
+	end
+	if def.pass then
+		Remotes.notify(player, "This robe comes with " .. Config.Robux.passes[1].name .. ". Ask at the Garden Stall.", "info")
 		return
 	end
 	if def.quest or def.reward or not def.price then
@@ -468,6 +481,18 @@ function Actions.WearRobe(player, robeId)
 	profile.robe = robeId
 	PlayerData.push(player)
 	Robes.apply(player)
+end
+
+function Actions.BuyPass(player, id)
+	if type(id) == "string" then
+		Robux.buyPass(player, id)
+	end
+end
+
+function Actions.BuyProduct(player, id)
+	if type(id) == "string" then
+		Robux.buyProduct(player, id)
+	end
 end
 
 function Actions.BuyPath(player)
@@ -573,6 +598,14 @@ function Interact.start(objects)
 	setupStoryPlaces(objects)
 	setupCollectibles(objects)
 	task.spawn(watchPlayers)
+	for name, start in pairs({ Garden = function()
+		Garden.start(objects)
+	end, Robux = Robux.start }) do
+		local ok, err = pcall(start)
+		if not ok then
+			warn("[Bodhi Path] " .. name .. " could not start: " .. tostring(err))
+		end
+	end
 end
 
 return Interact

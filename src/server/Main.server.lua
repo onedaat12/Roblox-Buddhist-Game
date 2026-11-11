@@ -22,6 +22,7 @@ local NPCs = require(script.Parent.NPCs)
 local Robes = require(script.Parent.Robes)
 local Interact = require(script.Parent.Interact)
 local Boss = require(script.Parent.Boss)
+local Robux = require(script.Parent.Robux)
 
 local function step(name, fn)
 	local ok, err = pcall(fn)
@@ -146,6 +147,12 @@ local function onPlayer(player)
 	end
 	player:LoadCharacter()
 	Quests.enter(player, true)
+	task.spawn(function()
+		local ok, err = pcall(Robux.check, player)
+		if not ok then
+			warn("[Bodhi Path] could not check passes: " .. tostring(err))
+		end
+	end)
 	if profile.stage == 1 then
 		Remotes.dialog(player, {
 			{ "", "Welcome to " .. Config.Title .. "." },

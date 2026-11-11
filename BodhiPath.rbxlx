@@ -1,4 +1,4 @@
-<roblox version="4"><Item class="ReplicatedStorage" referent="RBX5"><Properties><string name="Name">ReplicatedStorage</string></Properties><Item class="Folder" referent="RBX4"><Properties><string name="Name">Shared</string></Properties><Item class="ModuleScript" referent="RBX1"><Properties><string name="Name">Config</string><ProtectedString name="Source"><![CDATA[-- The Bodhi Path: shared settings and world data.
+<roblox version="4"><Item class="Lighting" referent="RBX1"><Properties><string name="Name">Lighting</string><token name="Technology">1</token></Properties></Item><Item class="ReplicatedStorage" referent="RBX6"><Properties><string name="Name">ReplicatedStorage</string></Properties><Item class="Folder" referent="RBX5"><Properties><string name="Name">Shared</string></Properties><Item class="ModuleScript" referent="RBX2"><Properties><string name="Name">Config</string><ProtectedString name="Source"><![CDATA[-- The Bodhi Path: shared settings and world data.
 -- Everything here is plain data so that the server and the client agree on it.
 -- Positions are written as {x = ..., z = ...}; the ground is at height 0 and the
 -- journey runs along the X axis, from the home temple (x = 0) to the Bodhi tree.
@@ -85,6 +85,7 @@ Config.Shrines = {
 	{ id = "mara_edge", name = "Edge of Mara's Field", x = 2064, z = 14 },
 	{ id = "mara_gate", name = "Before the Host", x = 2384, z = 14 },
 	{ id = "bodhgaya", name = "Bodh Gaya", x = 2592, z = 14 },
+	{ id = "garden", name = "Pilgrims' Garden", x = -2, z = -80 },
 }
 
 -- Places where meditating counts toward a quest.
@@ -184,6 +185,18 @@ Config.Items = {
 	phurba = { name = "Phurba", desc = "The three-sided ritual peg of Tibet. It wounds nothing: it pins one obstacle in place so that it can be faced.", keep = true, use = "equip", order = 21 },
 	chakra = { name = "Wheel of Light", desc = "A wheel of eight spokes. In the Deer Park the Buddha set the wheel of the Dharma turning. Thrown, it flies out and comes back. A gift of the animals of the old stories.", keep = true, use = "equip", order = 22 },
 	lantern = { name = "Paper Lantern", desc = "A lantern for the dark road. Set down its light and shadows inside the circle grow slow and weak.", keep = true, use = "equip", order = 23 },
+
+	-- Things that change only how you look (from the Garden Stall). "slot" items are
+	-- worn one at a time; lantern colours are used for the sky lanterns you release.
+	lantern_lotus = { name = "Lotus-Pink Lanterns", desc = "Your sky lanterns can glow the pink of a lotus at dawn.", keep = true, lanternColor = { 255, 150, 190 }, order = 30 },
+	lantern_jade = { name = "Jade Lanterns", desc = "Your sky lanterns can glow a soft jade green.", keep = true, lanternColor = { 120, 220, 160 }, order = 31 },
+	lantern_sky = { name = "Sky-Blue Lanterns", desc = "Your sky lanterns can glow the blue of a clear morning.", keep = true, lanternColor = { 130, 190, 255 }, order = 32 },
+	lantern_gold = { name = "Golden Lanterns", desc = "Your sky lanterns can glow bright gold. A patron's gift.", keep = true, lanternColor = { 255, 215, 80 }, order = 33 },
+	trail_petals = { name = "Trail of Petals", desc = "Flower petals drift down behind you as you walk.", keep = true, use = "wear", slot = "trail", order = 34 },
+	trail_light = { name = "Path of Light", desc = "A soft ribbon of light follows your footsteps.", keep = true, use = "wear", slot = "trail", order = 35 },
+	trail_gold = { name = "Golden Path", desc = "A wide ribbon of gold follows your footsteps. A patron's gift.", keep = true, use = "wear", slot = "trail", order = 36 },
+	firefly = { name = "Firefly Companion", desc = "A firefly keeps you company and lights your way a little.", keep = true, use = "wear", slot = "companion", order = 37 },
+	butterfly = { name = "Butterfly Companion", desc = "A butterfly rides at your shoulder.", keep = true, use = "wear", slot = "companion", order = 38 },
 }
 
 Config.Shops = {
@@ -219,6 +232,40 @@ Config.Shops = {
 			{ item = "spade", price = 320, once = true },
 		},
 	},
+	garden = {
+		name = "The Garden Stall",
+		keeper = "Sumana the Garland-Maker",
+		robux = true, -- the Robux items (Config.Robux) are listed at the bottom of this shop
+		stock = {
+			{ item = "tea", price = 15 },
+			{ item = "lantern_lotus", price = 60, once = true },
+			{ item = "lantern_jade", price = 60, once = true },
+			{ item = "lantern_sky", price = 60, once = true },
+			{ item = "trail_petals", price = 180, once = true },
+			{ item = "firefly", price = 200, once = true },
+			{ item = "trail_light", price = 240, once = true },
+			{ item = "butterfly", price = 260, once = true },
+		},
+	},
+}
+
+----------------------------------------------------------------------
+-- Things sold for Robux. They change only how things look, or are a gift to
+-- everyone in the game. Nothing here makes the journey easier.
+--
+-- HOW TO SWITCH ONE ON
+--   1. On create.roblox.com open the game, then Monetization.
+--   2. Make a Pass (for "passes") or a Developer Product (for "products"), set its price.
+--   3. Copy its ID number and put it below in place of the 0.
+-- While the number is 0 the item shows as "Coming soon" and cannot be bought.
+----------------------------------------------------------------------
+Config.Robux = {
+	passes = {
+		{ id = "patron", passId = 0, name = "Patron of the Temple", desc = "A thank-you for supporting the game: the white-and-gold Robe of the Patron, the Golden Path trail, and Golden Lanterns.", robe = "patron", items = { "trail_gold", "lantern_gold" } },
+	},
+	products = {
+		{ id = "flowers", productId = 0, name = "Offering of Flowers", desc = "Petals fall around every player in the game, with your name. It gives you nothing but the joy of giving. Can be offered again and again." },
+	},
 }
 
 ----------------------------------------------------------------------
@@ -236,6 +283,7 @@ Config.Robes = {
 	{ id = "black", name = "Black Robe", desc = "The black koromo of the Zen tradition of Japan.", price = 340, main = { 34, 34, 38 }, sash = { 110, 84, 50 }, bare = false },
 	{ id = "pilgrim", name = "Pilgrim's Robe", desc = "For one who has found all twenty Bodhi leaves.", reward = true, main = { 70, 122, 78 }, sash = { 214, 178, 80 }, bare = true },
 	{ id = "golden", name = "Robe of Awakening", desc = "For one who has sat beneath the Bodhi tree through the three watches of the night.", reward = true, main = { 244, 196, 70 }, sash = { 255, 232, 150 }, bare = true, glow = true },
+	{ id = "patron", name = "Robe of the Patron", desc = "White edged with gold: the dress of the lay supporters who have kept the temples standing for two and a half thousand years. Comes with Patron of the Temple.", pass = "patron", main = { 248, 244, 232 }, sash = { 226, 178, 54 }, bare = false },
 }
 
 ----------------------------------------------------------------------
@@ -361,7 +409,7 @@ Config.Animals = {
 }
 
 return Config
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX2"><Properties><string name="Name">Sounds</string><ProtectedString name="Source"><![CDATA[-- The Bodhi Path: music and sound effects.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX3"><Properties><string name="Name">Sounds</string><ProtectedString name="Source"><![CDATA[-- The Bodhi Path: music and sound effects.
 --
 -- HOW TO ADD A SOUND
 --   1. In Roblox Studio open the Toolbox, choose the Audio tab, and find a sound you like.
@@ -419,21 +467,32 @@ Sounds.Effects = {
 	hit = 9113818671, -- a strike lands on a shadow (soft thud)
 	beads = 6691605753, -- a mala bead of light is sent (light shimmer or ping)
 	metta = 99384056183835, -- loving-kindness radiates (warm swell or chord)
-	bowl = 0, -- the singing bowl (a long singing-bowl tone)
-	meditate = 0, -- you sit down to meditate (a single soft chime)
-	petals = 0, -- a shadow is dispelled into petals (gentle sparkle)
-	hurt = 0, -- your Calm is struck (dull low hit)
-	overwhelm = 0, -- your Calm runs out (low fading tone)
-	merit = 0, -- you earn merit (small bright chime)
-	quest = 0, -- a new step of the journey begins (short gong or fanfare)
-	pickup = 0, -- you pick something up: leaf, lotus, kusa (soft pluck)
-	talk = 0, -- someone begins to speak (soft page-turn or blip)
-	buy = 0, -- you buy something or put on a robe (cloth or coin sound)
-	pray = 0, -- you pray at a shrine (small bell)
-	storm = 0, -- Mara sends a storm (thunder crack)
-	quake = 0, -- the earth answers as your witness (deep rumble)
-	awaken = 0, -- the moment of awakening (long shimmering rise)
+	bowl = 138570431689848, -- the singing bowl (a long singing-bowl tone)
+	meditate = 9116395089, -- you sit down to meditate (a single soft chime)
+	petals = 110241936966089, -- a shadow is dispelled into petals (gentle sparkle)
+	hurt = 9113486062, -- your Calm is struck (dull low hit)
+	overwhelm = 107073250463751, -- your Calm runs out (low fading tone)
+	merit = 1839901345, -- you earn merit (small bright chime)
+	quest = 89056648074625, -- a new step of the journey begins (short gong or fanfare)
+	pickup = 1008455422378, -- you pick something up: leaf, lotus, kusa (soft pluck)
+	talk = 132723137731070, -- someone begins to speak (soft page-turn or blip)
+	buy = 607662191, -- you buy something or put on a robe (cloth or coin sound)
+	pray = 9113420607, -- you pray at a shrine (small bell)
+	storm = 71511119515611, -- Mara sends a storm (thunder crack)
+	quake = 9114220333, -- the earth answers as your witness (deep rumble)
+	awaken = 121538758381608, -- the moment of awakening (long shimmering rise)
 	splash = 142431247, -- you drop into deep water (a splash)
+}
+
+-- Effects that are too long: how many seconds to play before fading away gently.
+-- (Any effect not listed here plays in full, up to 12 seconds.)
+Sounds.EffectLength = {
+	bowl = 6,
+}
+
+-- Effects where only the ending is wanted: play just the last so-many seconds.
+Sounds.EffectTail = {
+	merit = 2,
 }
 
 ----------------------------------------------------------------------
@@ -446,7 +505,7 @@ Sounds.Ambient = {
 }
 
 return Sounds
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX3"><Properties><string name="Name">Story</string><ProtectedString name="Source"><![CDATA[-- The Bodhi Path: the story.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX4"><Properties><string name="Name">Story</string><ProtectedString name="Source"><![CDATA[-- The Bodhi Path: the story.
 -- People to meet, the steps of the journey, and the teachings written on the Bodhi leaves.
 --
 -- The journey follows the traditional account of how Siddhartha Gautama became the Buddha
@@ -489,6 +548,8 @@ Story.NPCs = {
 		lines = { "Tea, incense, lamps for the shrine. Take what helps you on the road." } },
 	{ id = "tailor", name = "Visakha the Robe-Maker", look = "villager_f", x = 204, z = -66, face = { x = 204, z = -40 }, robes = true,
 		lines = { "A robe is only cloth, friend. But it reminds the one who wears it what they have set out to do." } },
+	{ id = "garland", name = "Sumana the Garland-Maker", look = "villager_m", x = 4, z = -109, face = { x = 4, z = -90 }, shop = "garden",
+		lines = { "Flowers fade by evening. That is why they are worth offering." } },
 	{ id = "alms1", name = "Farmer Gopal", look = "farmer", x = 150, z = -13, face = { x = 150, z = 0 }, alms = true,
 		lines = { "The rains were kind this year. There is enough rice to share." } },
 	{ id = "alms2", name = "Grandmother Amba", look = "elder_f", x = 180, z = 13, face = { x = 180, z = 0 }, alms = true,
@@ -945,7 +1006,7 @@ Story.OverwhelmLines = {
 }
 
 return Story
-]]></ProtectedString></Properties></Item></Item></Item><Item class="ServerScriptService" referent="RBX24"><Properties><string name="Name">ServerScriptService</string></Properties><Item class="Folder" referent="RBX23"><Properties><string name="Name">Server</string></Properties><Item class="ModuleScript" referent="RBX6"><Properties><string name="Name">Boss</string><ProtectedString name="Source"><![CDATA[-- Boss: the meeting with Mara, told in the order the old stories tell it.
+]]></ProtectedString></Properties></Item></Item></Item><Item class="ServerScriptService" referent="RBX28"><Properties><string name="Name">ServerScriptService</string></Properties><Item class="Folder" referent="RBX27"><Properties><string name="Name">Server</string></Properties><Item class="ModuleScript" referent="RBX7"><Properties><string name="Name">Boss</string><ProtectedString name="Source"><![CDATA[-- Boss: the meeting with Mara, told in the order the old stories tell it.
 --   1. Mara's host attacks.
 --   2. Mara sends nine storms. To one who sits unmoved, they fall as flowers.
 --   3. Mara himself attacks from the back of the elephant Girimekhala, hurling his discus.
@@ -1413,7 +1474,7 @@ function Boss.start(objects)
 end
 
 return Boss
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX7"><Properties><string name="Name">Buildings</string><ProtectedString name="Source"><![CDATA[-- Buildings: temples, stupas, gateways, houses and the other architecture of the journey.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX8"><Properties><string name="Name">Buildings</string><ProtectedString name="Source"><![CDATA[-- Buildings: temples, stupas, gateways, houses and the other architecture of the journey.
 -- Styles are drawn from Buddhist India and the wider Buddhist world: the stone spire of the
 -- Mahabodhi temple, the domed stupas and carved gateways (toranas) of Sanchi, mud-walled
 -- village houses, tiered East Asian roofs, Tibetan prayer wheels and prayer flags.
@@ -2141,7 +2202,7 @@ function B.bodhiTree(parent, o)
 end
 
 return B
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX8"><Properties><string name="Name">Combat</string><ProtectedString name="Source"><![CDATA[-- Combat: Calm (the player's "health"), the monk's abilities, and meditation.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX9"><Properties><string name="Name">Combat</string><ProtectedString name="Source"><![CDATA[-- Combat: Calm (the player's "health"), the monk's abilities, and meditation.
 --
 -- Nothing is killed in this game. Mara's soldiers are troubles of the mind; when they are
 -- met steadily they are "dispelled" and fall apart into petals, as Mara's weapons turned
@@ -3111,7 +3172,212 @@ function Combat.start()
 end
 
 return Combat
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX9"><Properties><string name="Name">Enemies</string><ProtectedString name="Source"><![CDATA[-- Enemies: Mara's ten armies and his three daughters.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX10"><Properties><string name="Name">Cosmetics</string><ProtectedString name="Source"><![CDATA[-- Cosmetics: things that change only how a player looks. Trails that follow behind,
+-- small companions that float at the shoulder, and the colours of their sky lanterns.
+-- None of them makes the journey easier.
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("Config"))
+local PlayerData = require(script.Parent.PlayerData)
+
+local Cosmetics = {}
+
+local FEET = -2.8 -- how far below the middle of the body the ground is
+
+local function attachment(root, x, y, z)
+	local a = Instance.new("Attachment")
+	a.Name = "Cosmetic"
+	a.Position = Vector3.new(x, y, z)
+	a.Parent = root
+	return a
+end
+
+local function ribbon(root, color, width, life)
+	local a0 = attachment(root, -width / 2, FEET, 0.4)
+	local a1 = attachment(root, width / 2, FEET, 0.4)
+	local trail = Instance.new("Trail")
+	trail.Name = "Cosmetic"
+	trail.Attachment0 = a0
+	trail.Attachment1 = a1
+	trail.Lifetime = life
+	trail.MinLength = 0.1
+	trail.LightEmission = 0.8
+	trail.Color = ColorSequence.new(color)
+	trail.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.25), NumberSequenceKeypoint.new(1, 1) })
+	trail.Parent = root
+end
+
+local function drift(root, color, rate, size)
+	local e = Instance.new("ParticleEmitter")
+	e.Name = "Cosmetic"
+	e.Rate = rate
+	e.Lifetime = NumberRange.new(1.4, 2.4)
+	e.Speed = NumberRange.new(0.4, 1.4)
+	e.SpreadAngle = Vector2.new(180, 180)
+	e.Acceleration = Vector3.new(0, -2.5, 0)
+	e.Rotation = NumberRange.new(0, 360)
+	e.RotSpeed = NumberRange.new(-120, 120)
+	e.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, size), NumberSequenceKeypoint.new(1, size * 0.3) })
+	e.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.1), NumberSequenceKeypoint.new(0.7, 0.2), NumberSequenceKeypoint.new(1, 1) })
+	e.Color = ColorSequence.new(color)
+	e.LightEmission = 0.3
+	e.Parent = attachment(root, 0, FEET + 1.2, 0.8)
+end
+
+local Trails = {}
+
+function Trails.trail_petals(root)
+	drift(root, Color3.fromRGB(255, 176, 204), 9, 0.45)
+end
+
+function Trails.trail_light(root)
+	ribbon(root, Color3.fromRGB(255, 236, 190), 1.6, 1.3)
+end
+
+function Trails.trail_gold(root)
+	ribbon(root, Color3.fromRGB(255, 206, 80), 2.2, 1.8)
+	drift(root, Color3.fromRGB(255, 220, 120), 5, 0.25)
+end
+
+-- A small thing that floats beside the shoulder.
+local function floater(character, root, size, color, material)
+	local p = Instance.new("Part")
+	p.Name = "CosmeticPart"
+	p.Shape = Enum.PartType.Ball
+	p.Size = size
+	p.Color = color
+	p.Material = material
+	p.CanCollide = false
+	p.CanTouch = false
+	p.CanQuery = false
+	p.Massless = true
+	p.CastShadow = false
+	p.CFrame = root.CFrame * CFrame.new(1.9, 2.5, 0.5)
+	local weld = Instance.new("Weld")
+	weld.Part0 = root
+	weld.Part1 = p
+	weld.C0 = CFrame.new(1.9, 2.5, 0.5)
+	weld.Parent = p
+	p.Parent = character
+	return p
+end
+
+local function wing(body, side, color)
+	local w = Instance.new("Part")
+	w.Name = "Wing"
+	w.Size = Vector3.new(0.7, 0.05, 0.6)
+	w.Color = color
+	w.Material = Enum.Material.Neon
+	w.CanCollide = false
+	w.CanTouch = false
+	w.CanQuery = false
+	w.Massless = true
+	w.CastShadow = false
+	w.CFrame = body.CFrame * CFrame.new(side * 0.36, 0.1, 0) * CFrame.Angles(0, 0, math.rad(side * 28))
+	local weld = Instance.new("WeldConstraint")
+	weld.Part0 = body
+	weld.Part1 = w
+	weld.Parent = w
+	w.Parent = body
+end
+
+local Companions = {}
+
+function Companions.firefly(character, root)
+	local body = floater(character, root, Vector3.new(0.36, 0.36, 0.36), Color3.fromRGB(226, 255, 130), Enum.Material.Neon)
+	local light = Instance.new("PointLight")
+	light.Color = Color3.fromRGB(226, 255, 150)
+	light.Range = 12
+	light.Brightness = 1.2
+	light.Shadows = false
+	light.Parent = body
+	local e = Instance.new("ParticleEmitter")
+	e.Rate = 4
+	e.Lifetime = NumberRange.new(0.6, 1.2)
+	e.Speed = NumberRange.new(0.2, 0.8)
+	e.SpreadAngle = Vector2.new(180, 180)
+	e.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.18), NumberSequenceKeypoint.new(1, 0) })
+	e.Color = ColorSequence.new(Color3.fromRGB(226, 255, 150))
+	e.LightEmission = 1
+	e.Parent = body
+end
+
+function Companions.butterfly(character, root)
+	local body = floater(character, root, Vector3.new(0.2, 0.2, 0.2), Color3.fromRGB(60, 40, 30), Enum.Material.SmoothPlastic)
+	wing(body, -1, Color3.fromRGB(255, 160, 60))
+	wing(body, 1, Color3.fromRGB(255, 160, 60))
+end
+
+-- Put on (or take off) whatever the player has chosen to wear.
+function Cosmetics.apply(player)
+	local profile = PlayerData.get(player)
+	local character = player.Character
+	local root = character and character:FindFirstChild("HumanoidRootPart")
+	if not profile or not root then
+		return
+	end
+	for _, child in ipairs(root:GetChildren()) do
+		if child.Name == "Cosmetic" then
+			child:Destroy()
+		end
+	end
+	for _, child in ipairs(character:GetChildren()) do
+		if child.Name == "CosmeticPart" then
+			child:Destroy()
+		end
+	end
+	local worn = profile.worn or {}
+	local trail = worn.trail
+	if trail and Trails[trail] and (profile.inv[trail] or 0) > 0 then
+		Trails[trail](root)
+	end
+	local companion = worn.companion
+	if companion and Companions[companion] and (profile.inv[companion] or 0) > 0 then
+		Companions[companion](character, root)
+	end
+end
+
+-- Wear this item, or take it off if it is already on.
+function Cosmetics.toggle(player, itemId)
+	local profile = PlayerData.get(player)
+	local def = Config.Items[itemId]
+	if not profile or not def or not def.slot or (profile.inv[itemId] or 0) < 1 then
+		return
+	end
+	if profile.worn[def.slot] == itemId then
+		profile.worn[def.slot] = nil
+	else
+		profile.worn[def.slot] = itemId
+	end
+	Cosmetics.apply(player)
+end
+
+-- One of the lantern colours this player owns, or nil for the ordinary warm colours.
+function Cosmetics.lanternColor(player, rng)
+	local profile = PlayerData.get(player)
+	if not profile then
+		return nil
+	end
+	local owned = {}
+	for id, def in pairs(Config.Items) do
+		if def.lanternColor and (profile.inv[id] or 0) > 0 then
+			table.insert(owned, def.lanternColor)
+		end
+	end
+	if #owned == 0 then
+		return nil
+	end
+	table.sort(owned, function(a, b)
+		return a[1] * 65536 + a[2] * 256 + a[3] < b[1] * 65536 + b[2] * 256 + b[3]
+	end)
+	local c = owned[rng:NextInteger(1, #owned)]
+	return Color3.fromRGB(c[1], c[2], c[3])
+end
+
+return Cosmetics
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX11"><Properties><string name="Name">Enemies</string><ProtectedString name="Source"><![CDATA[-- Enemies: Mara's ten armies and his three daughters.
 -- Soldiers appear only where players are nearby, chase them, and wear down their Calm.
 -- Each army has its own character: Hunger drains you from a distance, Sloth slows you,
 -- Doubt never stays where you look for it, and so on (see Config.Enemies).
@@ -3388,7 +3654,318 @@ function Enemies.start()
 end
 
 return Enemies
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX10"><Properties><string name="Name">Interact</string><ProtectedString name="Source"><![CDATA[-- Interact: everything a player can use in the world or choose in a window.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX12"><Properties><string name="Name">Garden</string><ProtectedString name="Source"><![CDATA[-- Garden: the Pilgrims' Garden, a quiet corner of the temple compound where players
+-- can meet. Nothing here is part of the story and no shadow comes near it.
+--   * a tea pavilion with cushions to sit on, and a pot of tea to pour for friends
+--   * five song bells and a drum that anyone can play
+--   * sky lanterns to release
+--   * a meditation circle that gives merit only when people sit there together
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+
+local Kit = require(script.Parent.Kit)
+local Props = require(script.Parent.Props)
+
+local C = Kit.C
+local M = Enum.Material
+
+local Garden = {}
+
+local CENTRE = { x = -28, z = -94 }
+local TEA = { x = -46, z = -94 }
+local CIRCLE = { x = -10, z = -96 }
+local CIRCLE_RADIUS = 13
+
+local SOFT = { collide = false, shadow = false }
+
+local function V(x, y, z)
+	return Vector3.new(x, y, z)
+end
+
+-- A cushion or bench that a player can really sit on.
+local function seat(parent, cf, size, color)
+	local s = Instance.new("Seat")
+	s.Name = "Cushion"
+	s.Anchored = true
+	s.Size = size
+	s.Color = color
+	s.Material = M.Fabric
+	s.CFrame = cf
+	s.Parent = parent
+	return s
+end
+
+----------------------------------------------------------------------
+-- Building the garden (called while the world is being made)
+----------------------------------------------------------------------
+function Garden.build(ctx, parent)
+	local root = Kit.folder(parent, "PilgrimsGarden")
+	local things = { bells = {} }
+
+	-- keep trees and flowers out of the garden and off its path
+	ctx.reserve(CENTRE.x, CENTRE.z, 31)
+	for _, z in ipairs({ -42, -50, -58, -66 }) do
+		ctx.reserve(CENTRE.x, z, 6)
+	end
+
+	-- the path from the courtyard, and a small paved square in the middle
+	ctx.pave(CENTRE.x - 4, CENTRE.x + 4, -70, -36, M.Limestone)
+	ctx.pave(CENTRE.x - 9, CENTRE.x + 9, CENTRE.z - 9, CENTRE.z + 9, M.Limestone)
+	Props.signpost(root, Kit.at(CENTRE.x + 7, -39, 0), "Pilgrims' Garden")
+	Props.flags(root, V(CENTRE.x - 22, 13, -70), V(CENTRE.x + 22, 13, -70), true)
+	for _, sx in ipairs({ -1, 1 }) do
+		for _, sz in ipairs({ -1, 1 }) do
+			Props.lantern(root, Kit.at(CENTRE.x + sx * 11, CENTRE.z + sz * 11, 0))
+		end
+	end
+
+	-- two benches beside the way in
+	for _, sx in ipairs({ -1, 1 }) do
+		local x = CENTRE.x + sx * 10
+		seat(root, CFrame.new(x, 1.7, -76) * CFrame.Angles(0, math.rad(180), 0), V(7, 0.5, 2.2), C.wood).Material = M.WoodPlanks
+		Kit.block(root, CFrame.new(x - 3, 0.75, -76), V(0.5, 1.5, 2), C.woodDark, M.Wood)
+		Kit.block(root, CFrame.new(x + 3, 0.75, -76), V(0.5, 1.5, 2), C.woodDark, M.Wood)
+	end
+
+	-- the tea pavilion
+	do
+		local o = Kit.at(TEA.x, TEA.z, 0)
+		Kit.cyl(root, o * CFrame.new(0, 0.4, 0), 19, 0.8, C.wood, M.WoodPlanks)
+		for i = 0, 5 do
+			local a = i / 6 * math.pi * 2 + math.pi / 6
+			Kit.cyl(root, o * CFrame.new(math.cos(a) * 8.4, 5.6, math.sin(a) * 8.4), 0.8, 9.6, C.woodRed, M.Wood)
+		end
+		Kit.cyl(root, o * CFrame.new(0, 10.6, 0), 21, 0.6, C.woodDark, M.Wood, { collide = false })
+		Kit.blob(root, o * CFrame.new(0, 12.6, 0), V(23, 5, 23), C.tileTeal, M.Slate, { collide = false })
+		Kit.ball(root, o * CFrame.new(0, 15.6, 0), 1.6, C.goldBright, M.Metal, SOFT)
+		-- the low table and the teapot
+		Kit.cyl(root, o * CFrame.new(0, 1.4, 0), 5.4, 1.2, C.woodDark, M.Wood)
+		local pot = Kit.ball(root, o * CFrame.new(0, 2.7, 0), 1.5, C.bronze, M.Metal, SOFT)
+		Kit.block(root, o * CFrame.new(0.95, 2.8, 0) * CFrame.Angles(0, 0, math.rad(-35)), V(0.9, 0.22, 0.22), C.bronze, M.Metal, SOFT)
+		Kit.ball(root, o * CFrame.new(0, 3.55, 0), 0.4, C.gold, M.Metal, SOFT)
+		Kit.smoke(pot, Color3.fromRGB(240, 240, 240))
+		for i = 0, 5 do
+			local a = i / 6 * math.pi * 2
+			Kit.cyl(root, o * CFrame.new(math.cos(a) * 1.9, 2.15, math.sin(a) * 1.9), 0.5, 0.3, C.ivory, M.SmoothPlastic, SOFT)
+			local at = (o * CFrame.new(math.cos(a) * 5.4, 1.1, math.sin(a) * 5.4)).Position
+			seat(root, CFrame.new(at, V(o.Position.X, at.Y, o.Position.Z)), V(2.6, 0.6, 2.6), (i % 2 == 0) and C.maroon or C.saffron)
+		end
+		local lamp = Kit.ball(root, o * CFrame.new(0, 9.4, 0), 1, Color3.fromRGB(255, 214, 150), M.Neon, SOFT)
+		Kit.light(lamp, Color3.fromRGB(255, 205, 140), 30, 1.2)
+		things.teapot = pot
+	end
+
+	-- the meditation circle: eight cushions around a stone lantern
+	do
+		Kit.cyl(root, CFrame.new(CIRCLE.x, 0.15, CIRCLE.z), 22, 0.3, C.sandstoneLight, M.Sandstone)
+		Props.lantern(root, Kit.at(CIRCLE.x, CIRCLE.z, 0))
+		for i = 0, 7 do
+			local a = i / 8 * math.pi * 2
+			Kit.cyl(root, CFrame.new(CIRCLE.x + math.cos(a) * 8, 0.5, CIRCLE.z + math.sin(a) * 8), 3, 0.5, (i % 2 == 0) and C.saffron or C.maroon, M.Fabric)
+		end
+		things.circle = V(CIRCLE.x, 0, CIRCLE.z)
+	end
+
+	-- the song bells: five bells on a frame, low note to high note
+	do
+		local z = CENTRE.z - 21
+		Kit.cyl(root, CFrame.new(CENTRE.x - 9, 3.5, z), 0.7, 7, C.woodRed, M.Wood)
+		Kit.cyl(root, CFrame.new(CENTRE.x + 9, 3.5, z), 0.7, 7, C.woodRed, M.Wood)
+		Kit.block(root, CFrame.new(CENTRE.x, 7.2, z), V(19.4, 0.6, 0.8), C.woodRed, M.Wood)
+		for i = 1, 5 do
+			local x = CENTRE.x - 9 + i * 3
+			local size = 2.3 - i * 0.22
+			Kit.block(root, CFrame.new(x, 6.5, z), V(0.12, 1, 0.12), C.woodDark, M.Wood, SOFT)
+			local bell = Kit.cyl(root, CFrame.new(x, 6 - size / 2, z), size, size, C.gold, M.Metal, { collide = false })
+			Kit.ball(root, CFrame.new(x, 6 - size - 0.15, z), 0.45, C.bronze, M.Metal, SOFT)
+			table.insert(things.bells, bell)
+		end
+		-- the drum
+		local dx = CENTRE.x + 15
+		Kit.cyl(root, CFrame.new(dx, 0.6, z + 2), 3.2, 1.2, C.woodDark, M.Wood)
+		local drum = Kit.cyl(root, CFrame.new(dx, 2.6, z + 2), 4.4, 2.8, C.woodRed, M.Wood)
+		Kit.cyl(root, CFrame.new(dx, 4.05, z + 2), 4.2, 0.1, C.ivory, M.Fabric, SOFT)
+		things.drum = drum
+	end
+
+	-- the lantern table in the middle of the square
+	do
+		local table_ = Kit.cyl(root, CFrame.new(CENTRE.x, 1.2, CENTRE.z), 4.6, 2.4, C.woodDark, M.Wood)
+		for i = 0, 2 do
+			local a = i / 3 * math.pi * 2
+			local paper = Kit.block(root, CFrame.new(CENTRE.x + math.cos(a) * 1.1, 3.3, CENTRE.z + math.sin(a) * 1.1), V(1.1, 1.6, 1.1), Color3.fromRGB(255, 214, 150), M.Neon, SOFT)
+			if i == 0 then
+				Kit.light(paper, Color3.fromRGB(255, 200, 120), 20, 1.2)
+			end
+		end
+		things.lanternTable = table_
+	end
+
+	-- the garland-maker's stall
+	Props.stall(root, Kit.at(4, -116, Kit.FACE_POS_Z), C.lotusPink, { C.lotusPink, C.lotusWhite, C.saffron, C.flagYellow })
+	ctx.reserve(4, -113, 9)
+
+	ctx.objects.garden = things
+	return root
+end
+
+----------------------------------------------------------------------
+-- Using the garden (called once the game is running)
+----------------------------------------------------------------------
+local NOTES = { 1, 1.122, 1.26, 1.498, 1.682 } -- a five-note scale, so anything played sounds pleasant
+local LANTERN_COLORS = {
+	Color3.fromRGB(255, 206, 130), Color3.fromRGB(255, 170, 110), Color3.fromRGB(255, 226, 170),
+	Color3.fromRGB(255, 150, 140), Color3.fromRGB(250, 190, 90),
+}
+
+function Garden.start(objects)
+	local things = objects.garden
+	if not things then
+		return
+	end
+	local Remotes = require(script.Parent.Remotes)
+	local PlayerData = require(script.Parent.PlayerData)
+	local Combat = require(script.Parent.Combat)
+	local Cosmetics = require(script.Parent.Cosmetics)
+	local rng = Random.new()
+
+	-- song bells
+	for i, bell in ipairs(things.bells) do
+		local prompt = Kit.prompt(bell, "Ring", "Song Bell", 8)
+		prompt.Triggered:Connect(function()
+			Remotes.fx("note", { pos = bell.Position, pitch = NOTES[i] or 1 })
+			Remotes.fx("ring", { pos = bell.Position, radius = 4, color = Color3.fromRGB(255, 226, 150), time = 0.5 })
+		end)
+	end
+
+	-- the drum
+	if things.drum then
+		local prompt = Kit.prompt(things.drum, "Beat", "Garden Drum", 9)
+		prompt.Triggered:Connect(function()
+			Remotes.fx("drum", { pos = things.drum.Position })
+			Remotes.fx("ring", { pos = things.drum.Position + Vector3.new(0, 2, 0), radius = 6, color = Color3.fromRGB(255, 150, 110), time = 0.35 })
+		end)
+	end
+
+	-- tea, poured for everyone sitting near
+	if things.teapot then
+		local prompt = Kit.prompt(things.teapot, "Pour tea", "Teapot", 10)
+		prompt.Triggered:Connect(function(player)
+			local session = PlayerData.session(player)
+			if not session then
+				return
+			end
+			local now = os.clock()
+			if now < (session.teaAt or 0) then
+				Remotes.notify(player, "The pot is still steeping. Give it a moment.", "info")
+				return
+			end
+			session.teaAt = now + 45
+			Combat.heal(player, 30)
+			local friends = 0
+			for _, other in ipairs(Players:GetPlayers()) do
+				if other ~= player then
+					local pos = Combat.position(other)
+					if pos and (pos - things.teapot.Position).Magnitude <= 18 then
+						friends = friends + 1
+						Combat.heal(other, 30)
+						Remotes.notify(other, player.DisplayName .. " pours you a cup of tea.", "good")
+					end
+				end
+			end
+			if friends > 0 then
+				PlayerData.addMerit(player, math.min(6, friends * 2))
+				Remotes.notify(player, "You pour tea for " .. friends .. (friends == 1 and " friend." or " friends."), "good")
+			else
+				Remotes.notify(player, "You pour yourself a cup of tea. It is better shared.", "info")
+			end
+		end)
+	end
+
+	-- sky lanterns
+	if things.lanternTable then
+		local flying = 0
+		local prompt = Kit.prompt(things.lanternTable, "Release a sky lantern", "Lantern Table", 10)
+		prompt.Triggered:Connect(function(player)
+			local session = PlayerData.session(player)
+			if not session then
+				return
+			end
+			local now = os.clock()
+			if now < (session.lanternAt or 0) or flying >= 24 then
+				return
+			end
+			session.lanternAt = now + 4
+			flying = flying + 1
+			local start = things.lanternTable.Position + Vector3.new(rng:NextNumber(-3, 3), 4, rng:NextNumber(-3, 3))
+			local lantern = Instance.new("Part")
+			lantern.Name = "SkyLantern"
+			lantern.Size = Vector3.new(1.6, 2.2, 1.6)
+			lantern.Material = Enum.Material.Neon
+			lantern.Color = Cosmetics.lanternColor(player, rng) or LANTERN_COLORS[rng:NextInteger(1, #LANTERN_COLORS)]
+			lantern.Anchored = true
+			lantern.CanCollide = false
+			lantern.CanTouch = false
+			lantern.CanQuery = false
+			lantern.CastShadow = false
+			lantern.CFrame = CFrame.new(start)
+			Kit.light(lantern, lantern.Color, 18, 1.4)
+			lantern.Parent = workspace
+			local drift = Vector3.new(rng:NextNumber(-45, 45), rng:NextNumber(130, 170), rng:NextNumber(-45, 45))
+			TweenService:Create(lantern, TweenInfo.new(32, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), { CFrame = CFrame.new(start + drift) }):Play()
+			task.delay(28, function()
+				if lantern.Parent then
+					TweenService:Create(lantern, TweenInfo.new(4), { Transparency = 1 }):Play()
+				end
+			end)
+			task.delay(32.5, function()
+				lantern:Destroy()
+				flying = flying - 1
+			end)
+		end)
+	end
+
+	-- the meditation circle: merit comes only from sitting with others
+	if things.circle then
+		Combat.onMeditateTick(function(player, pos, dt)
+			local flat = Vector3.new(pos.X - things.circle.X, 0, pos.Z - things.circle.Z)
+			if flat.Magnitude > CIRCLE_RADIUS then
+				return
+			end
+			local session = PlayerData.session(player)
+			if not session then
+				return
+			end
+			session.circleTime = (session.circleTime or 0) + dt
+			if session.circleTime < 15 then
+				return
+			end
+			session.circleTime = 0
+			local companions = 0
+			for _, other in ipairs(Players:GetPlayers()) do
+				local theirs = other ~= player and PlayerData.session(other)
+				local at = theirs and theirs.meditating and Combat.position(other)
+				if at and Vector3.new(at.X - things.circle.X, 0, at.Z - things.circle.Z).Magnitude <= CIRCLE_RADIUS then
+					companions = companions + 1
+				end
+			end
+			if companions > 0 then
+				PlayerData.addMerit(player, math.min(4, companions))
+				if not session.circleTold then
+					session.circleTold = true
+					Remotes.notify(player, "You are sitting together. Each companion in the circle adds merit.", "good")
+				end
+			elseif not session.circleTold then
+				session.circleTold = true
+				Remotes.notify(player, "The circle is for sitting together. When others meditate here with you, everyone earns merit.", "info")
+			end
+		end)
+	end
+end
+
+return Garden
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX13"><Properties><string name="Name">Interact</string><ProtectedString name="Source"><![CDATA[-- Interact: everything a player can use in the world or choose in a window.
 -- The temple bell, prayer wheels, shrines, things to pick up, the shops, robes,
 -- the Eightfold Path, and using items from the Bag.
 
@@ -3405,6 +3982,9 @@ local Quests = require(script.Parent.Quests)
 local Combat = require(script.Parent.Combat)
 local Robes = require(script.Parent.Robes)
 local Kit = require(script.Parent.Kit)
+local Garden = require(script.Parent.Garden)
+local Cosmetics = require(script.Parent.Cosmetics)
+local Robux = require(script.Parent.Robux)
 
 local Interact = {}
 
@@ -3770,6 +4350,8 @@ function Actions.UseItem(player, itemId)
 		end
 	elseif def.use == "equip" then
 		Combat.chooseWeapon(player, itemId)
+	elseif def.use == "wear" then
+		Cosmetics.toggle(player, itemId)
 	elseif def.use == "quest" then
 		if not Quests.active(player, "use", itemId) then
 			Remotes.notify(player, "Not yet.", "info")
@@ -3822,6 +4404,10 @@ function Actions.Buy(player, shopId, itemId)
 				profile.weapon = itemId
 				Combat.equipWeapon(player)
 			end
+			if def.use == "wear" then
+				profile.worn[def.slot] = itemId
+				Cosmetics.apply(player)
+			end
 			PlayerData.push(player)
 			return
 		end
@@ -3832,6 +4418,10 @@ function Actions.BuyRobe(player, robeId)
 	local profile = PlayerData.get(player)
 	local def = type(robeId) == "string" and Robes.def(robeId) or nil
 	if not profile or not def or profile.robes[robeId] then
+		return
+	end
+	if def.pass then
+		Remotes.notify(player, "This robe comes with " .. Config.Robux.passes[1].name .. ". Ask at the Garden Stall.", "info")
 		return
 	end
 	if def.quest or def.reward or not def.price then
@@ -3858,6 +4448,18 @@ function Actions.WearRobe(player, robeId)
 	profile.robe = robeId
 	PlayerData.push(player)
 	Robes.apply(player)
+end
+
+function Actions.BuyPass(player, id)
+	if type(id) == "string" then
+		Robux.buyPass(player, id)
+	end
+end
+
+function Actions.BuyProduct(player, id)
+	if type(id) == "string" then
+		Robux.buyProduct(player, id)
+	end
 end
 
 function Actions.BuyPath(player)
@@ -3963,10 +4565,18 @@ function Interact.start(objects)
 	setupStoryPlaces(objects)
 	setupCollectibles(objects)
 	task.spawn(watchPlayers)
+	for name, start in pairs({ Garden = function()
+		Garden.start(objects)
+	end, Robux = Robux.start }) do
+		local ok, err = pcall(start)
+		if not ok then
+			warn("[Bodhi Path] " .. name .. " could not start: " .. tostring(err))
+		end
+	end
 end
 
 return Interact
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX11"><Properties><string name="Name">Kit</string><ProtectedString name="Source"><![CDATA[-- Kit: small helpers for building the world out of simple parts.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX14"><Properties><string name="Name">Kit</string><ProtectedString name="Source"><![CDATA[-- Kit: small helpers for building the world out of simple parts.
 -- Every structure in the game is assembled from these (blocks, cylinders, balls),
 -- so nothing has to be made by hand in Roblox Studio.
 
@@ -4263,7 +4873,7 @@ function Kit.weld(part, to)
 end
 
 return Kit
-]]></ProtectedString></Properties></Item><Item class="Script" referent="RBX12"><Properties><string name="Name">Main</string><ProtectedString name="Source"><![CDATA[-- The Bodhi Path: server start-up.
+]]></ProtectedString></Properties></Item><Item class="Script" referent="RBX15"><Properties><string name="Name">Main</string><ProtectedString name="Source"><![CDATA[-- The Bodhi Path: server start-up.
 -- Builds the world, then looks after each player who arrives.
 
 local Players = game:GetService("Players")
@@ -4287,6 +4897,7 @@ local NPCs = require(script.Parent.NPCs)
 local Robes = require(script.Parent.Robes)
 local Interact = require(script.Parent.Interact)
 local Boss = require(script.Parent.Boss)
+local Robux = require(script.Parent.Robux)
 
 local function step(name, fn)
 	local ok, err = pcall(fn)
@@ -4411,6 +5022,12 @@ local function onPlayer(player)
 	end
 	player:LoadCharacter()
 	Quests.enter(player, true)
+	task.spawn(function()
+		local ok, err = pcall(Robux.check, player)
+		if not ok then
+			warn("[Bodhi Path] could not check passes: " .. tostring(err))
+		end
+	end)
 	if profile.stage == 1 then
 		Remotes.dialog(player, {
 			{ "", "Welcome to " .. Config.Title .. "." },
@@ -4443,7 +5060,7 @@ for _, player in ipairs(Players:GetPlayers()) do
 end
 
 print("[Bodhi Path] Ready.")
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX13"><Properties><string name="Name">NPCs</string><ProtectedString name="Source"><![CDATA[-- NPCs: the people of the story. They stand (or sit) where the story needs them,
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX16"><Properties><string name="Name">NPCs</string><ProtectedString name="Source"><![CDATA[-- NPCs: the people of the story. They stand (or sit) where the story needs them,
 -- speak when spoken to, give alms, and keep the shops. A few simply wander so the
 -- villages feel alive.
 
@@ -4645,7 +5262,7 @@ function NPCs.start()
 end
 
 return NPCs
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX14"><Properties><string name="Name">PlayerData</string><ProtectedString name="Source"><![CDATA[-- PlayerData: each player's saved progress (merit, bag, robes, how far they have walked)
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX17"><Properties><string name="Name">PlayerData</string><ProtectedString name="Source"><![CDATA[-- PlayerData: each player's saved progress (merit, bag, robes, how far they have walked)
 -- plus short-lived things that last only for one visit (cooldowns, blessings).
 
 local Players = game:GetService("Players")
@@ -4697,6 +5314,7 @@ local function defaults()
 		weapon = "auto",
 		symbols = {},
 		friends = {},
+		worn = {},
 	}
 end
 
@@ -4980,6 +5598,7 @@ function PlayerData.push(player)
 		symbols = profile.symbols,
 		friends = profile.friends,
 		almsGiven = almsGiven,
+		worn = profile.worn,
 		lotus = sessions[player] and sessions[player].lotus or {},
 	})
 end
@@ -5005,7 +5624,7 @@ game:BindToClose(function()
 end)
 
 return PlayerData
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX15"><Properties><string name="Name">Props</string><ProtectedString name="Source"><![CDATA[-- Props: trees, rocks, animals and small objects.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX18"><Properties><string name="Name">Props</string><ProtectedString name="Source"><![CDATA[-- Props: trees, rocks, animals and small objects.
 -- Every function takes the place to put the thing ("o", a ground-level frame) and
 -- builds it from simple parts. Structures treat -Z as "front".
 
@@ -5528,7 +6147,7 @@ function Props.symbol(parent, o, id)
 end
 
 return Props
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX16"><Properties><string name="Name">Quests</string><ProtectedString name="Source"><![CDATA[-- Quests: moves each player through the steps of the journey (see Story.Quests).
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX19"><Properties><string name="Name">Quests</string><ProtectedString name="Source"><![CDATA[-- Quests: moves each player through the steps of the journey (see Story.Quests).
 -- Other modules report what happened ("talked to the abbot", "dispelled a shadow")
 -- and this module works out whether the current step is now complete.
 
@@ -5702,7 +6321,7 @@ function Quests.progress(player, kind, target, amount)
 end
 
 return Quests
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX17"><Properties><string name="Name">Remotes</string><ProtectedString name="Source"><![CDATA[-- Remotes: the messages that travel between the server and each player's screen.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX20"><Properties><string name="Name">Remotes</string><ProtectedString name="Source"><![CDATA[-- Remotes: the messages that travel between the server and each player's screen.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -5763,7 +6382,7 @@ function Remotes.fxTo(player, name, data)
 end
 
 return Remotes
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX18"><Properties><string name="Name">Rig</string><ProtectedString name="Source"><![CDATA[-- Rig: makes people (and Mara's soldiers) out of the standard Roblox character body.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX21"><Properties><string name="Name">Rig</string><ProtectedString name="Source"><![CDATA[-- Rig: makes people (and Mara's soldiers) out of the standard Roblox character body.
 -- One blank body is created when the server starts; every villager, monk and shadow is a
 -- copy of it, recoloured and dressed with simple welded pieces (robes, wraps, turbans).
 
@@ -6319,7 +6938,7 @@ function Rig.animate(model, fast)
 end
 
 return Rig
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX19"><Properties><string name="Name">Robes</string><ProtectedString name="Source"><![CDATA[-- Robes: dresses a player's avatar as a monastic.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX22"><Properties><string name="Name">Robes</string><ProtectedString name="Source"><![CDATA[-- Robes: dresses a player's avatar as a monastic.
 -- The avatar keeps its own face, hair and body. Everything it was wearing (shirt, trousers,
 -- jackets, shoes, hats, backpacks and the like) is taken off and replaced by a robe in the
 -- chosen colours, with a wrap and a sash. "My Own Clothes" restores the avatar.
@@ -6331,6 +6950,7 @@ local Config = require(Shared:WaitForChild("Config"))
 local PlayerData = require(script.Parent.PlayerData)
 local Combat = require(script.Parent.Combat)
 local Rig = require(script.Parent.Rig)
+local Cosmetics = require(script.Parent.Cosmetics)
 
 local Robes = {}
 
@@ -6503,10 +7123,170 @@ function Robes.apply(player)
 	end
 
 	Combat.equipWeapon(player)
+	Cosmetics.apply(player)
 end
 
 return Robes
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX20"><Properties><string name="Name">World</string><ProtectedString name="Source"><![CDATA[-- World: builds the whole landscape when the server starts.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX23"><Properties><string name="Name">Robux</string><ProtectedString name="Source"><![CDATA[-- Robux: the few things that can be bought with Robux. They change only how things
+-- look, or are a gift to everyone in the game. Nothing here makes the journey easier.
+--
+-- The ID numbers live in Config.Robux. While an ID is 0 that item is "coming soon"
+-- and cannot be bought.
+
+local Players = game:GetService("Players")
+local MarketplaceService = game:GetService("MarketplaceService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("Config"))
+local Remotes = require(script.Parent.Remotes)
+local PlayerData = require(script.Parent.PlayerData)
+local Combat = require(script.Parent.Combat)
+local Cosmetics = require(script.Parent.Cosmetics)
+
+local Robux = {}
+
+local function passById(id)
+	for _, def in ipairs(Config.Robux.passes) do
+		if def.id == id then
+			return def
+		end
+	end
+	return nil
+end
+
+local function productById(id)
+	for _, def in ipairs(Config.Robux.products) do
+		if def.id == id then
+			return def
+		end
+	end
+	return nil
+end
+
+-- Hand over what a pass includes. Safe to call more than once.
+function Robux.grantPass(player, id, quiet)
+	local def = passById(id)
+	local profile = PlayerData.get(player)
+	if not def or not profile then
+		return false
+	end
+	local new = not profile.bought["pass_" .. id]
+	profile.bought["pass_" .. id] = true
+	if def.robe then
+		profile.robes[def.robe] = true
+	end
+	for _, itemId in ipairs(def.items or {}) do
+		if (profile.inv[itemId] or 0) < 1 then
+			PlayerData.give(player, itemId, 1)
+		end
+	end
+	if new and not quiet then
+		Remotes.notify(player, "Thank you. " .. def.name .. " is yours: look in your Bag and at the robe-maker's.", "good")
+	end
+	PlayerData.push(player)
+	return true
+end
+
+-- When a player arrives, see which passes they already own.
+function Robux.check(player)
+	for _, def in ipairs(Config.Robux.passes) do
+		if def.passId > 0 then
+			local ok, owns = pcall(function()
+				return MarketplaceService:UserOwnsGamePassAsync(player.UserId, def.passId)
+			end)
+			if ok and owns and player.Parent then
+				Robux.grantPass(player, def.id, true)
+			end
+		end
+	end
+end
+
+function Robux.buyPass(player, id)
+	local def = passById(id)
+	local profile = PlayerData.get(player)
+	if not def or not profile then
+		return
+	end
+	if profile.bought["pass_" .. id] then
+		Remotes.notify(player, "You already have this.", "info")
+	elseif def.passId <= 0 then
+		Remotes.notify(player, def.name .. " is not available yet.", "info")
+	else
+		MarketplaceService:PromptGamePassPurchase(player, def.passId)
+	end
+end
+
+function Robux.buyProduct(player, id)
+	local def = productById(id)
+	if not def then
+		return
+	end
+	if def.productId <= 0 then
+		Remotes.notify(player, def.name .. " is not available yet.", "info")
+	else
+		MarketplaceService:PromptProductPurchase(player, def.productId)
+	end
+end
+
+-- An offering of flowers: petals fall around every player in the game.
+function Robux.flowers(player)
+	Remotes.notifyAll(player.DisplayName .. " has made an offering of flowers for everyone.", "good")
+	task.spawn(function()
+		local rng = Random.new()
+		for _ = 1, 10 do
+			for _, other in ipairs(Players:GetPlayers()) do
+				local pos = Combat.position(other)
+				if pos then
+					local at = pos + Vector3.new(rng:NextNumber(-14, 14), rng:NextNumber(8, 14), rng:NextNumber(-14, 14))
+					Remotes.fx("petals", { pos = at, color = Color3.fromRGB(255, 200, 220), big = true })
+				end
+			end
+			task.wait(0.6)
+		end
+	end)
+end
+
+function Robux.start()
+	MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player, passId, bought)
+		if not bought then
+			return
+		end
+		for _, def in ipairs(Config.Robux.passes) do
+			if def.passId == passId and def.passId > 0 then
+				Robux.grantPass(player, def.id)
+				if def.robe then
+					local profile = PlayerData.get(player)
+					if profile then
+						profile.robe = def.robe
+						PlayerData.push(player)
+						task.spawn(require(script.Parent.Robes).apply, player)
+					end
+				end
+				Cosmetics.apply(player)
+			end
+		end
+	end)
+
+	MarketplaceService.ProcessReceipt = function(receipt)
+		local player = Players:GetPlayerByUserId(receipt.PlayerId)
+		if not player then
+			return Enum.ProductPurchaseDecision.NotProcessedYet
+		end
+		for _, def in ipairs(Config.Robux.products) do
+			if def.productId == receipt.ProductId and def.productId > 0 then
+				if def.id == "flowers" then
+					Robux.flowers(player)
+				end
+				return Enum.ProductPurchaseDecision.PurchaseGranted
+			end
+		end
+		return Enum.ProductPurchaseDecision.NotProcessedYet
+	end
+end
+
+return Robux
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX24"><Properties><string name="Name">World</string><ProtectedString name="Source"><![CDATA[-- World: builds the whole landscape when the server starts.
 -- Terrain (ground, hills, rivers), lighting, the gates between zones, the things to
 -- collect, and then each zone's own scenery (see ZonesWest and ZonesEast).
 
@@ -6920,7 +7700,7 @@ end
 World.ctx = ctx
 
 return World
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX21"><Properties><string name="Name">ZonesEast</string><ProtectedString name="Source"><![CDATA[-- ZonesEast: the second half of the journey.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX25"><Properties><string name="Name">ZonesEast</string><ProtectedString name="Source"><![CDATA[-- ZonesEast: the second half of the journey.
 -- Uruvela (the grove of austerities), Senani village and the Neranjara river,
 -- Mara's Field, and Bodh Gaya with the Bodhi tree.
 
@@ -7285,13 +8065,14 @@ function Zones.build(ctx)
 end
 
 return Zones
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX22"><Properties><string name="Name">ZonesWest</string><ProtectedString name="Source"><![CDATA[-- ZonesWest: the first half of the journey.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX26"><Properties><string name="Name">ZonesWest</string><ProtectedString name="Source"><![CDATA[-- ZonesWest: the first half of the journey.
 -- Kapilavastu (home temple and village), the Road of the Four Sights,
 -- the River Anoma, and the Forest of the Teachers.
 
 local Kit = require(script.Parent.Kit)
 local Props = require(script.Parent.Props)
 local B = require(script.Parent.Buildings)
+local Garden = require(script.Parent.Garden)
 
 local C = Kit.C
 local M = Enum.Material
@@ -7390,6 +8171,9 @@ local function village(ctx)
 	-- the temple elephant
 	Props.elephant(root, Kit.at(84, -66, Kit.FACE_NEG_X), 0.8, nil, { cloth = C.maroon })
 	ctx.reserve(84, -66, 14)
+
+	-- the Pilgrims' Garden: a place to meet, south of the courtyard
+	Garden.build(ctx, root)
 
 	-- trees and flowers inside the compound
 	ctx.scatter(-128, 100, 16, 9, function(o)
@@ -7682,7 +8466,7 @@ function Zones.build(ctx)
 end
 
 return Zones
-]]></ProtectedString></Properties></Item></Item></Item><Item class="StarterPlayer" referent="RBX31"><Properties><string name="Name">StarterPlayer</string></Properties><Item class="StarterPlayerScripts" referent="RBX30"><Properties><string name="Name">StarterPlayerScripts</string></Properties><Item class="Folder" referent="RBX29"><Properties><string name="Name">Client</string></Properties><Item class="ModuleScript" referent="RBX25"><Properties><string name="Name">Audio</string><ProtectedString name="Source"><![CDATA[-- Audio: plays the music for the current step of the journey and the sound effects.
+]]></ProtectedString></Properties></Item></Item></Item><Item class="StarterPlayer" referent="RBX35"><Properties><string name="Name">StarterPlayer</string></Properties><Item class="StarterPlayerScripts" referent="RBX34"><Properties><string name="Name">StarterPlayerScripts</string></Properties><Item class="Folder" referent="RBX33"><Properties><string name="Name">Client</string></Properties><Item class="ModuleScript" referent="RBX29"><Properties><string name="Name">Audio</string><ProtectedString name="Source"><![CDATA[-- Audio: plays the music for the current step of the journey and the sound effects.
 -- The sound IDs themselves live in ReplicatedStorage.Shared.Sounds.
 
 local Players = game:GetService("Players")
@@ -7767,7 +8551,8 @@ end
 local lastPlayed = {}
 
 -- Play an effect by name. If "pos" is given, it is only heard when you are near it.
-function Audio.play(name, pos, volume)
+-- "pitch" plays it higher (above 1) or lower (below 1): used for the song bells.
+function Audio.play(name, pos, volume, pitch)
 	local id = Sounds.Effects[name]
 	if type(id) ~= "number" or id <= 0 then
 		return
@@ -7788,11 +8573,48 @@ function Audio.play(name, pos, volume)
 	s.Name = name
 	s.SoundId = asset(id)
 	s.Volume = (volume or 1) * Sounds.EffectVolume
+	if pitch then
+		s.PlaybackSpeed = pitch
+	end
 	s.Parent = folder
-	s:Play()
-	task.delay(12, function()
-		s:Destroy()
-	end)
+	local tail = Sounds.EffectTail and Sounds.EffectTail[name]
+	if type(tail) == "number" and tail > 0 then
+		-- only the ending is wanted: wait until the sound has arrived, then start near its end
+		local full = s.Volume
+		s.Volume = 0
+		task.spawn(function()
+			local waited = 0
+			while not s.IsLoaded and waited < 3 do
+				task.wait(0.05)
+				waited = waited + 0.05
+			end
+			if not s.Parent then
+				return
+			end
+			s.TimePosition = math.max(0, s.TimeLength - tail)
+			s:Play()
+			TweenService:Create(s, TweenInfo.new(0.12), { Volume = full }):Play()
+		end)
+	else
+		s:Play()
+	end
+	local length = Sounds.EffectLength and Sounds.EffectLength[name]
+	if type(length) == "number" and length > 0 and length < 12 then
+		-- a long recording: let it ring, then fade it away over the last two seconds
+		local fade = math.min(2, length / 2)
+		task.delay(length - fade, function()
+			if s.Parent then
+				TweenService:Create(s, TweenInfo.new(fade), { Volume = 0 }):Play()
+			end
+		end)
+		task.delay(length + 0.2, function()
+			s:Destroy()
+		end)
+	else
+		task.delay(12, function()
+			s:Destroy()
+		end)
+	end
 end
 
 ----------------------------------------------------------------------
@@ -7891,7 +8713,7 @@ do
 end
 
 return Audio
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX26"><Properties><string name="Name">Fx</string><ProtectedString name="Source"><![CDATA[-- Fx: what the world looks like for this player.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX30"><Properties><string name="Name">Fx</string><ProtectedString name="Source"><![CDATA[-- Fx: what the world looks like for this player.
 -- Visual effects, the changing light of each zone, which gates are open, and which
 -- things have already been collected.
 
@@ -8115,7 +8937,7 @@ CollectionService:GetInstanceAddedSignal("GateVeil"):Connect(applyGate)
 CollectionService:GetInstanceAddedSignal("Collectible"):Connect(applyCollectible)
 
 return Fx
-]]></ProtectedString></Properties></Item><Item class="LocalScript" referent="RBX27"><Properties><string name="Name">Main</string><ProtectedString name="Source"><![CDATA[-- The Bodhi Path: everything the player sees on screen and every button they press.
+]]></ProtectedString></Properties></Item><Item class="LocalScript" referent="RBX31"><Properties><string name="Name">Main</string><ProtectedString name="Source"><![CDATA[-- The Bodhi Path: everything the player sees on screen and every button they press.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -8140,7 +8962,7 @@ local Action = Remotes:WaitForChild("Action")
 local state = {
 	merit = 0, stage = 1, prog = {}, inv = {}, abilities = { strike = true, meditate = true },
 	robes = {}, robe = "novice", path = 0, leaves = {}, collected = {}, shrines = {}, bought = {}, lotus = {},
-	weapon = "auto", symbols = {}, friends = {},
+	weapon = "auto", symbols = {}, friends = {}, worn = {},
 }
 
 pcall(function()
@@ -8391,9 +9213,12 @@ function Windows.bag()
 			label = "Offer"
 		elseif def.use == "equip" then
 			label = (heldWeapon() == id) and "Put away" or "Hold"
+		elseif def.use == "wear" then
+			label = (state.worn and state.worn[def.slot] == id) and "Take off" or "Wear"
 		end
-		local color = (label == "Put away") and T.green or nil
-		row(def.name .. ((def.use == "equip") and "" or ("  x" .. state.inv[id])), def.desc, label, color, label and function()
+		local color = (label == "Put away" or label == "Take off") and T.green or nil
+		local single = def.use == "equip" or def.use == "wear" or def.lanternColor
+		row(def.name .. (single and "" or ("  x" .. state.inv[id])), def.desc, label, color, label and function()
 			Action:FireServer("UseItem", id)
 		end or nil)
 	end
@@ -8418,6 +9243,30 @@ function Windows.shop(shopId)
 			end)
 		end
 	end
+	if shop.robux then
+		heading("Support the temple (Robux)")
+		row("About these", "These change only how things look, or are a gift to everyone. Nothing here makes the journey easier.", nil, nil, nil, 50)
+		for _, def in ipairs(Config.Robux.passes) do
+			if state.bought["pass_" .. def.id] then
+				row(def.name, def.desc, "Owned", T.green, nil, 76)
+			elseif def.passId > 0 then
+				row(def.name, def.desc, "Robux", T.goldBright, function()
+					Action:FireServer("BuyPass", def.id)
+				end, 76)
+			else
+				row(def.name, def.desc, "Coming soon", T.dim, nil, 76)
+			end
+		end
+		for _, def in ipairs(Config.Robux.products) do
+			if def.productId > 0 then
+				row(def.name, def.desc, "Robux", T.goldBright, function()
+					Action:FireServer("BuyProduct", def.id)
+				end, 76)
+			else
+				row(def.name, def.desc, "Coming soon", T.dim, nil, 76)
+			end
+		end
+	end
 end
 
 function Windows.robes()
@@ -8430,6 +9279,8 @@ function Windows.robes()
 			row(def.name, def.desc, "Wear", T.goldBright, function()
 				Action:FireServer("WearRobe", def.id)
 			end)
+		elseif def.pass then
+			row(def.name, def.desc, "A patron's gift", T.dim, nil)
 		elseif def.quest or def.reward then
 			row(def.name, def.desc, "Earned on the journey", T.dim, nil)
 		else
@@ -8843,6 +9694,13 @@ Effects.hit = Fx.hit
 function Effects.bell()
 	Fx.shake(0.4, 0.25)
 end
+-- the song bells and the drum in the Pilgrims' Garden
+function Effects.note(data)
+	Audio.play("pray", data.pos, 1, data.pitch or 1)
+end
+function Effects.drum(data)
+	Audio.play("hit", data.pos, 1.5, 0.5)
+end
 function Effects.hurt()
 	vignette.BackgroundTransparency = 0.72
 	tween(vignette, 0.5, { BackgroundTransparency = 1 })
@@ -9058,7 +9916,7 @@ refreshMerit()
 refreshTracker()
 refreshAbilities()
 Action:FireServer("Ready")
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX28"><Properties><string name="Name">UI</string><ProtectedString name="Source"><![CDATA[-- UI: small helpers and the shared look of every panel on screen.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX32"><Properties><string name="Name">UI</string><ProtectedString name="Source"><![CDATA[-- UI: small helpers and the shared look of every panel on screen.
 
 local UI = {}
 

@@ -590,6 +590,12 @@ InstMT.__newindex = function(self, key, value)
 		return
 	end
 	local m = member(d.class, key)
+	if m and m.k == "C" then
+		if value ~= nil and type(value) ~= "function" then fail(tostring(key) .. " of " .. describe(self) .. " must be a function", 2) end
+		d.callbacks = d.callbacks or {}
+		d.callbacks[key] = value
+		return
+	end
 	if not m or m.k ~= "P" then fail(tostring(key) .. " is not a valid property of " .. describe(self), 2) end
 	if m.ro then fail(tostring(key) .. " of " .. describe(self) .. " cannot be set (read only)", 2) end
 	if value == nil and m.cat ~= "Class" then fail("cannot set " .. key .. " of " .. describe(self) .. " to nil", 2) end
