@@ -8528,7 +8528,7 @@ function Zones.build(ctx)
 end
 
 return Zones
-]]></ProtectedString></Properties></Item></Item></Item><Item class="StarterPlayer" referent="RBX35"><Properties><string name="Name">StarterPlayer</string><bool name="EnableMouseLockOption">false</bool><float name="CameraMinZoomDistance">5</float></Properties><Item class="StarterPlayerScripts" referent="RBX34"><Properties><string name="Name">StarterPlayerScripts</string></Properties><Item class="Folder" referent="RBX33"><Properties><string name="Name">Client</string></Properties><Item class="ModuleScript" referent="RBX29"><Properties><string name="Name">Audio</string><ProtectedString name="Source"><![CDATA[-- Audio: plays the music for the current step of the journey and the sound effects.
+]]></ProtectedString></Properties></Item></Item></Item><Item class="StarterPlayer" referent="RBX35"><Properties><string name="Name">StarterPlayer</string></Properties><Item class="StarterPlayerScripts" referent="RBX34"><Properties><string name="Name">StarterPlayerScripts</string></Properties><Item class="Folder" referent="RBX33"><Properties><string name="Name">Client</string></Properties><Item class="ModuleScript" referent="RBX29"><Properties><string name="Name">Audio</string><ProtectedString name="Source"><![CDATA[-- Audio: plays the music for the current step of the journey and the sound effects.
 -- The sound IDs themselves live in ReplicatedStorage.Shared.Sounds.
 
 local Players = game:GetService("Players")
