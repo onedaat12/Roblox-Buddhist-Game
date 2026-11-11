@@ -399,14 +399,14 @@ Sounds.Music = {
 	{ step = "bowl", id = 140422396863468 }, -- 18  The Golden Bowl: wonder, flowing water
 	{ step = "sotthiya", id = 111399415119885 }, -- 19  The Grass-Cutter: simple, earthy
 	{ step = "kusa", id = 92428953268139 }, -- 20  Eight Handfuls of Grass: quiet anticipation
-	{ step = "daughters", id = 0 }, -- 21  The Daughters of Mara: hypnotic, then dangerous
-	{ step = "armies", id = 0 }, -- 22  The Ten Armies: battle drums
-	{ step = "mara", id = 0 }, -- 23  Mara: the biggest, darkest track
-	{ step = "seat", id = 0 }, -- 24  The Seat of Awakening: hushed, sacred
-	{ step = "watch1", id = 0 }, -- 25  The First Watch: night, vast, slow
-	{ step = "watch2", id = 0 }, -- 26  The Second Watch: wider, deeper
-	{ step = "watch3", id = 0 }, -- 27  The Third Watch: rising, luminous
-	{ step = "awake", id = 0 }, -- 28  Awakened: joyful peace
+	{ step = "daughters", id = 9041786001 }, -- 21  The Daughters of Mara: hypnotic, then dangerous
+	{ step = "armies", id = 84331969561132 }, -- 22  The Ten Armies: battle drums
+	{ step = "mara", id = 9045721164 }, -- 23  Mara: the biggest, darkest track
+	{ step = "seat", id = 126695140992161 }, -- 24  The Seat of Awakening: hushed, sacred
+	{ step = "watch1", id = 82555754602814 }, -- 25  The First Watch: night, vast, slow
+	{ step = "watch2", id = 110481782288601 }, -- 26  The Second Watch: wider, deeper
+	{ step = "watch3", id = 1839251961 }, -- 27  The Third Watch: rising, luminous
+	{ step = "awake", id = 96506107863425 }, -- 28  Awakened: joyful peace
 }
 
 ----------------------------------------------------------------------
